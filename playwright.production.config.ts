@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 /** Run against a built Next.js server to detect SSR/hydration/asset regressions. */
 export default defineConfig({
   testDir: './e2e',
-  testMatch: '**/production.spec.ts',
+  testMatch: ['**/production.spec.ts','**/offline.spec.ts'],
   timeout: 90_000,
   expect: { timeout: 15_000 },
   retries: process.env.CI ? 1 : 0,

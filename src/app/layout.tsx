@@ -7,7 +7,10 @@ export const metadata: Metadata = {
   title: 'MeowDeck',
   applicationName: 'MeowDeck',
   description: 'A Little Cat. A Clever Deck.',
-  category: 'games'
+  category: 'games',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {capable:true,title:'MeowDeck',statusBarStyle:'black-translucent'},
+  icons: {icon:'/icons/favicon.png',apple:'/icons/apple-touch-icon.png'}
 };
 
 export const viewport: Viewport = {

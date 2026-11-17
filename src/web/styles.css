@@ -230,3 +230,24 @@ button.game-option:not(:disabled):hover {border-color:#edc180;background:#2b4838
 
 .p3-speech{display:inline-block;max-width:min(210px,32vw);padding:5px 8px;color:#382a1a;background:#f0dfb5;border:2px solid #8f7047;box-shadow:2px 2px #253423;border-radius:3px;line-height:1.35}
 @media(max-width:650px){.p3-speech{max-width:145px;font-size:.59rem;padding:4px 6px}}
+/* P4: Compact controls preserve P2 visual identity and touch targets. */
+.p4-statusbar{position:fixed;left:10px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:10;max-width:min(340px,75vw);display:flex;flex-wrap:wrap;gap:7px;pointer-events:none}
+.p4-status{background:#142c21ed;border:1px solid #a9955c;border-radius:4px;padding:6px 10px;color:#e6d8b8;font:600 .67rem monospace;box-shadow:2px 3px 0 #111;pointer-events:auto}
+.p4-status.error{border-color:#e69b91;color:#ffd6cf}
+.p4-save-summary{color:#dfc69a;font:.74rem/1.6 monospace;margin:5px 0 0}
+.p4-settings{display:flex;flex-direction:column;gap:14px}
+.p4-settings label{display:flex;flex-direction:column;gap:6px;font-size:.81rem;color:#e8ddc2}
+.p4-settings select,.p4-settings input[type=range]{width:100%;min-height:44px;background:#1b3024;color:#f6e4c6;border:2px solid #8a6d47;padding:5px 9px}
+.p4-settings input[type=checkbox]{height:26px;width:26px;accent-color:#d9a65e}
+.p4-settings .p4-setting-check{display:flex;flex-direction:row;align-items:center;justify-content:space-between}
+.p4-stats h3{font:800 .9rem monospace;color:#eed3a0;margin:20px 0 10px}
+.p4-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.p4-stats-grid>div{border:1px solid #927450;padding:10px;display:flex;flex-direction:column;gap:4px;background:#1d3026}
+.p4-stats-grid span{font-size:.72rem;color:#decda9}.p4-stats-grid strong{font-size:1.5rem;color:#f1da9e}
+.p4-stat-breakdown,.p4-recent{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.p4-stat-breakdown>div,.p4-recent>div{display:grid;grid-template-columns:1fr auto auto;gap:14px;padding:9px;border-bottom:1px dashed #806e51;font-size:.77rem}
+.p4-stats .pixel-button{margin-top:10px}
+.p4-small{font:.75rem/1.6 monospace;color:#d7c69c}
+.p4-install{max-width:430px;display:flex;flex-wrap:wrap;gap:8px}
+.p4-warning{border:1px solid #aa7466;padding:11px;color:#ffd9c6;background:#492e27;line-height:1.5}
+@media(max-width:480px){.p4-statusbar{bottom:calc(84px + env(safe-area-inset-bottom));font-size:.63rem}.p4-status{padding:4px 7px}}

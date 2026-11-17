@@ -613,3 +613,8 @@ interface MeowDeckSaveV1 {
 | 1.0 | Initial Game Design & Technical Blueprint: MeowDeck, Crazy Eights MVP, Mochi 44-frame animation specification, AI fairness, UI/UX, architecture and QA |
 
 **End of document.**
+
+
+## P4 Implementation Note (2026-11-17)
+
+A browser-local IndexedDB save/Continue candidate, idempotent completed-match statistics, persistent TH/EN/motion/audio settings, original Web Audio cues, and build-aware PWA infrastructure have been integrated without rewriting P1 rules or altering P0 artwork. See `docs/P4_ARCHITECTURE.md` and `docs/P4_REPORT.md`. **Real Next.js production build, hydration and offline-reopening tests are not yet verified in the current environment.**

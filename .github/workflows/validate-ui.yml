@@ -4,6 +4,9 @@ on:
     paths:
       - 'src/app/**'
       - 'src/web/**'
+      - 'public/icons/**'
+      - 'scripts/build-offline.mjs'
+      - 'scripts/sw.template.js'
       - 'src/games/**'
       - 'e2e/**'
       - 'next.config.*'

@@ -114,3 +114,22 @@ See [`docs/P3_MOCHI_AI.md`](docs/P3_MOCHI_AI.md) and [`docs/P3_REPORT.md`](docs/
 **Important reproducibility gate:** This migration source was prepared in an environment without access to the npm registry. Before merging, run `npm install` with registry access to generate **and commit** `package-lock.json`, then run `npm ci` and all CI/browser tests. Do not interpret the local headless validation alone as Next.js build verification.
 
 See [migration guide](docs/P2_5_NEXTJS_MIGRATION.md) and [verification report](docs/P2_5_REPORT.md).
+
+
+## P4 — local persistence, statistics, audio and installable offline-first PWA candidate
+
+P4 source lives in `src/web/storage`, `src/web/statistics`, `src/web/settings`, `src/web/audio`, `src/web/pwa` and the App Router manifest. The project now includes an original synthesized sound engine and a build-aware, custom service worker. The original P0–P3 assets and game rules are unchanged.
+
+**Status:** P4 local implementation with **54/54 Node tests passed**; Next.js production build and browser/offline acceptance are **NOT VERIFIED** until dependencies and a production browser runner are available. Do not deploy as offline-ready solely from this source package. See `docs/P4_REPORT.md`.
+
+```bash
+npm ci
+npm run typecheck
+npm test
+npm run validate:assets
+npm run build
+npm run test:e2e
+npm run test:e2e:production
+```
+
+The build emits `public/sw.js` and `public/offline-precache.json` from the actual Next.js build ID. For development, PWA registration is disabled; test offline behavior in production mode.

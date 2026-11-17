@@ -1,0 +1,6 @@
+{
+  "extends":"./tsconfig.engine.json",
+  "compilerOptions":{"rootDir":"src","outDir":"dist-p4","declaration":false,"sourceMap":false},
+  "include":["src/games/meowdeck/**/*.ts","src/web/storage/**/*.ts","src/web/statistics/**/*.ts","src/web/settings/**/*.ts","src/web/audio/**/*.ts","src/web/pwa/**/*.ts"],
+  "exclude":["node_modules","dist","dist-p4"]
+}
