@@ -1,0 +1,32 @@
+name: Validate MeowDeck assets
+
+on:
+  pull_request:
+    paths:
+      - 'public/assets/meowdeck/**'
+      - 'asset-contract.json'
+      - 'asset-digests.json'
+      - 'scripts/validate_assets.py'
+      - 'requirements-assets.txt'
+      - '.github/workflows/validate-assets.yml'
+  push:
+    paths:
+      - 'public/assets/meowdeck/**'
+      - 'asset-contract.json'
+      - 'asset-digests.json'
+      - 'scripts/validate_assets.py'
+      - 'requirements-assets.txt'
+      - '.github/workflows/validate-assets.yml'
+
+jobs:
+  validate-assets:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-assets.txt
+      - run: python scripts/validate_assets.py

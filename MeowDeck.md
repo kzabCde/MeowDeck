@@ -197,7 +197,10 @@ AI thinking delay เป็นเพียงเรื่องการนำ�
 
 - **52 Card Faces**: `AS, 2S, ..., KS`, `AH...KH`, `AD...KD`, `AC...KC` (เลือกลำดับที่สอดคล้องกันตลอดระบบ)
 - **Card backs**: อย่างน้อย 1 ลาย; รองรับเปลี่ยนลายในอนาคต
-- **Base card artwork**: `64 × 96 px` ต่อใบ
+- **Base card artwork**: `96 × 144 px` ต่อใบ (อ้างอิง `asset-contract.json`)
+- **HD artwork**: `192 × 288 px` ต่อใบ (nearest-neighbor 2×)
+- **Aspect ratio**: `2:3`; แผ่น Atlas 8 × 7 ช่อง ขนาด `768 × 1008 px` และ HD Atlas `1536 × 2016 px`
+- **Crazy Eights**: ใช้ไพ่ 52 ใบเท่านั้น; `joker_red`, `joker_black` และ `card_back` เป็น assets เสริม ไม่ใช่ไพ่เล่นในสำรับ
 - กำหนด card ID ใน Engine เป็น `${rank}${suit}` โดย `rank: A,2...10,J,Q,K`, `suit: S,H,D,C`
 - ไพ่จริงควรแสดงแยกจากแมวและแอนิเมชันอุ้งเท้า เพื่อให้ใช้งานได้กับเกมทุกโหมด
 - ควบคุมภาพ Ace, J, Q, K ให้อ่านค่าไพ่ได้แม้บนหน้าจอเล็ก
@@ -228,6 +231,7 @@ AI thinking delay เป็นเพียงเรื่องการนำ�
 **Rendering:** Frame-based; allow individual frame timings if needed  
 **Layers:** Mochi character, paws, cards, table, VFX แยกกันใน runtime  
 **Requirement:** ทุกเฟรมคงรายละเอียดสัดส่วน ขน เสื้อ อุ้งเท้าและหางจาก Character Master
+**P0 Asset Contract:** `asset-contract.json` เป็น single source of truth สำหรับ `frameDurationMs`, จำนวนเฟรม, loop และ atlas geometry; `public/assets/meowdeck/mochi/animations.json` เป็น manifest สำหรับ renderer. FPS หากจำเป็นต้องคำนวณจาก `1000 / frameDurationMs` โดยไม่ปัดเป็นจำนวนเต็มเมื่อทำให้เวลาเคลื่อนไหวเปลี่ยนไป. ตัวละครใช้ anchor `(48, 88)` และ origin `(0.5, 88/96)`; animation `thinking` ต้อง loop. ใช้ `actionFrame=3` แบบ zero-based ใน `draw_card` และ `play_card` เพื่อซิงก์ภาพเท่านั้น ไม่สั่งเปลี่ยน game state, และ Reduced Motion ไม่มีผลต่อกติกาหรือผลลัพธ์. กติกา/AI/การ์ดจริงเป็นอิสระจากการเล่น Sprite.
 
 | Clip ID | Frames | Default timing | Playback | Trigger |
 |---|---:|---:|---|---|

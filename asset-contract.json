@@ -1,0 +1,146 @@
+{
+  "contractVersion": "1.0.0",
+  "gameId": "meowdeck",
+  "cards": {
+    "rankIds": [
+      "A",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "J",
+      "Q",
+      "K"
+    ],
+    "suitIds": [
+      "S",
+      "H",
+      "D",
+      "C"
+    ],
+    "suitDirectoryNames": {
+      "S": "spades",
+      "H": "hearts",
+      "D": "diamonds",
+      "C": "clubs"
+    },
+    "cardIdSyntax": "${rank}${suit}",
+    "playableCardCount": 52,
+    "optionalAssetIds": [
+      "joker_red",
+      "joker_black",
+      "card_back"
+    ],
+    "totalAssetCount": 55,
+    "baseSize": {
+      "width": 96,
+      "height": 144
+    },
+    "hdSize": {
+      "width": 192,
+      "height": 288
+    },
+    "aspectRatio": {
+      "width": 2,
+      "height": 3
+    },
+    "pngMode": "RGBA",
+    "interpolation": "nearest-neighbor",
+    "manifestPath": "public/assets/meowdeck/cards/manifest.json",
+    "atlas": {
+      "columns": 8,
+      "rows": 7,
+      "usedCells": 55,
+      "transparentCells": 1,
+      "image": "public/assets/meowdeck/cards/spritesheets/cards_atlas.png",
+      "image2x": "public/assets/meowdeck/cards/spritesheets/cards_atlas@2x.png",
+      "metadata": "public/assets/meowdeck/cards/spritesheets/cards_atlas.json"
+    }
+  },
+  "mochi": {
+    "manifestPath": "public/assets/meowdeck/mochi/animations.json",
+    "frameSize": {
+      "width": 96,
+      "height": 96
+    },
+    "anchor": {
+      "x": 48,
+      "y": 88
+    },
+    "origin": {
+      "x": 0.5,
+      "y": 0.9166666666666666
+    },
+    "pngMode": "RGBA",
+    "sheetLayout": "horizontal-row",
+    "totalAnimations": 10,
+    "totalFrames": 44,
+    "animationSpecs": {
+      "idle": {
+        "frameCount": 4,
+        "frameDurationMs": 200,
+        "loop": true
+      },
+      "blink": {
+        "frameCount": 3,
+        "frameDurationMs": 100,
+        "loop": false
+      },
+      "thinking": {
+        "frameCount": 4,
+        "frameDurationMs": 180,
+        "loop": true
+      },
+      "draw_card": {
+        "frameCount": 6,
+        "frameDurationMs": 100,
+        "loop": false,
+        "actionFrame": 3
+      },
+      "play_card": {
+        "frameCount": 6,
+        "frameDurationMs": 100,
+        "loop": false,
+        "actionFrame": 3
+      },
+      "victory": {
+        "frameCount": 6,
+        "frameDurationMs": 140,
+        "loop": false
+      },
+      "defeat": {
+        "frameCount": 4,
+        "frameDurationMs": 200,
+        "loop": false
+      },
+      "sleep": {
+        "frameCount": 4,
+        "frameDurationMs": 300,
+        "loop": true
+      },
+      "pet_reaction": {
+        "frameCount": 4,
+        "frameDurationMs": 160,
+        "loop": false
+      },
+      "surprise": {
+        "frameCount": 3,
+        "frameDurationMs": 120,
+        "loop": false
+      }
+    },
+    "priority": [
+      "victory/defeat",
+      "draw_card/play_card",
+      "pet_reaction/surprise",
+      "thinking",
+      "sleep",
+      "idle/blink"
+    ]
+  }
+}

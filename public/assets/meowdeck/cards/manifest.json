@@ -1,0 +1,892 @@
+{
+  "name": "Complete Pixel Art Playing Card Deck",
+  "version": "2.0",
+  "authoring": "programmatic deterministic pixel art",
+  "base_size": {
+    "width": 96,
+    "height": 144
+  },
+  "high_resolution_size": {
+    "width": 192,
+    "height": 288
+  },
+  "assets_total": 55,
+  "standard_cards": 52,
+  "jokers": 2,
+  "backs": 1,
+  "assets": [
+    {
+      "id": "AH",
+      "rank": "A",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": 1,
+      "path": "cards/hearts/AH.png",
+      "path_2x": "assets_2x/cards/hearts/AH.png",
+      "atlas": {
+        "x": 0,
+        "y": 0,
+        "w": 96,
+        "h": 144,
+        "index": 0
+      }
+    },
+    {
+      "id": "2H",
+      "rank": "2",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": 2,
+      "path": "cards/hearts/2H.png",
+      "path_2x": "assets_2x/cards/hearts/2H.png",
+      "atlas": {
+        "x": 96,
+        "y": 0,
+        "w": 96,
+        "h": 144,
+        "index": 1
+      }
+    },
+    {
+      "id": "3H",
+      "rank": "3",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": 3,
+      "path": "cards/hearts/3H.png",
+      "path_2x": "assets_2x/cards/hearts/3H.png",
+      "atlas": {
+        "x": 192,
+        "y": 0,
+        "w": 96,
+        "h": 144,
+        "index": 2
+      }
+    },
+    {
+      "id": "4H",
+      "rank": "4",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": 4,
+      "path": "cards/hearts/4H.png",
+      "path_2x": "assets_2x/cards/hearts/4H.png",
+      "atlas": {
+        "x": 288,
+        "y": 0,
+        "w": 96,
+        "h": 144,
+        "index": 3
+      }
+    },
+    {
+      "id": "5H",
+      "rank": "5",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": 5,
+      "path": "cards/hearts/5H.png",
+      "path_2x": "assets_2x/cards/hearts/5H.png",
+      "atlas": {
+        "x": 384,
+        "y": 0,
+        "w": 96,
+        "h": 144,
+        "index": 4
+      }
+    },
+    {
+      "id": "6H",
+      "rank": "6",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": 6,
+      "path": "cards/hearts/6H.png",
+      "path_2x": "assets_2x/cards/hearts/6H.png",
+      "atlas": {
+        "x": 480,
+        "y": 0,
+        "w": 96,
+        "h": 144,
+        "index": 5
+      }
+    },
+    {
+      "id": "7H",
+      "rank": "7",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": 7,
+      "path": "cards/hearts/7H.png",
+      "path_2x": "assets_2x/cards/hearts/7H.png",
+      "atlas": {
+        "x": 576,
+        "y": 0,
+        "w": 96,
+        "h": 144,
+        "index": 6
+      }
+    },
+    {
+      "id": "8H",
+      "rank": "8",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": 8,
+      "path": "cards/hearts/8H.png",
+      "path_2x": "assets_2x/cards/hearts/8H.png",
+      "atlas": {
+        "x": 672,
+        "y": 0,
+        "w": 96,
+        "h": 144,
+        "index": 7
+      }
+    },
+    {
+      "id": "9H",
+      "rank": "9",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": 9,
+      "path": "cards/hearts/9H.png",
+      "path_2x": "assets_2x/cards/hearts/9H.png",
+      "atlas": {
+        "x": 0,
+        "y": 144,
+        "w": 96,
+        "h": 144,
+        "index": 8
+      }
+    },
+    {
+      "id": "10H",
+      "rank": "10",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": 10,
+      "path": "cards/hearts/10H.png",
+      "path_2x": "assets_2x/cards/hearts/10H.png",
+      "atlas": {
+        "x": 96,
+        "y": 144,
+        "w": 96,
+        "h": 144,
+        "index": 9
+      }
+    },
+    {
+      "id": "JH",
+      "rank": "J",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": null,
+      "path": "cards/hearts/JH.png",
+      "path_2x": "assets_2x/cards/hearts/JH.png",
+      "atlas": {
+        "x": 192,
+        "y": 144,
+        "w": 96,
+        "h": 144,
+        "index": 10
+      }
+    },
+    {
+      "id": "QH",
+      "rank": "Q",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": null,
+      "path": "cards/hearts/QH.png",
+      "path_2x": "assets_2x/cards/hearts/QH.png",
+      "atlas": {
+        "x": 288,
+        "y": 144,
+        "w": 96,
+        "h": 144,
+        "index": 11
+      }
+    },
+    {
+      "id": "KH",
+      "rank": "K",
+      "suit": "hearts",
+      "suit_symbol": "♥",
+      "pip_count": null,
+      "path": "cards/hearts/KH.png",
+      "path_2x": "assets_2x/cards/hearts/KH.png",
+      "atlas": {
+        "x": 384,
+        "y": 144,
+        "w": 96,
+        "h": 144,
+        "index": 12
+      }
+    },
+    {
+      "id": "AD",
+      "rank": "A",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": 1,
+      "path": "cards/diamonds/AD.png",
+      "path_2x": "assets_2x/cards/diamonds/AD.png",
+      "atlas": {
+        "x": 480,
+        "y": 144,
+        "w": 96,
+        "h": 144,
+        "index": 13
+      }
+    },
+    {
+      "id": "2D",
+      "rank": "2",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": 2,
+      "path": "cards/diamonds/2D.png",
+      "path_2x": "assets_2x/cards/diamonds/2D.png",
+      "atlas": {
+        "x": 576,
+        "y": 144,
+        "w": 96,
+        "h": 144,
+        "index": 14
+      }
+    },
+    {
+      "id": "3D",
+      "rank": "3",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": 3,
+      "path": "cards/diamonds/3D.png",
+      "path_2x": "assets_2x/cards/diamonds/3D.png",
+      "atlas": {
+        "x": 672,
+        "y": 144,
+        "w": 96,
+        "h": 144,
+        "index": 15
+      }
+    },
+    {
+      "id": "4D",
+      "rank": "4",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": 4,
+      "path": "cards/diamonds/4D.png",
+      "path_2x": "assets_2x/cards/diamonds/4D.png",
+      "atlas": {
+        "x": 0,
+        "y": 288,
+        "w": 96,
+        "h": 144,
+        "index": 16
+      }
+    },
+    {
+      "id": "5D",
+      "rank": "5",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": 5,
+      "path": "cards/diamonds/5D.png",
+      "path_2x": "assets_2x/cards/diamonds/5D.png",
+      "atlas": {
+        "x": 96,
+        "y": 288,
+        "w": 96,
+        "h": 144,
+        "index": 17
+      }
+    },
+    {
+      "id": "6D",
+      "rank": "6",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": 6,
+      "path": "cards/diamonds/6D.png",
+      "path_2x": "assets_2x/cards/diamonds/6D.png",
+      "atlas": {
+        "x": 192,
+        "y": 288,
+        "w": 96,
+        "h": 144,
+        "index": 18
+      }
+    },
+    {
+      "id": "7D",
+      "rank": "7",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": 7,
+      "path": "cards/diamonds/7D.png",
+      "path_2x": "assets_2x/cards/diamonds/7D.png",
+      "atlas": {
+        "x": 288,
+        "y": 288,
+        "w": 96,
+        "h": 144,
+        "index": 19
+      }
+    },
+    {
+      "id": "8D",
+      "rank": "8",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": 8,
+      "path": "cards/diamonds/8D.png",
+      "path_2x": "assets_2x/cards/diamonds/8D.png",
+      "atlas": {
+        "x": 384,
+        "y": 288,
+        "w": 96,
+        "h": 144,
+        "index": 20
+      }
+    },
+    {
+      "id": "9D",
+      "rank": "9",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": 9,
+      "path": "cards/diamonds/9D.png",
+      "path_2x": "assets_2x/cards/diamonds/9D.png",
+      "atlas": {
+        "x": 480,
+        "y": 288,
+        "w": 96,
+        "h": 144,
+        "index": 21
+      }
+    },
+    {
+      "id": "10D",
+      "rank": "10",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": 10,
+      "path": "cards/diamonds/10D.png",
+      "path_2x": "assets_2x/cards/diamonds/10D.png",
+      "atlas": {
+        "x": 576,
+        "y": 288,
+        "w": 96,
+        "h": 144,
+        "index": 22
+      }
+    },
+    {
+      "id": "JD",
+      "rank": "J",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": null,
+      "path": "cards/diamonds/JD.png",
+      "path_2x": "assets_2x/cards/diamonds/JD.png",
+      "atlas": {
+        "x": 672,
+        "y": 288,
+        "w": 96,
+        "h": 144,
+        "index": 23
+      }
+    },
+    {
+      "id": "QD",
+      "rank": "Q",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": null,
+      "path": "cards/diamonds/QD.png",
+      "path_2x": "assets_2x/cards/diamonds/QD.png",
+      "atlas": {
+        "x": 0,
+        "y": 432,
+        "w": 96,
+        "h": 144,
+        "index": 24
+      }
+    },
+    {
+      "id": "KD",
+      "rank": "K",
+      "suit": "diamonds",
+      "suit_symbol": "♦",
+      "pip_count": null,
+      "path": "cards/diamonds/KD.png",
+      "path_2x": "assets_2x/cards/diamonds/KD.png",
+      "atlas": {
+        "x": 96,
+        "y": 432,
+        "w": 96,
+        "h": 144,
+        "index": 25
+      }
+    },
+    {
+      "id": "AC",
+      "rank": "A",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": 1,
+      "path": "cards/clubs/AC.png",
+      "path_2x": "assets_2x/cards/clubs/AC.png",
+      "atlas": {
+        "x": 192,
+        "y": 432,
+        "w": 96,
+        "h": 144,
+        "index": 26
+      }
+    },
+    {
+      "id": "2C",
+      "rank": "2",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": 2,
+      "path": "cards/clubs/2C.png",
+      "path_2x": "assets_2x/cards/clubs/2C.png",
+      "atlas": {
+        "x": 288,
+        "y": 432,
+        "w": 96,
+        "h": 144,
+        "index": 27
+      }
+    },
+    {
+      "id": "3C",
+      "rank": "3",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": 3,
+      "path": "cards/clubs/3C.png",
+      "path_2x": "assets_2x/cards/clubs/3C.png",
+      "atlas": {
+        "x": 384,
+        "y": 432,
+        "w": 96,
+        "h": 144,
+        "index": 28
+      }
+    },
+    {
+      "id": "4C",
+      "rank": "4",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": 4,
+      "path": "cards/clubs/4C.png",
+      "path_2x": "assets_2x/cards/clubs/4C.png",
+      "atlas": {
+        "x": 480,
+        "y": 432,
+        "w": 96,
+        "h": 144,
+        "index": 29
+      }
+    },
+    {
+      "id": "5C",
+      "rank": "5",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": 5,
+      "path": "cards/clubs/5C.png",
+      "path_2x": "assets_2x/cards/clubs/5C.png",
+      "atlas": {
+        "x": 576,
+        "y": 432,
+        "w": 96,
+        "h": 144,
+        "index": 30
+      }
+    },
+    {
+      "id": "6C",
+      "rank": "6",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": 6,
+      "path": "cards/clubs/6C.png",
+      "path_2x": "assets_2x/cards/clubs/6C.png",
+      "atlas": {
+        "x": 672,
+        "y": 432,
+        "w": 96,
+        "h": 144,
+        "index": 31
+      }
+    },
+    {
+      "id": "7C",
+      "rank": "7",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": 7,
+      "path": "cards/clubs/7C.png",
+      "path_2x": "assets_2x/cards/clubs/7C.png",
+      "atlas": {
+        "x": 0,
+        "y": 576,
+        "w": 96,
+        "h": 144,
+        "index": 32
+      }
+    },
+    {
+      "id": "8C",
+      "rank": "8",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": 8,
+      "path": "cards/clubs/8C.png",
+      "path_2x": "assets_2x/cards/clubs/8C.png",
+      "atlas": {
+        "x": 96,
+        "y": 576,
+        "w": 96,
+        "h": 144,
+        "index": 33
+      }
+    },
+    {
+      "id": "9C",
+      "rank": "9",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": 9,
+      "path": "cards/clubs/9C.png",
+      "path_2x": "assets_2x/cards/clubs/9C.png",
+      "atlas": {
+        "x": 192,
+        "y": 576,
+        "w": 96,
+        "h": 144,
+        "index": 34
+      }
+    },
+    {
+      "id": "10C",
+      "rank": "10",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": 10,
+      "path": "cards/clubs/10C.png",
+      "path_2x": "assets_2x/cards/clubs/10C.png",
+      "atlas": {
+        "x": 288,
+        "y": 576,
+        "w": 96,
+        "h": 144,
+        "index": 35
+      }
+    },
+    {
+      "id": "JC",
+      "rank": "J",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": null,
+      "path": "cards/clubs/JC.png",
+      "path_2x": "assets_2x/cards/clubs/JC.png",
+      "atlas": {
+        "x": 384,
+        "y": 576,
+        "w": 96,
+        "h": 144,
+        "index": 36
+      }
+    },
+    {
+      "id": "QC",
+      "rank": "Q",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": null,
+      "path": "cards/clubs/QC.png",
+      "path_2x": "assets_2x/cards/clubs/QC.png",
+      "atlas": {
+        "x": 480,
+        "y": 576,
+        "w": 96,
+        "h": 144,
+        "index": 37
+      }
+    },
+    {
+      "id": "KC",
+      "rank": "K",
+      "suit": "clubs",
+      "suit_symbol": "♣",
+      "pip_count": null,
+      "path": "cards/clubs/KC.png",
+      "path_2x": "assets_2x/cards/clubs/KC.png",
+      "atlas": {
+        "x": 576,
+        "y": 576,
+        "w": 96,
+        "h": 144,
+        "index": 38
+      }
+    },
+    {
+      "id": "AS",
+      "rank": "A",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": 1,
+      "path": "cards/spades/AS.png",
+      "path_2x": "assets_2x/cards/spades/AS.png",
+      "atlas": {
+        "x": 672,
+        "y": 576,
+        "w": 96,
+        "h": 144,
+        "index": 39
+      }
+    },
+    {
+      "id": "2S",
+      "rank": "2",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": 2,
+      "path": "cards/spades/2S.png",
+      "path_2x": "assets_2x/cards/spades/2S.png",
+      "atlas": {
+        "x": 0,
+        "y": 720,
+        "w": 96,
+        "h": 144,
+        "index": 40
+      }
+    },
+    {
+      "id": "3S",
+      "rank": "3",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": 3,
+      "path": "cards/spades/3S.png",
+      "path_2x": "assets_2x/cards/spades/3S.png",
+      "atlas": {
+        "x": 96,
+        "y": 720,
+        "w": 96,
+        "h": 144,
+        "index": 41
+      }
+    },
+    {
+      "id": "4S",
+      "rank": "4",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": 4,
+      "path": "cards/spades/4S.png",
+      "path_2x": "assets_2x/cards/spades/4S.png",
+      "atlas": {
+        "x": 192,
+        "y": 720,
+        "w": 96,
+        "h": 144,
+        "index": 42
+      }
+    },
+    {
+      "id": "5S",
+      "rank": "5",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": 5,
+      "path": "cards/spades/5S.png",
+      "path_2x": "assets_2x/cards/spades/5S.png",
+      "atlas": {
+        "x": 288,
+        "y": 720,
+        "w": 96,
+        "h": 144,
+        "index": 43
+      }
+    },
+    {
+      "id": "6S",
+      "rank": "6",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": 6,
+      "path": "cards/spades/6S.png",
+      "path_2x": "assets_2x/cards/spades/6S.png",
+      "atlas": {
+        "x": 384,
+        "y": 720,
+        "w": 96,
+        "h": 144,
+        "index": 44
+      }
+    },
+    {
+      "id": "7S",
+      "rank": "7",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": 7,
+      "path": "cards/spades/7S.png",
+      "path_2x": "assets_2x/cards/spades/7S.png",
+      "atlas": {
+        "x": 480,
+        "y": 720,
+        "w": 96,
+        "h": 144,
+        "index": 45
+      }
+    },
+    {
+      "id": "8S",
+      "rank": "8",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": 8,
+      "path": "cards/spades/8S.png",
+      "path_2x": "assets_2x/cards/spades/8S.png",
+      "atlas": {
+        "x": 576,
+        "y": 720,
+        "w": 96,
+        "h": 144,
+        "index": 46
+      }
+    },
+    {
+      "id": "9S",
+      "rank": "9",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": 9,
+      "path": "cards/spades/9S.png",
+      "path_2x": "assets_2x/cards/spades/9S.png",
+      "atlas": {
+        "x": 672,
+        "y": 720,
+        "w": 96,
+        "h": 144,
+        "index": 47
+      }
+    },
+    {
+      "id": "10S",
+      "rank": "10",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": 10,
+      "path": "cards/spades/10S.png",
+      "path_2x": "assets_2x/cards/spades/10S.png",
+      "atlas": {
+        "x": 0,
+        "y": 864,
+        "w": 96,
+        "h": 144,
+        "index": 48
+      }
+    },
+    {
+      "id": "JS",
+      "rank": "J",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": null,
+      "path": "cards/spades/JS.png",
+      "path_2x": "assets_2x/cards/spades/JS.png",
+      "atlas": {
+        "x": 96,
+        "y": 864,
+        "w": 96,
+        "h": 144,
+        "index": 49
+      }
+    },
+    {
+      "id": "QS",
+      "rank": "Q",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": null,
+      "path": "cards/spades/QS.png",
+      "path_2x": "assets_2x/cards/spades/QS.png",
+      "atlas": {
+        "x": 192,
+        "y": 864,
+        "w": 96,
+        "h": 144,
+        "index": 50
+      }
+    },
+    {
+      "id": "KS",
+      "rank": "K",
+      "suit": "spades",
+      "suit_symbol": "♠",
+      "pip_count": null,
+      "path": "cards/spades/KS.png",
+      "path_2x": "assets_2x/cards/spades/KS.png",
+      "atlas": {
+        "x": 288,
+        "y": 864,
+        "w": 96,
+        "h": 144,
+        "index": 51
+      }
+    },
+    {
+      "id": "joker_red",
+      "type": "joker",
+      "variation": "red",
+      "path": "jokers/joker_red.png",
+      "path_2x": "assets_2x/jokers/joker_red.png",
+      "atlas": {
+        "x": 384,
+        "y": 864,
+        "w": 96,
+        "h": 144,
+        "index": 52
+      }
+    },
+    {
+      "id": "joker_black",
+      "type": "joker",
+      "variation": "blue",
+      "path": "jokers/joker_black.png",
+      "path_2x": "assets_2x/jokers/joker_black.png",
+      "atlas": {
+        "x": 480,
+        "y": 864,
+        "w": 96,
+        "h": 144,
+        "index": 53
+      }
+    },
+    {
+      "id": "card_back",
+      "type": "back",
+      "path": "backs/card_back.png",
+      "path_2x": "assets_2x/backs/card_back.png",
+      "atlas": {
+        "x": 576,
+        "y": 864,
+        "w": 96,
+        "h": 144,
+        "index": 54
+      }
+    }
+  ]
+}
