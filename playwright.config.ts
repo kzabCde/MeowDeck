@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test';
 // Those query flags are intentionally disabled in Next.js production builds.
 export default defineConfig({
   testDir: './e2e',
-  testIgnore: '**/production.spec.ts',
+  // Offline reopening requires a production build and installed service worker.\n  testIgnore: ['**/production.spec.ts', '**/offline.spec.ts'],
   timeout: 180_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,
