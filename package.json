@@ -1,32 +1,33 @@
 {
   "name": "meowdeck",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "type": "module",
-  "description": "MeowDeck — Crazy Eights with P3 fair difficulty AI and animated Mochi",
+  "description": "MeowDeck — Next.js App Router, original P1 Crazy Eights engine and P3 Mochi AI/animations",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "tsc -p tsconfig.json",
-    "build:web": "tsc -p tsconfig.web.json && vite build",
-    "preview": "vite preview --host 0.0.0.0",
-    "typecheck": "tsc --noEmit -p tsconfig.json",
-    "typecheck:web": "tsc --noEmit -p tsconfig.web.json",
-    "test": "npm run build && node --test tests/*.test.mjs",
-    "test:simulation": "npm run build && node examples/play-match.mjs",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "start": "next start",
+    "build:engine": "tsc -p tsconfig.engine.json",
+    "typecheck": "next typegen && tsc --noEmit -p tsconfig.json",
+    "typecheck:engine": "tsc --noEmit -p tsconfig.engine.json",
+    "test": "npm run build:engine && node --test tests/*.test.mjs",
+    "test:simulation": "npm run build:engine && node examples/play-match.mjs",
     "test:e2e": "playwright test",
+    "test:e2e:production": "playwright test --config=playwright.production.config.ts",
     "validate:assets": "python scripts/validate_assets.py",
-    "benchmark:ai": "npm run build && node examples/benchmark-ai.mjs 1000"
+    "benchmark:ai": "npm run build:engine && node examples/benchmark-ai.mjs 1000"
   },
   "dependencies": {
+    "next": "16.4.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
     "typescript": "^5.8.3",
+    "@types/node": "^22.15.30",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
-    "vite": "^7.1.7",
-    "@vitejs/plugin-react": "^5.0.3",
     "@playwright/test": "^1.55.1"
   }
 }

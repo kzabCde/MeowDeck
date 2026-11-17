@@ -1,15 +1,16 @@
 # MeowDeck — A Little Cat. A Clever Deck.
 
-**MeowDeck P3: responsive Crazy Eights, three fair Mochi AI difficulties, and all ten original production animations.** P0 assets and P1 rules remain authoritative and unchanged. P4 persistence/audio/PWA are not implemented.
+**MeowDeck P2.5: Next.js App Router + React 19 with the original P1 Crazy Eights game, P2 gameplay UI, three fair P3 AI difficulties, and all ten Mochi animations.** P0 assets and P1 rules remain authoritative and unchanged. P4 persistence/audio/PWA are not implemented.
 
 ## Prerequisites and commands
 
-- Node.js 22+ and npm (for `npm install`).
+- Node.js 22+ and npm. Next.js is the only web framework; no Vite remains. Next uses its supported Webpack mode to resolve the original NodeNext `.js` TypeScript imports without rewriting P1/P3.
 - TypeScript is a development-only dependency. The `dist/` folder is generated, not tracked.
 - Python + Pillow are required **only** to re-run P0 pixel-art validation.
 
 ```bash
 npm install
+npm run typecheck:engine
 npm run typecheck
 npm test
 npm run test:simulation
@@ -57,7 +58,7 @@ The P0 machine-readable source of truth is [`asset-contract.json`](asset-contrac
 - Sprite sheets: `public/assets/meowdeck/mochi/sprites/`
 - Original art digests: `asset-digests.json`
 
-The playing deck has 52 cards, while the asset manifest also contains 2 Jokers and 1 card back (55 artwork IDs). Card dimensions are 96×144 (base) and 192×288 (HD). Mochi has 10 animation clips with 44 frames, specified in its manifest. The runtime app will integrate them in P2/P3, not in the headless P1 Engine.
+The playing deck has 52 cards, while the asset manifest also contains 2 Jokers and 1 card back (55 artwork IDs). Card dimensions are 96×144 (base) and 192×288 (HD). Mochi has 10 animation clips with 44 frames, specified in its manifest. The Next.js runtime uses these original assets in P2/P3; the headless P1 Engine never loads images.
 
 ## Development documentation
 
@@ -71,7 +72,7 @@ No gameplay UI, AI behavior tiers, deployment, or online services are provided b
 
 ## P2 — Interactive Gameplay UI
 
-P2 introduces a React + Vite client, keeping the P1 engine fully independent of React. To run the web application:
+P2 originally used React + Vite. **P2.5 migrates that same interface in place to Next.js App Router**, keeping P1/P3 game logic fully independent of React. To run the browser game:
 
 ```bash
 npm install
@@ -81,10 +82,12 @@ npm run dev
 Browser build and tests:
 
 ```bash
-npm run typecheck:web
-npm run build:web
+npm run typecheck:engine
+npm run typecheck
+npm run build
 npx playwright install chromium
-npm run test:e2e
+npm run test:e2e                 # Next development server: deterministic fixtures
+npm run test:e2e:production      # Next production server: hydration/assets smoke test
 ```
 
 P3 adds distinct **Practice / Easy / Normal / Hard** opponents and manifest-driven Mochi sprite animations, without changing Crazy Eights rules. Save/Resume across refresh, statistics and audio remain P4. See `docs/P2_GAMEPLAY_UI.md` and `docs/P2_REPORT.md`.
@@ -99,3 +102,15 @@ npm run test:e2e       # P2 regression + P3 difficulty and animation checks
 ```
 
 See [`docs/P3_MOCHI_AI.md`](docs/P3_MOCHI_AI.md) and [`docs/P3_REPORT.md`](docs/P3_REPORT.md). No original art or rules have been altered.
+
+## P2.5 — Next.js migration (current runtime)
+
+- App Router entry: `src/app/layout.tsx` (Server Component), `src/app/page.tsx` (Client Component boundary via `src/web/App.tsx`). Original gameplay stays in `src/web/`; pure engine/AI/animation clocks stay in `src/games/meowdeck/`.
+- `tsconfig.engine.json` is the original NodeNext headless engine config; `tsconfig.json` is Next's browser and App Router config. `dist/` remains separate from `.next/`.
+- `qaSeed` / `fastAI` work **only** in `next dev`. Production builds ignore these query parameters. Use the separate production E2E smoke test for `next start` rather than exposing development fixtures in production.
+- UI/engine assets remain at `/assets/meowdeck/*` in the Next `public` directory, and are not processed by image optimizers.
+- No server-side game rules, remote API, database, save backend, audio or PWA changes were introduced.
+
+**Important reproducibility gate:** This migration source was prepared in an environment without access to the npm registry. Before merging, run `npm install` with registry access to generate **and commit** `package-lock.json`, then run `npm ci` and all CI/browser tests. Do not interpret the local headless validation alone as Next.js build verification.
+
+See [migration guide](docs/P2_5_NEXTJS_MIGRATION.md) and [verification report](docs/P2_5_REPORT.md).

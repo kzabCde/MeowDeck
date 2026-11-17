@@ -1,0 +1,48 @@
+import { expect, test } from '@playwright/test';
+
+test('Next.js production App Router hydrates, serves canonical manifests and stays playable', async ({ page, request }) => {
+  const pageErrors: string[] = [];
+  const badConsole: string[] = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+  page.on('console', message => {
+    if (message.type() === 'error' && /hydration|mismatch|uncaught|runtime|manifest/i.test(message.text())) {
+      badConsole.push(message.text());
+    }
+  });
+
+  const home = await page.goto('/?qaSeed=62&fastAI=1', { waitUntil: 'domcontentloaded' });
+  expect(home?.status()).toBe(200);
+  await expect(page).toHaveTitle('MeowDeck');
+  await expect(page.getByTestId('main-menu')).toBeVisible();
+  await expect(page.getByTestId('play-now')).toBeEnabled();
+
+  for (const assetPath of [
+    '/assets/meowdeck/cards/manifest.json',
+    '/assets/meowdeck/mochi/animations.json',
+    '/assets/meowdeck/cards/backs/card_back.png',
+    '/assets/meowdeck/mochi/sprites/mochi_idle_4f_96x96.png'
+  ]) {
+    const response = await request.get(assetPath);
+    expect(response.status(), `Public asset must be available: ${assetPath}`).toBe(200);
+  }
+
+  await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
+  await page.getByTestId('difficulty-hard').click();
+  await page.getByTestId('start-match').click();
+  await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+  await expect(page.getByTestId('player-hand').locator('button')).toHaveCount(7);
+  expect(pageErrors).toEqual([]);
+  expect(badConsole).toEqual([]);
+});
+
+test('Next.js production mobile mount has no horizontal overflow', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await expect(page.getByTestId('main-menu')).toBeVisible();
+  await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
+  await page.getByTestId('start-match').click();
+  await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
+});
