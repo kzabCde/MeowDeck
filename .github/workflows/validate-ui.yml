@@ -4,6 +4,9 @@ on:
     paths:
       - 'src/app/**'
       - 'src/web/**'
+      - 'public/icons/**'
+      - 'scripts/build-offline.mjs'
+      - 'scripts/sw.template.js'
       - 'src/games/**'
       - 'e2e/**'
       - 'next.config.*'
@@ -45,6 +48,17 @@ jobs:
         run: npm run build
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
+      - name: Verify Playwright development/production suite separation
+        run: |
+          npx playwright test --config=playwright.config.ts --list > /tmp/meowdeck-dev-tests.txt
+          if grep -Eq 'offline[.]spec[.]ts|production[.]spec[.]ts' /tmp/meowdeck-dev-tests.txt; then
+            echo 'Production-only specs leaked into the development suite'
+            cat /tmp/meowdeck-dev-tests.txt
+            exit 1
+          fi
+          npx playwright test --config=playwright.production.config.ts --list > /tmp/meowdeck-prod-tests.txt
+          grep -q 'offline.spec.ts' /tmp/meowdeck-prod-tests.txt
+          grep -q 'production.spec.ts' /tmp/meowdeck-prod-tests.txt
       - name: Run seeded development E2E
         run: npm run test:e2e
       - name: Run production build E2E

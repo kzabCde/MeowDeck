@@ -53,3 +53,9 @@ next-env.d.ts
 # MeowDeck Playwright artifacts
 /playwright-report/
 /test-results/
+
+# Generated build-aware offline assets
+/public/sw.js
+/public/offline-precache.json
+
+/dist-p4/

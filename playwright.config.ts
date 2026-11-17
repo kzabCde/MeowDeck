@@ -4,7 +4,9 @@ import { defineConfig, devices } from '@playwright/test';
 // Those query flags are intentionally disabled in Next.js production builds.
 export default defineConfig({
   testDir: './e2e',
-  testIgnore: '**/production.spec.ts',
+  // Only UI dev regressions belong here. Production and offline PWA tests run
+  // with playwright.production.config.ts against a built Next.js server.
+  testMatch: ['**/gameplay.spec.ts', '**/p3.spec.ts', '**/p4.spec.ts'],
   timeout: 180_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,

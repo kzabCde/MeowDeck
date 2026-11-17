@@ -1,19 +1,20 @@
 import { useState } from 'react';
 import type { T } from '../i18n.js';
 import type { Difficulty } from '../../games/meowdeck/ai/strategies.js';
+import type { SavedMatchV1 } from '../storage/save-schema.js';
 import { Mochi } from './Mochi.js';
 import { CardBack } from './PixelCard.js';
 import { cardImage } from '../game/assets.js';
 
-interface MenuProps { t: T; hasMatch: boolean; onPlay: () => void; onContinue: () => void; onSettings: () => void; onStatistics: () => void; onRules: () => void }
-export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatistics, onRules }: MenuProps) {
+interface MenuProps { t: T; hasMatch: boolean; onPlay: () => void; onContinue: () => void; onSettings: () => void; onStatistics: () => void; onRules: () => void; saved?: SavedMatchV1 | null; preferredDifficulty?: Difficulty }
+export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatistics, onRules, saved }: MenuProps) {
   return <main className="menu-page" data-testid="main-menu">
     <header className="menu-topbar"><div className="brand-mini">✦ MEOWDECK ✦</div><div className="top-actions"><button className="link-button" onClick={onRules}>{t('rules')}</button><button className="link-button" onClick={onSettings}>{t('settings')} ⚙</button></div></header>
     <div className="menu-stage">
       <div className="menu-copy"><span className="eyebrow">✦ PIXEL CARD ADVENTURE ✦</span><h1 className="brand-title">MEOW<span>DECK</span></h1><div className="tagline">{t('subtitle')}</div>
         <h2>{t('welcome')}</h2><p className="menu-intro">{t('intro')}</p>
         <div className="menu-buttons"><button className="pixel-button button-primary button-xl" onClick={onPlay} data-testid="play-now">{t('play')} <span>❯</span></button>
-          {hasMatch && <button className="pixel-button button-cream" onClick={onContinue} data-testid="continue">{t('continue')}</button>}
+          {hasMatch && <><button className="pixel-button button-cream" onClick={onContinue} data-testid="continue">{t('continue')}</button>{saved && <p className="p4-save-summary" data-testid="save-summary">{t('savedRound')} {saved.gameState.roundNumber} · {saved.gameState.scores.human}:{saved.gameState.scores.ai} · {t(saved.difficulty)} · {t('savedAt')}: {new Date(saved.savedAt).toLocaleString()}</p>}</>}
           <div className="menu-secondary"><button className="pixel-button button-secondary" onClick={onStatistics}>{t('statistics')}</button><button className="pixel-button button-secondary" onClick={onSettings}>{t('settings')}</button></div>
         </div>
       </div>
@@ -22,7 +23,7 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
         <div className="hero-felt"><div className="hero-card hc-1"><img className="pixel-art" src={cardImage('AH', true)} alt="Ace of Hearts" /></div><div className="hero-card hc-2"><img className="pixel-art" src={cardImage('8S', true)} alt="Eight of Spades" /></div><div className="hero-card hc-3"><CardBack label="Face-down card" /></div></div>
         <div className="scene-corner left">✧</div><div className="scene-corner right">✧</div>
       </div>
-    </div><footer className="menu-footer"><span>© MEOWDECK</span><span>CRAZY EIGHTS · v0.3.1</span></footer>
+    </div><footer className="menu-footer"><span>© MEOWDECK</span><span>CRAZY EIGHTS · v0.4.0</span></footer>
   </main>;
 }
 
@@ -37,8 +38,8 @@ export function GameSelection({ t, onBack, onNext }: { t:T; onBack:()=>void; onN
   </main>;
 }
 
-export function DifficultySelection({ t, onBack, onStart }: { t:T; onBack:()=>void; onStart:(difficulty:Difficulty)=>void }) {
-  const [selected,setSelected]=useState<Difficulty>('practice');
+export function DifficultySelection({ t, onBack, onStart, preferredDifficulty='practice' }: { t:T; onBack:()=>void; onStart:(difficulty:Difficulty)=>void;preferredDifficulty?:Difficulty }) {
+  const [selected,setSelected]=useState<Difficulty>(preferredDifficulty);
   const modes:readonly {id:Difficulty;key:'practice'|'easy'|'normal'|'hard'; desc:'practiceDesc'|'easyDesc'|'normalDesc'|'hardDesc'}[]=[
     {id:'practice',key:'practice',desc:'practiceDesc'},
     {id:'easy',key:'easy',desc:'easyDesc'},

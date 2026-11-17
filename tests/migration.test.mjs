@@ -36,10 +36,11 @@ test('original NodeNext engine compiler survives as standalone configuration',()
 test('browser-only QA flags are gated to development and SSR initial state is deterministic',()=>{
   const app=source('src/web/App.tsx');
   assert.doesNotMatch(app,/import\.meta/);
-  assert.match(app,/useState\(false\); \/\/ SSR and hydration/);
+  assert.match(app,/useState<GameSettingsV1>\(DEFAULT_SETTINGS\)/);
+  assert.match(app,/useState\(false\)/); // stable initial system motion preference
   assert.match(app,/process\.env\.NODE_ENV === 'development'/);
   assert.match(app,/new URLSearchParams\(window\.location\.search\)/);
-  assert.match(app,/const seed = process\.env\.NODE_ENV === 'development'/);
+  assert.match(app,/const seed=process\.env\.NODE_ENV==='development'/);
   assert.match(app,/media\.addEventListener\('change'/);
 });
 

@@ -1,22 +1,24 @@
 {
   "name": "meowdeck",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
-  "description": "MeowDeck — Next.js App Router, original P1 Crazy Eights engine and P3 Mochi AI/animations",
+  "description": "MeowDeck \u2014 offline-first Crazy Eights Next.js PWA",
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "build": "next build --webpack && node scripts/build-offline.mjs",
     "start": "next start",
     "build:engine": "tsc -p tsconfig.engine.json",
     "typecheck": "next typegen && tsc --noEmit -p tsconfig.json",
     "typecheck:engine": "tsc --noEmit -p tsconfig.engine.json",
-    "test": "npm run build:engine && node --test tests/*.test.mjs",
+    "test": "npm run build:engine && npm run build:p4 && node --test tests/*.test.mjs",
     "test:simulation": "npm run build:engine && node examples/play-match.mjs",
     "test:e2e": "playwright test",
     "test:e2e:production": "playwright test --config=playwright.production.config.ts",
     "validate:assets": "python scripts/validate_assets.py",
-    "benchmark:ai": "npm run build:engine && node examples/benchmark-ai.mjs 1000"
+    "benchmark:ai": "npm run build:engine && node examples/benchmark-ai.mjs 1000",
+    "test:offline": "playwright test --config=playwright.production.config.ts e2e/offline.spec.ts",
+    "build:p4": "tsc -p tsconfig.p4-test.json"
   },
   "dependencies": {
     "next": "16.4.6",

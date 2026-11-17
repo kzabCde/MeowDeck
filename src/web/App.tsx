@@ -13,9 +13,16 @@ import { secureRandomInt, type RandomInt } from '../games/meowdeck/core/random.j
 import { PresentationQueue, type PresentationCue } from '../games/meowdeck/presentation/mochi-animation.js';
 import { cuesFromConfirmedEvents } from '../games/meowdeck/presentation/event-cues.js';
 import { getTranslator, type Language } from './i18n.js';
+import { LocalGameRepository, SaveError } from './storage/database.js';
+import { makeSavedMatch, type SavedMatchV1 } from './storage/save-schema.js';
+import { toMatchRecord, type MatchRecord } from './statistics/statistics-service.js';
+import { StatisticsPanel } from './components/StatisticsPanel.js';
+import { DEFAULT_SETTINGS, readSettings, writeSettings, resetSettings, resolveReducedMotion, type GameSettingsV1 } from './settings/settings-store.js';
+import { GameAudio } from './audio/audio-manager.js';
+import { setupPwa, type PwaController, type PwaState } from './pwa/service-worker-register.js';
 
 type Screen = 'menu' | 'select' | 'difficulty' | 'game';
-type Modal = 'pause' | 'settings' | 'rules' | 'statistics' | 'suit' | 'restart' | 'leave' | null;
+type Modal = 'pause' | 'settings' | 'rules' | 'statistics' | 'suit' | 'restart' | 'leave' | 'replace' | 'discard' | 'resetStats' | 'resetSettings' | 'storageConflict' | 'corrupt' | null;
 const fourSuits: readonly Suit[] = ['S', 'H', 'D', 'C'];
 
 function sessionId(): string { return crypto.randomUUID(); }
@@ -25,8 +32,28 @@ function qaSeededRandom(seed: number): (maxExclusive: number) => number {
 }
 
 export function App() {
-  const [language, setLanguage] = useState<Language>('th');
-  const [reducedMotion, setReducedMotion] = useState(false); // SSR and hydration start with the same value.
+  const [settings,setSettings]=useState<GameSettingsV1>(DEFAULT_SETTINGS);
+  const [systemMotion,setSystemMotion]=useState(false);
+  const language:Language=settings.language;
+  const reducedMotion=resolveReducedMotion(settings.motion,systemMotion);
+  const [storageReady,setStorageReady]=useState(false);
+  const [saveStatus,setSaveStatus]=useState<'loading'|'saving'|'saved'|'error'|'unavailable'>('loading');
+  const [savedMatch,setSavedMatch]=useState<SavedMatchV1|null>(null);
+  const [records,setRecords]=useState<MatchRecord[]>([]);
+  const [pwaStatus,setPwaStatus]=useState<PwaState>('unsupported');
+  const [pwaUpdate,setPwaUpdate]=useState(false);
+  const [pwaInstallable,setPwaInstallable]=useState(false);
+  const [isIos,setIsIos]=useState(false);
+  const [saveWarning,setSaveWarning]=useState<string|null>(null);
+  const repositoryRef=useRef<LocalGameRepository|null>(null);
+  const lastSavedRef=useRef<SavedMatchV1|null>(null);
+  const writeQueue=useRef<Promise<void>>(Promise.resolve());
+  const lastPersistSucceededRef=useRef(true);
+  const audioRef=useRef<GameAudio|null>(null);
+  const pwaRef=useRef<PwaController|null>(null);
+  const canUpdateRef=useRef<()=>Promise<boolean>>(async()=>false);
+  const replaceIntent=useRef<Difficulty>('practice');
+  const storageConflictRef=useRef(false);
   const [screen, setScreen] = useState<Screen>('menu');
   const [modal, setModal] = useState<Modal>(null);
   const [selected, setSelected] = useState<CardId | null>(null);
@@ -45,6 +72,83 @@ export function App() {
   const actionCounterRef = useRef(0);
   const t = useMemo(() => getTranslator(language), [language]);
   const view = session ? getHumanView(session) : null;
+  const updateSettings=useCallback((change:Partial<GameSettingsV1>)=>{
+    setSettings(current=>({...current,...change}));
+  },[]);
+  const queuePersist=useCallback((state:GameState,mode:Difficulty,sequence:number):Promise<void>=>{
+    const repository=repositoryRef.current;
+    if(!repository){setSaveStatus('unavailable');return Promise.resolve();}
+    lastPersistSucceededRef.current=false;setSaveStatus('saving');
+    const work=writeQueue.current.catch(()=>{}).then(async()=>{
+      const previous=lastSavedRef.current;
+      const record=state.phase==='match_end'?toMatchRecord(state,mode):undefined;
+      const save=makeSavedMatch(state,mode,sequence,previous?.sessionId===state.sessionId?previous.revision:0);
+      const committed=await repository.commit(save,record,previous?.sessionId!==state.sessionId);
+      lastSavedRef.current=record?null:committed;
+      setSavedMatch(record?null:committed);
+      if(record)setRecords(await repository.records());
+      lastPersistSucceededRef.current=true;setSaveStatus('saved');setSaveWarning(null);
+    }).catch(error=>{
+      lastPersistSucceededRef.current=false;setSaveStatus('error');setSaveWarning(error instanceof SaveError?error.kind:'transaction');
+      if(error instanceof SaveError&&error.kind==='conflict'){storageConflictRef.current=true;setModal('storageConflict');}
+    });
+    writeQueue.current=work;return work;
+  },[]);
+  const playUi=useCallback((sound:'click'|'select'|'confirm'|'pet'='click')=>{void audioRef.current?.unlock();audioRef.current?.play(sound);},[]);
+  const reloadRecords=useCallback(()=>{void repositoryRef.current?.records().then(setRecords).catch(()=>setSaveWarning('statistics'));},[]);
+
+  useEffect(()=>{
+    let alive=true;
+    const audio=new GameAudio(DEFAULT_SETTINGS);audioRef.current=audio;
+    setIsIos(/iPad|iPhone|iPod/.test(navigator.userAgent));
+    const media=window.matchMedia('(prefers-reduced-motion: reduce)');setSystemMotion(media.matches);
+    const preference=(event:MediaQueryListEvent)=>setSystemMotion(event.matches);
+    media.addEventListener('change',preference);
+    const onVisible=()=>audio.setVisible(!document.hidden);
+    document.addEventListener('visibilitychange',onVisible);
+    // Session storage survives refresh in the same tab, while separate tabs receive distinct owners.
+    let owner:string;
+    try{owner=sessionStorage.getItem('meowdeck:tab-owner')||crypto.randomUUID();sessionStorage.setItem('meowdeck:tab-owner',owner);}
+    catch{owner=crypto.randomUUID();}
+    const localSettings=readSettings();setSettings(localSettings);audio.setSettings(localSettings);
+    void LocalGameRepository.create(owner).then(async repository=>{
+      if(!alive){repository.close();return;}
+      repositoryRef.current=repository;
+      const [loaded,history]=await Promise.all([repository.load(),repository.records()]);
+      if(!alive)return;
+      setRecords(history);
+      if(loaded.invalid){setModal('corrupt');setSaveWarning(loaded.reason??'invalid');}
+      else if(loaded.save){lastSavedRef.current=loaded.save;setSavedMatch(loaded.save);}
+      setStorageReady(true);setSaveStatus('saved');
+    }).catch(()=>{if(alive){setStorageReady(true);setSaveStatus('unavailable');setSaveWarning('unavailable');}});
+    const renew=window.setInterval(()=>{
+      const repo=repositoryRef.current;
+      if(!repo||!sessionRef.current||sessionRef.current.phase==='match_end')return;
+      void repo.renew().then(ok=>{if(!ok&&alive){setSaveStatus('error');setSaveWarning('conflict');storageConflictRef.current=true;setModal('storageConflict');}}).catch(()=>{});
+    },4000);
+    return ()=>{alive=false;window.clearInterval(renew);media.removeEventListener('change',preference);
+      document.removeEventListener('visibilitychange',onVisible);audio.dispose();audioRef.current=null;
+      // Do not drop the lease on React Strict Mode's development unmount/remount cycle.
+      // The same tab reuses its owner ID; another tab must claim after lease expiry or explicit takeover.
+      const repo=repositoryRef.current;repositoryRef.current=null;repo?.close();
+    };
+  },[]);
+  useEffect(()=>{audioRef.current?.setSettings(settings);if(storageReady&&!writeSettings(settings))setSaveWarning('settings');},[settings,storageReady]);
+  canUpdateRef.current=async()=>{
+    await writeQueue.current;
+    const current=sessionRef.current,saved=lastSavedRef.current;
+    if(!repositoryRef.current||!lastPersistSucceededRef.current)return false;
+    if(current&&current.phase!=='match_end'&&(!saved||saved.sessionId!==current.sessionId||
+      saved.gameState.processedActionIds.length!==current.processedActionIds.length))return false;
+    return true;
+  };
+  useEffect(()=>{
+    if(process.env.NODE_ENV!=='production')return;
+    const pwa=setupPwa((status,update,installable)=>{setPwaStatus(status);setPwaUpdate(update);setPwaInstallable(installable);},()=>canUpdateRef.current());
+    pwaRef.current=pwa;
+    return ()=>{pwa.dispose();pwaRef.current=null;};
+  },[]);
+
 
   const clearPresentation=useCallback(()=>{presentationQueue.current.clear();setPresentationCue(null);setResultReady(false);},[]);
   const cueComplete=useCallback((id:string)=>{
@@ -67,13 +171,15 @@ export function App() {
   // Atomic controller. This is the only place that submits gameplay changes to P1.
   const dispatch = useCallback((action: GameAction): boolean => {
     const previous = sessionRef.current;
-    if (!previous) return false;
+    if (!previous || storageConflictRef.current) return false;
     const result = applyAction(previous, action);
     if (!result.ok) { setLastError(result.error.code); return false; }
     sessionRef.current = result.state;
     setSession(result.state);
     setSelected(null);
     setLastError(null);
+    audioRef.current?.onEvents(result.events,`${previous.sessionId}:${action.actionId}`);
+    void queuePersist(result.state,difficulty,action.type==='restart_match'?1:actionCounterRef.current+1);
     if(action.type==='start_next_round'||action.type==='restart_match')clearPresentation();
     if(skipCosmetics){
       presentationQueue.current.clear();setPresentationCue(null);
@@ -85,12 +191,13 @@ export function App() {
       if(['round_end','match_end'].includes(result.state.phase)&&cues.length===0&&presentationQueue.current.count===0)setResultReady(true);
     }
     return true;
-  }, [clearPresentation,skipCosmetics]);
+  }, [clearPresentation,skipCosmetics,queuePersist,difficulty]);
 
   const nextActionId = useCallback((current: GameState) => `${current.sessionId}:ui:${++actionCounterRef.current}`, []);
   const submit = useCallback((type: 'play_card' | 'draw_card' | 'finish_turn' | 'pass_turn', actor: 'human' | 'ai', cardId?: CardId, selectedSuit?: Suit): boolean => {
     const current = sessionRef.current;
     if (!current || current.currentActor !== actor || !['human_turn','ai_thinking'].includes(current.phase)) return false;
+    if(storageConflictRef.current)return false;
     const actionId = nextActionId(current);
     const common = { actor, expectedTurnId: current.turnId, actionId };
     const action: GameAction = type === 'play_card'
@@ -101,23 +208,49 @@ export function App() {
     return dispatch(action);
   }, [dispatch, nextActionId]);
 
-  const startMatch = useCallback((chosen:Difficulty='practice') => {
-    const url = new URL(window.location.href);
-    const seed = process.env.NODE_ENV === 'development' ? Number(url.searchParams.get('qaSeed')) : NaN;
-    const state = Number.isSafeInteger(seed) && seed > 0
-      ? createMatch({ sessionId: sessionId(), rng: qaSeededRandom(seed) })
-      : createMatch({ sessionId: sessionId() });
-    actionCounterRef.current = 0;
+  const startMatch = useCallback((chosen:Difficulty='practice',confirmed=false) => {
+    if(!storageReady)return;
+    if(!confirmed && (savedMatch||sessionRef.current?.phase!=='match_end'&&sessionRef.current)){
+      replaceIntent.current=chosen;setModal('replace');return;
+    }
+    playUi('confirm');
+    const url=new URL(window.location.href);
+    const seed=process.env.NODE_ENV==='development'?Number(url.searchParams.get('qaSeed')):NaN;
+    const state=Number.isSafeInteger(seed)&&seed>0
+      ?createMatch({sessionId:sessionId(),rng:qaSeededRandom(seed)})
+      :createMatch({sessionId:sessionId()});
+    actionCounterRef.current=0;
     aiRng.current=Number.isSafeInteger(seed)&&seed>0?qaSeededRandom(seed^0xD3CA1):secureRandomInt;
-    setDifficulty(chosen);
-    clearPresentation();
-    sessionRef.current = state;
-    setSession(state);
-    setSelected(null);
-    setLastError(null);
-    setModal(null);
-    setScreen('game');
-  }, [clearPresentation]);
+    setDifficulty(chosen);updateSettings({preferredDifficulty:chosen});
+    clearPresentation();storageConflictRef.current=false;
+    sessionRef.current=state;setSession(state);setSelected(null);setLastError(null);setModal(null);setScreen('game');
+    void queuePersist(state,chosen,1);
+  },[clearPresentation,playUi,queuePersist,savedMatch,storageReady,updateSettings]);
+
+  const continueMatch=useCallback(async(force=false)=>{
+    const repo=repositoryRef.current;if(!repo||!storageReady)return;
+    playUi('confirm');
+    try{
+      const saved=await repo.claim(force);
+      if(!saved)return;
+      lastSavedRef.current=saved;setSavedMatch(saved);
+      actionCounterRef.current=saved.nextActionSequence-1;
+      aiRng.current=secureRandomInt;
+      setDifficulty(saved.difficulty);clearPresentation();
+      sessionRef.current=saved.gameState;setSession(saved.gameState);
+      setResultReady(saved.gameState.phase==='round_end');setScreen('game');setModal(null);storageConflictRef.current=false;
+      lastPersistSucceededRef.current=true;setSaveStatus('saved');setSaveWarning(null);
+    }catch(error){setSaveWarning(error instanceof SaveError?error.kind:'invalid');
+      if(error instanceof SaveError&&error.kind==='conflict'){setModal('storageConflict');storageConflictRef.current=true;}
+      else setModal('corrupt');}
+  },[clearPresentation,playUi,storageReady]);
+  const discardSaved=useCallback(async()=>{
+    const repo=repositoryRef.current;if(!repo)return;
+    try{await writeQueue.current;await repo.discard();lastSavedRef.current=null;setSavedMatch(null);
+      sessionRef.current=null;setSession(null);clearPresentation();setModal(null);setScreen('menu');setSaveStatus('saved');storageConflictRef.current=false;
+    }catch{setSaveStatus('error');setSaveWarning('conflict');}
+  },[clearPresentation]);
+
 
   // P3: strategy sees only sanitized AIObservation; the controller checks the live turn again.
   useEffect(()=>{
@@ -144,14 +277,6 @@ export function App() {
     return ()=>window.clearTimeout(timer);
   },[session,screen,modal,submit,difficulty,presentationCue?.id,skipCosmetics]);
 
-  // Hydration-safe browser preferences. Do not access window or document during render.
-  useEffect(() => {
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReducedMotion(media.matches);
-    const onPreferenceChange = (event: MediaQueryListEvent) => setReducedMotion(event.matches);
-    media.addEventListener('change', onPreferenceChange);
-    return () => media.removeEventListener('change', onPreferenceChange);
-  }, []);
   useEffect(() => {
     // Production builds do not honor qaSeed or fastAI, even if query params exist.
     if (process.env.NODE_ENV === 'development') {
@@ -191,50 +316,77 @@ export function App() {
   function restart() {
     const current = sessionRef.current;
     if (!current) { startMatch(); return; }
+    playUi('confirm');
     const success = dispatch({ type: 'restart_match', newSessionId: sessionId(), actionId: nextActionId(current) });
     if (success) { actionCounterRef.current = 0; setScreen('game'); setModal(null); }
   }
-  function goMenu() { clearPresentation();setModal(null); setScreen('menu'); }
+  function goMenu() { playUi();clearPresentation();setModal(null);setScreen('menu'); }
   const isEnded = session?.phase === 'round_end' || session?.phase === 'match_end';
   const isMatchEnd = session?.phase === 'match_end';
   const modalOpen = Boolean(modal) || (screen === 'game' && isEnded);
 
-  if (assetStatus !== 'ready') {
+  if (assetStatus !== 'ready' || !storageReady) {
     return <main className="asset-loading" role="status" aria-live="polite">
       <div className="brand-mini">✦ MEOWDECK ✦</div>
-      {assetStatus === 'loading' ? <p>Loading card artwork… / กำลังโหลดไพ่…</p>
+      {assetStatus === 'loading' || !storageReady ? <p>{t('saveLoading')}</p>
         : <><p>Card artwork could not be loaded. / โหลดภาพไพ่ไม่สำเร็จ</p>
           <button className="pixel-button button-cream" onClick={() => { setAssetStatus('loading'); setAssetAttempt(n => n + 1); }}>Retry / ลองอีกครั้ง</button></>}
     </main>;
   }
   return <div className="meowdeck-app">
-    {screen === 'menu' && <MainMenu t={t} hasMatch={!!session && !isEnded} onPlay={() => setScreen('select')} onContinue={() => setScreen('game')}
+    <div className="p4-statusbar" role="status" aria-live="polite">
+      {(session||savedMatch||saveStatus==='error'||saveStatus==='unavailable') && <span className={`p4-status ${saveStatus==='error'?'error':''}`} data-testid="save-status">{t(saveStatus==='saving'?'saving':saveStatus==='saved'?'saved':saveStatus==='unavailable'?'saveUnavailable':saveStatus==='error'?'saveFailed':'saveLoading')}</span>}
+      {process.env.NODE_ENV==='production' && <span className="p4-status" data-testid="offline-status">{t(pwaStatus==='ready'?'offlineReady':pwaStatus==='loading'?'offlinePreparing':pwaStatus==='failed'?'offlineFailed':'offlineUnsupported')}</span>}
+      {saveWarning && <span className="p4-status error" role="alert">{t(saveWarning==='conflict'?'storageConflict':'saveFailed')}</span>}
+    </div>
+    {screen === 'menu' && <MainMenu t={t} hasMatch={!!savedMatch || (!!session && !isEnded)} saved={savedMatch} preferredDifficulty={settings.preferredDifficulty} onPlay={() => {playUi();setScreen('select');}} onContinue={() => {if(sessionRef.current&&sessionRef.current.phase!=='match_end'&&!storageConflictRef.current){setResultReady(sessionRef.current.phase==='round_end');setScreen('game');}else void continueMatch();}}
       onSettings={() => setModal('settings')} onStatistics={() => setModal('statistics')} onRules={() => setModal('rules')} />}
+    {screen==='menu' && process.env.NODE_ENV==='production' && <div className="p4-install" style={{padding:'8px 24px 16px',margin:'0 auto'}}>
+      {pwaInstallable&&<button className="pixel-button button-secondary" onClick={()=>{void pwaRef.current?.install();}}>{t('installApp')}</button>}
+      {pwaUpdate&&<button className="pixel-button button-cream" onClick={()=>{void pwaRef.current?.update();}}>{t('updateApp')}</button>}
+      {!pwaInstallable&&isIos&&<p className="p4-small">{t('installIos')}</p>}
+    </div>}
     {screen === 'select' && <GameSelection t={t} onBack={() => setScreen('menu')} onNext={() => setScreen('difficulty')} />}
-    {screen === 'difficulty' && <DifficultySelection t={t} onBack={() => setScreen('select')} onStart={startMatch} />}
-    {screen === 'game' && view && <GameTable view={view} t={t} selected={selected} onSelect={setSelected} onPlay={playSelected}
-      onDraw={() => submit('draw_card','human')} onFinish={() => submit('finish_turn','human')}
-      onPass={() => submit('pass_turn','human')} onPause={() => setModal('pause')} error={lastError}
-      difficulty={difficulty} cue={presentationCue} reducedMotion={reducedMotion} paused={Boolean(modal)} onCueDone={cueComplete} onPet={petMochi} />}
+    {screen === 'difficulty' && <DifficultySelection t={t} preferredDifficulty={settings.preferredDifficulty} onBack={() => setScreen('select')} onStart={startMatch} />}
+    {screen === 'game' && view && <GameTable view={view} t={t} selected={selected} onSelect={id=>{playUi('select');setSelected(id);}} onPlay={playSelected}
+      onDraw={() => {playUi('select');submit('draw_card','human');}} onFinish={() => {playUi('click');submit('finish_turn','human');}}
+      onPass={() => {playUi();submit('pass_turn','human');}} onPause={() => {playUi();setModal('pause');}} error={lastError}
+      difficulty={difficulty} cue={presentationCue} reducedMotion={reducedMotion} paused={Boolean(modal)} onCueDone={cueComplete} onPet={()=>{playUi('pet');petMochi();}} />}
 
 
     {modal === 'settings' && <GameDialog title={t('settings')} onClose={() => setModal(null)} t={t}>
-      <label className="settings-field"><span>{t('language')}</span><select value={language} onChange={(e: ChangeEvent<HTMLSelectElement>)=>setLanguage(e.target.value as Language)} aria-label={t('language')}><option value="th">ไทย</option><option value="en">English</option></select></label>
-      <label className="settings-toggle"><span><strong>{t('reducedMotion')}</strong><small>{t('reducedHelp')}</small></span><input type="checkbox" checked={reducedMotion} onChange={(e: ChangeEvent<HTMLInputElement>)=>setReducedMotion(e.target.checked)} /></label>
-      <p className="modal-note">{t('settingsScope')}</p>
+      <div className="p4-settings" data-testid="persistent-settings">
+        <label>{t('language')}<select value={settings.language} onChange={(e:ChangeEvent<HTMLSelectElement>)=>updateSettings({language:e.target.value as Language})}><option value="th">ไทย</option><option value="en">English</option></select></label>
+        <label>{t('preferredDifficulty')}<select value={settings.preferredDifficulty} onChange={(e:ChangeEvent<HTMLSelectElement>)=>updateSettings({preferredDifficulty:e.target.value as Difficulty})}>{(['practice','easy','normal','hard'] as const).map(d=><option key={d} value={d}>{t(d)}</option>)}</select></label>
+        <label className="p4-setting-check">{t('reducedMotion')}<input type="checkbox" checked={reducedMotion} onChange={(e:ChangeEvent<HTMLInputElement>)=>updateSettings({motion:e.target.checked?'on':'off'})}/></label>
+        <label>{t('motionPreference')}<select data-testid="motion-setting" value={settings.motion} onChange={(e:ChangeEvent<HTMLSelectElement>)=>updateSettings({motion:e.target.value as GameSettingsV1['motion']})}><option value="system">{t('motionSystem')}</option><option value="on">{t('motionOn')}</option><option value="off">{t('motionOff')}</option></select></label>
+        <label className="p4-setting-check">{t('soundEffects')}<input type="checkbox" data-testid="sfx-toggle" checked={settings.sfxEnabled} onChange={(e:ChangeEvent<HTMLInputElement>)=>updateSettings({sfxEnabled:e.target.checked})}/></label>
+        <label>{t('sfxVolume')}<input type="range" min="0" max="1" step="0.05" data-testid="sfx-volume" value={settings.sfxVolume} onChange={(e:ChangeEvent<HTMLInputElement>)=>updateSettings({sfxVolume:Number(e.target.value)})}/></label>
+        <label className="p4-setting-check">{t('music')}<input type="checkbox" data-testid="music-toggle" checked={settings.musicEnabled} onChange={(e:ChangeEvent<HTMLInputElement>)=>{playUi();updateSettings({musicEnabled:e.target.checked});}}/></label>
+        <label>{t('musicVolume')}<input type="range" min="0" max="1" step="0.05" data-testid="music-volume" value={settings.musicVolume} onChange={(e:ChangeEvent<HTMLInputElement>)=>updateSettings({musicVolume:Number(e.target.value)})}/></label>
+        <p className="p4-small">{t('settingsSaved')}</p>
+        <button className="pixel-button button-secondary" onClick={()=>setModal('resetSettings')}>{t('resetSettings')}</button>
+        {!!savedMatch && <button className="pixel-button button-secondary" data-testid="discard-match" onClick={()=>setModal('discard')}>{t('discardMatch')}</button>}
+      </div>
     </GameDialog>}
     {modal === 'rules' && <GameDialog title={t('rules')} onClose={() => setModal(null)} t={t}><p>{t('rulesIntro')}</p></GameDialog>}
-    {modal === 'statistics' && <GameDialog title={t('statistics')} onClose={() => setModal(null)} t={t}><p>{t('statsLater')}</p></GameDialog>}
+    {modal === 'statistics' && <GameDialog title={t('statistics')} onClose={() => setModal(null)} t={t} wide><StatisticsPanel records={records} t={t} onReset={()=>setModal('resetStats')}/></GameDialog>}
     {modal === 'pause' && <GameDialog title={t('gamePaused')} onClose={() => setModal(null)} t={t}>
       <div className="modal-buttons"><button className="pixel-button button-primary" onClick={() => setModal(null)}>{t('resume')}</button>
         <button className="pixel-button button-cream" onClick={() => setModal('settings')}>{t('settings')}</button>
         <button className="pixel-button button-secondary" onClick={() => setModal('restart')}>{t('restart')}</button>
-        <button className="pixel-button button-secondary" onClick={() => setModal('leave')}>{t('leave')}</button></div>
+        <button className="pixel-button button-secondary" onClick={() => setModal('leave')}>{t('leave')}</button><p className="p4-small">{t(saveStatus==='saved'?'saved':saveStatus==='saving'?'saving':saveStatus==='unavailable'?'saveUnavailable':'saveFailed')}</p></div>
     </GameDialog>}
     {modal === 'restart' && <GameDialog title={t('confirmRestart')} onClose={() => setModal('pause')} t={t}><p>{t('confirmRestartDesc')}</p>
       <div className="modal-inline"><button className="pixel-button button-secondary" onClick={() => setModal('pause')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={restart}>{t('confirm')}</button></div></GameDialog>}
     {modal === 'leave' && <GameDialog title={t('confirmLeave')} onClose={() => setModal('pause')} t={t}><p>{t('confirmLeaveDesc')}</p>
       <div className="modal-inline"><button className="pixel-button button-secondary" onClick={() => setModal('pause')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={goMenu}>{t('confirm')}</button></div></GameDialog>}
+    {modal === 'replace' && <GameDialog title={t('replaceMatch')} t={t} onClose={()=>setModal(null)}><p>{t('replaceWarning')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>setModal(null)}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>startMatch(replaceIntent.current,true)}>{t('confirm')}</button></div></GameDialog>}
+    {modal === 'discard' && <GameDialog title={t('discardMatch')} t={t} onClose={()=>setModal('settings')}><p>{t('discardConfirm')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>setModal('settings')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{void discardSaved();}}>{t('confirm')}</button></div></GameDialog>}
+    {modal === 'resetStats' && <GameDialog title={t('resetStatistics')} t={t} onClose={()=>setModal('statistics')}><p>{t('resetStatsConfirm')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>setModal('statistics')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{void repositoryRef.current?.resetStatistics().then(()=>{reloadRecords();setModal('statistics');}).catch(()=>setSaveWarning('statistics'));}}>{t('confirm')}</button></div></GameDialog>}
+    {modal === 'resetSettings' && <GameDialog title={t('resetSettings')} t={t} onClose={()=>setModal('settings')}><p>{t('resetSettingsConfirm')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>setModal('settings')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{resetSettings();updateSettings(DEFAULT_SETTINGS);setModal('settings');}}>{t('confirm')}</button></div></GameDialog>}
+    {modal === 'storageConflict' && <GameDialog title={t('storageConflict')} t={t} onClose={()=>{setModal(null);setScreen('menu');}}><p>{t('storageConflict')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>{setModal(null);setScreen('menu');}}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{void continueMatch(true);}}>{t('takeOver')}</button></div></GameDialog>}
+    {modal === 'corrupt' && <GameDialog title={t('corruptSave')} t={t} onClose={()=>setModal(null)}><p>{t('corruptSave')}</p><button className="pixel-button button-secondary" onClick={()=>{void discardSaved();}}>{t('recoverSave')}</button></GameDialog>}
     {modal === 'suit' && <GameDialog title={t('chooseSuit')} onClose={() => setModal(null)} t={t} initialFocusSelector='[data-testid="suit-S"]'><p>{t('chooseSuitDesc')}</p>
       <div className="suit-picker">{fourSuits.map(suit=><button key={suit} type="button" data-testid={`suit-${suit}`} className={`suit-choice suit-${SUIT_CLASS[suit]}`} onClick={() => selectSuit(suit)}><span>{SUIT_SYMBOL[suit]}</span>{t(({ S:'spades', H:'hearts', D:'diamonds', C:'clubs' } as const)[suit])}</button>)}</div>
       <button className="pixel-button button-secondary dialog-bottom" onClick={() => setModal(null)}>{t('cancel')}</button>
