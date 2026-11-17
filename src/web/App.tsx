@@ -3,7 +3,7 @@ import { applyAction, createAIObservation, createMatch, getHumanView, type CardI
 import { GameDialog } from './components/GameDialog.js';
 import { GameTable } from './components/GameTable.js';
 import { DifficultySelection, GameSelection, MainMenu } from './components/Screens.js';
-import { SUIT_SYMBOL, SUIT_CLASS } from './game/assets.js';
+import { SUIT_SYMBOL, SUIT_CLASS, ensureCardAssets } from './game/assets.js';
 import { choosePracticeMove } from './game/practice-opponent.js';
 import { getTranslator, type Language } from './i18n.js';
 
@@ -25,6 +25,8 @@ export function App() {
   const [selected, setSelected] = useState<CardId | null>(null);
   const [session, setSession] = useState<GameState | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
+  const [assetStatus, setAssetStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [assetAttempt, setAssetAttempt] = useState(0);
   const sessionRef = useRef<GameState | null>(null);
   const actionCounterRef = useRef(0);
   const t = useMemo(() => getTranslator(language), [language]);
@@ -92,6 +94,12 @@ export function App() {
     return () => window.clearTimeout(timer);
   }, [session, screen, modal, submit]);
 
+  useEffect(() => {
+    let active = true;
+    ensureCardAssets().then(() => { if (active) setAssetStatus('ready'); })
+      .catch(() => { if (active) setAssetStatus('error'); });
+    return () => { active = false; };
+  }, [assetAttempt]);
   useEffect(() => { document.documentElement.lang = language; }, [language]);
   useEffect(() => { document.documentElement.classList.toggle('reduce-motion', reducedMotion); }, [reducedMotion]);
   useEffect(() => { setSelected(null); }, [session?.turnId, session?.roundNumber]);
@@ -126,6 +134,14 @@ export function App() {
   const isMatchEnd = session?.phase === 'match_end';
   const modalOpen = Boolean(modal) || (screen === 'game' && isEnded);
 
+  if (assetStatus !== 'ready') {
+    return <main className="asset-loading" role="status" aria-live="polite">
+      <div className="brand-mini">✦ MEOWDECK ✦</div>
+      {assetStatus === 'loading' ? <p>Loading card artwork… / กำลังโหลดไพ่…</p>
+        : <><p>Card artwork could not be loaded. / โหลดภาพไพ่ไม่สำเร็จ</p>
+          <button className="pixel-button button-cream" onClick={() => { setAssetStatus('loading'); setAssetAttempt(n => n + 1); }}>Retry / ลองอีกครั้ง</button></>}
+    </main>;
+  }
   return <div className="meowdeck-app">
     {screen === 'menu' && <MainMenu t={t} hasMatch={!!session && !isEnded} onPlay={() => setScreen('select')} onContinue={() => setScreen('game')}
       onSettings={() => setModal('settings')} onStatistics={() => setModal('statistics')} onRules={() => setModal('rules')} />}

@@ -208,3 +208,5 @@ button.game-option:not(:disabled):hover {border-color:#edc180;background:#2b4838
 }
 @media (prefers-reduced-motion:reduce) {*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 .reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+
+.asset-loading {min-height:100svh;background:#181e1b;color:#f4e8ce;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:30px}

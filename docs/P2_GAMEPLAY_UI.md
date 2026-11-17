@@ -56,7 +56,7 @@ A deterministic, nonstrategic **legal-action driver** makes the P2 UI playable u
 
 ### Mochi (P2 static presentation only)
 
-`Mochi.tsx` crops the **first frame** of an existing production sprite sheet and swaps among idle/thinking/victory/defeat according to public state. No GIF playback or frame-controller logic is included. `src/web/game/assets.ts` maps card artwork through the P0 manifest. P3 can supply an animation presenter without modifying game rules or rewriting the table.
+`Mochi.tsx` crops the **first frame** of an existing production sprite sheet and swaps among idle/thinking/victory/defeat according to public state. No GIF playback or frame-controller logic is included. `src/web/game/assets.ts` loads the canonical P0 card manifest once from `/assets/meowdeck/cards/manifest.json` and maps each card ID from that data; it does not create a second manifest. P3 can supply an animation presenter without modifying game rules or rewriting the table.
 
 ### UI screens and affordances
 
