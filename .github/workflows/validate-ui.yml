@@ -1,0 +1,46 @@
+name: Validate MeowDeck Gameplay UI
+on:
+  pull_request:
+    paths:
+      - 'src/web/**'
+      - 'src/games/**'
+      - 'e2e/**'
+      - 'index.html'
+      - 'vite.config.ts'
+      - 'tsconfig*.json'
+      - 'package.json'
+      - 'playwright.config.ts'
+      - '.github/workflows/validate-ui.yml'
+  workflow_dispatch:
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Check core and browser types
+        run: |
+          npm run typecheck
+          npm run typecheck:web
+      - name: Run core tests
+        run: npm test
+      - name: Build browser app
+        run: npm run build:web
+      - name: Install Chromium for browser tests
+        run: npx playwright install --with-deps chromium
+      - name: Run responsive E2E flow
+        run: npm run test:e2e
+      - name: Upload failing Playwright diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p2-playwright-results
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
