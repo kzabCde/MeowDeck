@@ -4,11 +4,11 @@ import { ensureMochiAnimations, isMochiSheetReady, mochiSheetUrl } from './mochi
 
 export interface MochiAnimationProps {
   readonly pose?: MochiClipName;
-  readonly cue?: PresentationCue | null;
+  readonly cue?: PresentationCue | null | undefined;
   readonly reducedMotion?: boolean;
   readonly paused?:boolean;
-  readonly onCueDone?: (id:string)=>void;
-  readonly onCueActionFrame?: (id:string)=>void;
+  readonly onCueDone?: ((id:string)=>void) | undefined;
+  readonly onCueActionFrame?: ((id:string)=>void) | undefined;
 }
 /** Frame updates are imperative on an isolated span; never re-render the entire game table per frame. */
 export function useMochiAnimation({pose='idle',cue=null,reducedMotion=false,paused=false,onCueDone,onCueActionFrame}:MochiAnimationProps) {
