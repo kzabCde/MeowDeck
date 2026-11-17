@@ -64,7 +64,7 @@ img {display:block;max-width:100%}
 .selection-head p {color:#b7b29e}
 .selection-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px}
 .game-option {min-width:0;text-align:left;display:flex;flex-direction:column;align-items:stretch;min-height:330px;padding:20px;border:3px solid #71583c;background:#24372c;color:#f4e8ce;box-shadow:6px 6px #111611;position:relative;border-radius:3px}
-button.game-option:not(:disabled):hover {transform:translateY(-5px);border-color:#edc180}
+button.game-option:not(:disabled):hover {border-color:#edc180;background:#2b4838;box-shadow:6px 6px #111611,0 0 0 2px #ad8c56}
 .game-option strong {font-size:1.2rem;margin:9px 0}
 .option-badge {color:#e0bd79;font-size:.65rem;font-family:monospace;letter-spacing:.1em}
 .option-desc {font-size:.81rem;color:#beb9a7;line-height:1.5}
