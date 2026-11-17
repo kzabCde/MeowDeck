@@ -1,0 +1,32 @@
+name: Bootstrap Next.js npm lockfile
+on:
+  push:
+    branches:
+      - refactor/p2-5-nextjs-app-router-migration
+    paths:
+      - '.github/workflows/bootstrap-lockfile.yml'
+      - 'package.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lockfile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate genuine lockfile
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Verify dependency lockfile
+        run: |
+          test -s package-lock.json
+          npm ci --ignore-scripts --no-audit --no-fund
+      - name: Upload dependency lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: p25-npm-package-lock
+          path: package-lock.json
+          if-no-files-found: error
