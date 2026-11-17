@@ -25,7 +25,7 @@ Animation: `src/games/meowdeck/presentation/mochi-animation.ts`, `event-cues.ts`
 - `python scripts/validate_assets.py` — **1,549/1,549 passing**, no P0 assets altered.
 - `node examples/benchmark-ai.mjs 1000` — **PASS**, 3×1000 matches; Easy 42.3%, Normal 44.5%, Hard 47.2% versus the same baseline. Full table in `docs/P3_MOCHI_AI.md`.
 - TS/TSX syntax compilation via global TypeScript — **PASS**.
-- `npm run typecheck:web`, `npm run build:web`, `npm run test:e2e` — **NOT EXECUTED LOCALLY** because React/Vite/Playwright packages are unavailable in the sandbox and npm registry cannot be reached. The existing GitHub Actions validation workflow covers these checks.
+- `npm run typecheck:web`, `npm run build:web`, `npm run test:e2e` — **VERIFIED PASS IN GITHUB ACTIONS** on [run #44095085689](https://github.com/kzabCde/MeowDeck/actions/runs/44095085689); Browser Chromium E2E **14/14 passed** (including six responsive viewport checks). They were not executable locally because npm packages were unavailable in the sandbox.
 
 ## E. Source changes
 
@@ -37,6 +37,6 @@ Unchanged: P0 PNGs and JSON manifests, P1 card rules, reducer and selectors.
 
 ## F. Open verification and risk
 
-Browser CI, responsive screen tests, one-shot VFX synchronization and low-end mobile performance must be confirmed via Playwright CI and manual visual QA. See the Pull Request for latest CI results. P4 persistent saves/stats/audio are intentionally deferred.
+Browser CI, TypeScript checks, AI benchmark and responsive E2E are green in GitHub Actions. **Manual** review for short landscape, 200% zoom, exact paw/card choreography and low-end mobile performance remains advisable before release. P4 persistent saves/stats/audio are intentionally deferred.
 
-**Phase status:** P3 code ready locally; final completion requires CI browser verification. No merge or deployment performed.
+**Phase status:** P3 implementation and automated verification **COMPLETE** on Pull Request #4; manual visual QA is outstanding. PR remains unmerged; no deployment performed.
