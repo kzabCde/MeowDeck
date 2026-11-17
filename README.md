@@ -1,6 +1,6 @@
 # MeowDeck — A Little Cat. A Clever Deck.
 
-**P0 asset contract + P1 headless Crazy Eights game engine.** This repository does not yet include the P2 React UI, P3 AI strategy, Mochi animation controller, or P4 persistence. Both the cards and Mochi PNG artwork remain unchanged.
+**MeowDeck P3: responsive Crazy Eights, three fair Mochi AI difficulties, and all ten original production animations.** P0 assets and P1 rules remain authoritative and unchanged. P4 persistence/audio/PWA are not implemented.
 
 ## Prerequisites and commands
 
@@ -87,4 +87,15 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Only a **Practice** opponent is active in P2. The genuine Easy/Normal/Hard AI strategies and full Mochi sprite animation playback belong to P3. Save/Resume across refresh, statistics and audio belong to P4. See `docs/P2_GAMEPLAY_UI.md` and `docs/P2_REPORT.md`.
+P3 adds distinct **Practice / Easy / Normal / Hard** opponents and manifest-driven Mochi sprite animations, without changing Crazy Eights rules. Save/Resume across refresh, statistics and audio remain P4. See `docs/P2_GAMEPLAY_UI.md` and `docs/P2_REPORT.md`.
+
+## P3 — Fair Mochi AI and production animation
+
+The UI can now select Easy, Normal, Hard or Practice. AI policies only see `createAIObservation(state)`; only the original controller can call `applyAction`. `Mochi.tsx` renders 10 original P0 sprite clips at their manifest-defined frame durations, and public P1 events drive presentational animation and card flights. Reduced Motion bypasses decorative playback.
+
+```bash
+npm run benchmark:ai   # 1,000 seeded matches per difficulty
+npm run test:e2e       # P2 regression + P3 difficulty and animation checks
+```
+
+See [`docs/P3_MOCHI_AI.md`](docs/P3_MOCHI_AI.md) and [`docs/P3_REPORT.md`](docs/P3_REPORT.md). No original art or rules have been altered.

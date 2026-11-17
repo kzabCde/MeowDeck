@@ -1,10 +1,13 @@
-import { MOCHI_BASE, MOCHI_POSES, type MochiPose } from '../game/assets.js';
+import type { MochiClipName, PresentationCue } from '../../games/meowdeck/presentation/mochi-animation.js';
+import { useMochiAnimation } from '../animation/useMochiAnimation.js';
 import type { T } from '../i18n.js';
 
-/** P2 uses only the first production sprite-sheet frame; P3 will supply playback timing. */
-export function Mochi({ pose = 'idle', size = 'large', t }: { pose?: MochiPose; size?: 'large' | 'small'; t: T }) {
-  const clip = MOCHI_POSES[pose];
-  return <div className={`mochi-character mochi-${size}`} role="img" aria-label={`${t('mochi')} — ${pose}`} data-testid="mochi">
-    <span className="mochi-frame pixel-art" style={{ backgroundImage: `url(${MOCHI_BASE}${clip.file})`, backgroundSize: `${clip.frames * 100}% 100%` }} />
-  </div>;
+export function Mochi({ pose='idle',size='large',t,cue,reducedMotion=false,paused=false,onCueDone,onCueActionFrame,onPet }: {
+  pose?:MochiClipName;size?:'large'|'small';t:T;cue?:PresentationCue|null;reducedMotion?:boolean;paused?:boolean;
+  onCueDone?:(id:string)=>void;onCueActionFrame?:(id:string)=>void;onPet?:()=>void;
+}) {
+  const {spriteRef}=useMochiAnimation({pose,cue,reducedMotion,paused,onCueDone,onCueActionFrame});
+  const artwork=<span ref={spriteRef} className="mochi-frame pixel-art" />;
+  if(onPet)return <button className={`mochi-character mochi-${size} mochi-pet`} type="button" onClick={onPet} aria-label={t('petMochi')} data-testid="mochi" title={t('petMochi')}>{artwork}</button>;
+  return <div className={`mochi-character mochi-${size}`} role="img" aria-label={`${t('mochi')} — ${t('mochiAppearance')}`} data-testid="mochi">{artwork}</div>;
 }

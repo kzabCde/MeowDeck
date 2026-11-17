@@ -6,8 +6,9 @@ const en = {
   gameSelect: 'Choose a game', gameSelectSub: 'One little table. Many big adventures.',
   crazyEights: 'Crazy Eights', crazyEightsDesc: 'Match the suit or rank. Eights change the game.',
   comingSoon: 'Coming soon', available: 'PLAYABLE', chooseDifficulty: 'Choose your opponent',
-  practice: 'Practice', practiceDesc: 'A simple, rule-following Mochi. Advanced AI arrives in P3.',
-  easy: 'Easy', normal: 'Normal', hard: 'Hard', aiLater: 'P3 AI required',
+  practice: 'Practice', practiceDesc: 'A rule-following Mochi for learning the basics.',
+  easyDesc: 'Playful, unpredictable moves for a gentle challenge.', normalDesc: 'Balanced tactics: suit planning and timely wild cards.', hardDesc: 'Fair probability-aware play with careful hand management.',
+  easy: 'Easy', normal: 'Normal', hard: 'Hard',
   back: 'Back', mainMenu: 'Main menu', settings: 'Settings', statistics: 'Statistics',
   statsLater: 'Match statistics will arrive in P4.', start: 'Start match',
   round: 'ROUND', draw: 'DRAW', discard: 'DISCARD', deck: 'Deck', cards: 'cards',
@@ -35,6 +36,8 @@ const en = {
   blocked: 'Blocked round', emptied: 'Hand emptied',
   unavailable: 'This mode is not yet available.',
   invalidAction: 'Action rejected by game engine',
+  petMochi: 'Pet Mochi', mochiAppearance: 'animated card dealer',
+  mochiThinking: 'Let me think…', mochiPlaying: 'My move!', mochiDrawing: 'One more card…', mochiWinning: 'Meow! I win!', mochiLosing: 'Oops… rematch?', mochiSurprised: 'Oh! A wild eight!', mochiPetted: 'Purr… thank you!',
   close: 'Close'
 } as const;
 
@@ -44,8 +47,9 @@ const th: Record<keyof typeof en, string> = {
   gameSelect: 'เลือกเกมไพ่', gameSelectSub: 'โต๊ะไพ่เล็ก ๆ กับความสนุกอีกมากมาย',
   crazyEights: 'Crazy Eights', crazyEightsDesc: 'ลงไพ่ดอกหรือแต้มเดียวกัน ไพ่ 8 เปลี่ยนเกมได้!',
   comingSoon: 'เร็ว ๆ นี้', available: 'เล่นได้', chooseDifficulty: 'เลือกคู่ต่อสู้',
-  practice: 'โหมดฝึกหัด', practiceDesc: 'โมจิเล่นตามกติกาพื้นฐาน ส่วน AI ระดับสูงจะมาใน P3',
-  easy: 'ง่าย', normal: 'ปกติ', hard: 'ยาก', aiLater: 'รอระบบ AI ใน P3',
+  practice: 'โหมดฝึกหัด', practiceDesc: 'โมจิเล่นตามกติกา เหมาะสำหรับฝึกพื้นฐาน',
+  easyDesc: 'โมจิเล่นแบบเป็นกันเอง มีทางเลือกที่คาดเดาได้ยาก', normalDesc: 'โมจิวางแผนเลือกดอกและใช้ไพ่ 8 อย่างมีเหตุผล', hardDesc: 'โมจิประเมินความน่าจะเป็นจากข้อมูลที่เปิดเผยโดยไม่โกง',
+  easy: 'ง่าย', normal: 'ปกติ', hard: 'ยาก',
   back: 'ย้อนกลับ', mainMenu: 'เมนูหลัก', settings: 'ตั้งค่า', statistics: 'สถิติ',
   statsLater: 'สถิติแมตช์จะเพิ่มใน P4', start: 'เริ่มแมตช์',
   round: 'รอบที่', draw: 'จั่วไพ่', discard: 'ไพ่ที่ลง', deck: 'กองจั่ว', cards: 'ใบ',
@@ -73,6 +77,8 @@ const th: Record<keyof typeof en, string> = {
   blocked: 'ไพ่หมดทางเล่น', emptied: 'ไพ่หมดมือ',
   unavailable: 'โหมดนี้ยังไม่เปิดให้เล่น',
   invalidAction: 'ระบบเกมปฏิเสธคำสั่งนี้',
+  petMochi: 'ลูบโมจิ', mochiAppearance: 'แมวเจ้ามือที่มีแอนิเมชัน',
+  mochiThinking: 'ขอโมจิคิดก่อนนะ…', mochiPlaying: 'ตานี้โมจิเอาจริง!', mochiDrawing: 'ขอจั่วอีกใบ…', mochiWinning: 'เหมียว! โมจิชนะแล้ว!', mochiLosing: 'อุ๊ย… รอบหน้าขอแก้มือ!', mochiSurprised: 'โอ้! ไพ่ 8 มาแล้ว!', mochiPetted: 'เพอร์… ขอบคุณนะ!',
   close: 'ปิด'
 };
 

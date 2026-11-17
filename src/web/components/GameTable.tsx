@@ -1,9 +1,12 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { CardId } from '../../games/meowdeck/core/cards.js';
 import type { PublicGameState } from '../../games/meowdeck/games/crazy-eights/selectors.js';
 import type { Card } from '../../games/meowdeck/core/cards.js';
 import type { LegalAction } from '../../games/meowdeck/core/game-types.js';
-import { SUIT_SYMBOL, SUIT_CLASS, cardImage, type MochiPose } from '../game/assets.js';
+import { SUIT_SYMBOL, SUIT_CLASS, cardImage } from '../game/assets.js';
+import type { MochiClipName, PresentationCue } from '../../games/meowdeck/presentation/mochi-animation.js';
+import type { Difficulty } from '../../games/meowdeck/ai/strategies.js';
+import { getMochiClip } from '../animation/mochi-loader.js';
 import type { T } from '../i18n.js';
 import { CardBack, PixelCard } from './PixelCard.js';
 import { Mochi } from './Mochi.js';
@@ -21,7 +24,14 @@ export interface GameTableProps {
   onPass: () => void;
   onPause: () => void;
   error: string | null;
+  difficulty: Difficulty;
+  cue: PresentationCue|null;
+  reducedMotion:boolean;
+  paused:boolean;
+  onCueDone:(id:string)=>void;
+  onPet:()=>void;
 }
+
 
 function gameHint(view: HumanView, t: T): string {
   if (view.phase === 'round_end' || view.phase === 'match_end') return t('roundResult');
@@ -32,15 +42,42 @@ function gameHint(view: HumanView, t: T): string {
   return t('pickCard');
 }
 
-export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinish, onPass, onPause, error }: GameTableProps) {
+export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinish, onPass, onPause, error, difficulty, cue, reducedMotion, paused, onCueDone, onPet }: GameTableProps) {
   const handRef = useRef<HTMLDivElement | null>(null);
+  const tableRef = useRef<HTMLDivElement|null>(null);
+  const drawRef = useRef<HTMLDivElement|null>(null);
+  const discardRef = useRef<HTMLDivElement|null>(null);
+  const enemyRef = useRef<HTMLDivElement|null>(null);
+  const [flight,setFlight]=useState<{id:string;left:number;top:number;dx:number;dy:number;duration:number;started:boolean;cardId?:CardId}|null>(null);
+  const [shownActionFrame,setShownActionFrame]=useState<string|null>(null);
+  useEffect(()=>{
+    if(reducedMotion||!cue||!['draw_card','play_card'].includes(cue.clip)) {setFlight(null);return;}
+    const table=tableRef.current;
+    const from=cue.clip==='draw_card'?drawRef.current:enemyRef.current;
+    const to=cue.clip==='draw_card'?enemyRef.current:discardRef.current;
+    const clip=getMochiClip(cue.clip);
+    if(!table||!from||!to||!clip||clip.actionFrame===undefined)return;
+    const b=table.getBoundingClientRect(),a=from.getBoundingClientRect(),z=to.getBoundingClientRect();
+    const left=a.left-b.left+a.width/2-24,top=a.top-b.top+a.height/2-36;
+    const dx=(z.left+z.width/2)-(a.left+a.width/2),dy=(z.top+z.height/2)-(a.top+a.height/2);
+    setShownActionFrame(null);
+    setFlight({id:cue.id,left,top,dx,dy,duration:clip.frameDurationMs*clip.actionFrame,started:false,...(cue.cardId?{cardId:cue.cardId as CardId}:{})});
+    const id=requestAnimationFrame(()=>setFlight(prev=>prev?.id===cue.id?{...prev,started:true}:prev));
+    return()=>{cancelAnimationFrame(id);setFlight(null);};
+  },[cue?.id,reducedMotion]);
+  const onActionFrame=(id:string)=>{setShownActionFrame(id);setFlight(prev=>prev?.id===id?null:prev);};
+  const currentSpeech = cue?.clip==='victory'?t('mochiWinning'):cue?.clip==='defeat'?t('mochiLosing'):
+    cue?.clip==='draw_card'?t('mochiDrawing'):cue?.clip==='play_card'?t('mochiPlaying'):
+    cue?.clip==='surprise'?t('mochiSurprised'):cue?.clip==='pet_reaction'?t('mochiPetted'):
+    view.currentActor==='ai'?t('mochiThinking'):t('gameMochi');
+
   const isHumanTurn = view.phase === 'human_turn';
   const plays = new Set(view.legalActions.filter((a): a is Extract<LegalAction,{type:'play_card'}>=>a.type==='play_card').map(a=>a.cardId));
   const canPlay = selected !== null && plays.has(selected);
   const canDraw = view.legalActions.some(a=>a.type==='draw_card');
   const canFinish = view.legalActions.some(a=>a.type==='finish_turn');
   const canPass = view.legalActions.some(a=>a.type==='pass_turn');
-  const currentPose: MochiPose = view.phase === 'match_end' || view.phase === 'round_end'
+  const currentPose: MochiClipName = view.phase === 'match_end' || view.phase === 'round_end'
     ? view.roundResult?.winner === 'ai' ? 'victory' : view.roundResult?.winner === 'human' ? 'defeat' : 'idle'
     : view.phase === 'ai_thinking' ? 'thinking' : 'idle';
   function navigate(current: number, offset: -1 | 1) {
@@ -55,18 +92,22 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
       <div className="hud-score"><span>{t('you')}</span><strong data-testid="human-score">{view.scores.human}</strong><span className="score-sep">:</span><strong data-testid="mochi-score">{view.scores.ai}</strong><span>{t('mochi')}</span></div>
       <button className="pixel-button button-secondary pause-btn" type="button" onClick={onPause} data-testid="pause-button">⚙ <span>{t('pause')}</span></button>
     </header>
-    <div className="table-frame"><div className="game-table">
+    <div className="table-frame"><div className="game-table" ref={tableRef}>
       <div className="table-corner corner-tl">✦</div><div className="table-corner corner-tr">✦</div><div className="table-corner corner-bl">✦</div><div className="table-corner corner-br">✦</div>
       <section className="opponent-area" aria-label={t('mochiHand')}>
-        <div className="opponent-persona"><div className="opponent-avatar"><Mochi pose={currentPose} size="small" t={t}/></div><div className="opponent-title"><span className="character-eyebrow">THE CARD MASTER</span><h2>MOCHI <span>✦</span></h2><div className="character-subtitle" aria-live="polite">{view.currentActor === 'ai' ? t('mochiTurn') : t('gameMochi')}</div></div></div>
-        <div className="opponent-cards" data-testid="ai-hand"><div className="opponent-card-fan" aria-hidden="true">{Array.from({length:Math.min(view.handCounts.ai,7)},(_,i)=><CardBack key={i} small label={t('mochiHand')} />)}</div>
+        <div className="opponent-persona"><div className="opponent-avatar"><Mochi pose={currentPose} cue={cue} size="small" t={t} reducedMotion={reducedMotion} paused={paused} onCueDone={onCueDone} onCueActionFrame={onActionFrame} onPet={onPet}/></div><div className="opponent-title"><span className="character-eyebrow">THE CARD MASTER</span><h2>MOCHI <span>✦</span></h2><div className="character-subtitle p3-speech" aria-live="polite">{currentSpeech}</div><div className="difficulty-name">{t(difficulty)}</div></div></div>
+        <div className="opponent-cards" data-testid="ai-hand"><div className="opponent-card-fan" ref={enemyRef} aria-hidden="true">{Array.from({length:Math.min(view.handCounts.ai,7)},(_,i)=><CardBack key={i} small label={t('mochiHand')} />)}</div>
           <div className="hand-count">{t('mochi')} · <b data-testid="ai-card-count">{view.handCounts.ai}</b> {t('cards')}</div></div>
       </section>
+      {flight && <div key={flight.id} aria-hidden="true" data-testid="mochi-card-flight" className="p3-card-flight"
+        style={{left:flight.left,top:flight.top,transitionDuration:`${flight.duration}ms`,transform:flight.started?`translate(${flight.dx}px,${flight.dy}px)`:'translate(0px,0px)'}}>
+          <img className="pixel-art" src={flight.cardId?cardImage(flight.cardId,true):cardImage('card_back',true)} alt="" />
+      </div>}
       <div className="center-ornament"><span>◆</span> MEOWDECK <span>◆</span></div>
       <section className="table-center" aria-label={t('discard')}>
-        <div className="pile-group"><span className="pile-label">{t('draw')}</span><div className="draw-pile"><CardBack label={t('deck')}/><span className="pile-count" data-testid="draw-count">{view.drawPileCount}</span></div></div>
+        <div className="pile-group"><span className="pile-label">{t('draw')}</span><div className="draw-pile" ref={drawRef}><CardBack label={t('deck')}/><span className="pile-count" data-testid="draw-count">{view.drawPileCount}</span></div></div>
         <div className="table-center-symbol">✦</div>
-        <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" data-testid="top-discard"><img className="pixel-art card-image" src={cardImage(view.topDiscard.id, true)} alt={`${view.topDiscard.rank} ${SUIT_SYMBOL[view.topDiscard.suit]}`} /></div></div>
+        <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" ref={discardRef} data-testid="top-discard"><img className="pixel-art card-image" style={cue?.clip==='play_card'&&cue.cardId===view.topDiscard.id&&shownActionFrame!==cue.id&&!reducedMotion?{visibility:'hidden'}:undefined} src={cardImage(view.topDiscard.id, true)} alt={`${view.topDiscard.rank} ${SUIT_SYMBOL[view.topDiscard.suit]}`} /></div></div>
         <div className="active-suit"><span>{t('activeSuit')}</span><strong className={`suit-${SUIT_CLASS[view.activeSuit]}`} data-testid="active-suit" aria-label={t(({ S:'spades', H:'hearts', D:'diamonds', C:'clubs' } as const)[view.activeSuit])}>{SUIT_SYMBOL[view.activeSuit]}</strong></div>
       </section>
       <div className={`turn-banner ${isHumanTurn?'your-turn':'opponent-turn'}`} aria-live="polite" data-testid="turn-status"><span className="turn-glimmer">✦</span><strong>{isHumanTurn?t('yourTurn'):t('mochiTurn')}</strong><span className="turn-glimmer">✦</span></div>
