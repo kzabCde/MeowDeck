@@ -1,47 +1,59 @@
-name: Validate MeowDeck Gameplay UI and Mochi P3
+name: Validate MeowDeck Next.js Gameplay
 on:
   pull_request:
     paths:
+      - 'src/app/**'
       - 'src/web/**'
       - 'src/games/**'
       - 'e2e/**'
-      - 'index.html'
-      - 'vite.config.ts'
+      - 'next.config.*'
       - 'tsconfig*.json'
       - 'package.json'
-      - 'playwright.config.ts'
+      - 'package-lock.json'
+      - 'playwright*.ts'
       - '.github/workflows/validate-ui.yml'
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   web:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-      - name: Check core and browser types
-        run: |
-          npm run typecheck
-          npm run typecheck:web
-      - name: Run core tests
+          cache: npm
+      - name: Install frozen dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Typecheck headless engine
+        run: npm run typecheck:engine
+      - name: Check Next.js App Router types
+        run: npm run typecheck
+      - name: Run core and P3 tests
         run: npm test
-      - name: Benchmark three fair AI difficulties
+      - name: Deterministic full match
+        run: npm run test:simulation
+      - name: Benchmark AI strategies
         run: npm run benchmark:ai
-      - name: Build browser app
-        run: npm run build:web
-      - name: Install Chromium for browser tests
+      - name: Validate all production art
+        run: |
+          python -m pip install -r requirements-assets.txt
+          npm run validate:assets
+      - name: Build Next.js production app
+        run: npm run build
+      - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-      - name: Run responsive E2E flow
+      - name: Run seeded development E2E
         run: npm run test:e2e
-      - name: Upload failing Playwright diagnostics
+      - name: Run production build E2E
+        run: npm run test:e2e:production
+      - name: Upload Playwright diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: p2-playwright-results
+          name: nextjs-migration-playwright
           path: |
             playwright-report/
             test-results/

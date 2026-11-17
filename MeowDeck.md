@@ -323,7 +323,7 @@ AI thinking delay เป็นเพียงเรื่องการนำ�
 
 ## 10. Technical Architecture
 
-**Recommended stack for integration:** Next.js App Router + React + TypeScript; UI-driven 2D card animations (CSS/Canvas/Phaser เป็นทางเลือกตามโครงสร้างจริงที่มี) โดยไม่บังคับใช้เอนจินใหม่หาก React เพียงพอ
+**Current application platform (P2.5 migration):** Next.js 16 App Router + React 19 + TypeScript; UI-driven 2D card animations (CSS/Canvas/Phaser เป็นทางเลือกตามโครงสร้างจริงที่มี) โดยไม่บังคับใช้เอนจินใหม่หาก React เพียงพอ
 
 ### 10.1 High-Level Modules
 

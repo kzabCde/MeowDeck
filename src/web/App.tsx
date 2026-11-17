@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { applyAction, createAIObservation, createMatch, getHumanView, type CardId, type GameAction, type GameState, type Suit } from '../games/meowdeck/index.js';
 import { GameDialog } from './components/GameDialog.js';
@@ -24,7 +26,7 @@ function qaSeededRandom(seed: number): (maxExclusive: number) => number {
 
 export function App() {
   const [language, setLanguage] = useState<Language>('th');
-  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
+  const [reducedMotion, setReducedMotion] = useState(false); // SSR and hydration start with the same value.
   const [screen, setScreen] = useState<Screen>('menu');
   const [modal, setModal] = useState<Modal>(null);
   const [selected, setSelected] = useState<CardId | null>(null);
@@ -34,7 +36,7 @@ export function App() {
   const presentationQueue=useRef(new PresentationQueue());
   const petCooldown=useRef(-100000);
   const aiRng=useRef<RandomInt>(secureRandomInt);
-  const skipCosmetics=import.meta.env.DEV && new URL(window.location.href).searchParams.get('fastAI')==='1';
+  const [skipCosmetics,setSkipCosmetics]=useState(false); // QA query flags are read client-side, in dev only.
   const [session, setSession] = useState<GameState | null>(null);
   const [lastError, setLastError] = useState<string | null>(null);
   const [assetStatus, setAssetStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -101,7 +103,7 @@ export function App() {
 
   const startMatch = useCallback((chosen:Difficulty='practice') => {
     const url = new URL(window.location.href);
-    const seed = import.meta.env.DEV ? Number(url.searchParams.get('qaSeed')) : NaN;
+    const seed = process.env.NODE_ENV === 'development' ? Number(url.searchParams.get('qaSeed')) : NaN;
     const state = Number.isSafeInteger(seed) && seed > 0
       ? createMatch({ sessionId: sessionId(), rng: qaSeededRandom(seed) })
       : createMatch({ sessionId: sessionId() });
@@ -141,6 +143,21 @@ export function App() {
     },delay);
     return ()=>window.clearTimeout(timer);
   },[session,screen,modal,submit,difficulty,presentationCue?.id,skipCosmetics]);
+
+  // Hydration-safe browser preferences. Do not access window or document during render.
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(media.matches);
+    const onPreferenceChange = (event: MediaQueryListEvent) => setReducedMotion(event.matches);
+    media.addEventListener('change', onPreferenceChange);
+    return () => media.removeEventListener('change', onPreferenceChange);
+  }, []);
+  useEffect(() => {
+    // Production builds do not honor qaSeed or fastAI, even if query params exist.
+    if (process.env.NODE_ENV === 'development') {
+      setSkipCosmetics(new URLSearchParams(window.location.search).get('fastAI') === '1');
+    }
+  }, []);
 
   useEffect(() => {
     let active = true;

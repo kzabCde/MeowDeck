@@ -7,7 +7,8 @@ on:
       - "tests/**"
       - "examples/**"
       - "package.json"
-      - "tsconfig.json"
+      - "tsconfig.engine.json"
+      - "package-lock.json"
       - ".github/workflows/validate-engine.yml"
   pull_request:
     paths:
@@ -15,7 +16,8 @@ on:
       - "tests/**"
       - "examples/**"
       - "package.json"
-      - "tsconfig.json"
+      - "tsconfig.engine.json"
+      - "package-lock.json"
       - ".github/workflows/validate-engine.yml"
 
 jobs:
@@ -28,9 +30,9 @@ jobs:
         with:
           node-version: "22"
       - name: Install development tooling
-        run: npm install --ignore-scripts --no-audit --no-fund
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Type check
-        run: npm run typecheck
+        run: npm run typecheck:engine
       - name: Run unit and deterministic full-match tests
         run: npm test
       - name: Run standalone headless match example

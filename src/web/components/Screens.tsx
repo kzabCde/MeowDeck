@@ -22,7 +22,7 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
         <div className="hero-felt"><div className="hero-card hc-1"><img className="pixel-art" src={cardImage('AH', true)} alt="Ace of Hearts" /></div><div className="hero-card hc-2"><img className="pixel-art" src={cardImage('8S', true)} alt="Eight of Spades" /></div><div className="hero-card hc-3"><CardBack label="Face-down card" /></div></div>
         <div className="scene-corner left">✧</div><div className="scene-corner right">✧</div>
       </div>
-    </div><footer className="menu-footer"><span>© MEOWDECK</span><span>CRAZY EIGHTS · v0.2.0</span></footer>
+    </div><footer className="menu-footer"><span>© MEOWDECK</span><span>CRAZY EIGHTS · v0.3.1</span></footer>
   </main>;
 }
 
