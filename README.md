@@ -68,3 +68,23 @@ The playing deck has 52 cards, while the asset manifest also contains 2 Jokers a
 - [`docs/P1_REPORT.md`](docs/P1_REPORT.md) — P1 verification and readiness
 
 No gameplay UI, AI behavior tiers, deployment, or online services are provided by P1.
+
+## P2 — Interactive Gameplay UI
+
+P2 introduces a React + Vite client, keeping the P1 engine fully independent of React. To run the web application:
+
+```bash
+npm install
+npm run dev
+```
+
+Browser build and tests:
+
+```bash
+npm run typecheck:web
+npm run build:web
+npx playwright install chromium
+npm run test:e2e
+```
+
+Only a **Practice** opponent is active in P2. The genuine Easy/Normal/Hard AI strategies and full Mochi sprite animation playback belong to P3. Save/Resume across refresh, statistics and audio belong to P4. See `docs/P2_GAMEPLAY_UI.md` and `docs/P2_REPORT.md`.

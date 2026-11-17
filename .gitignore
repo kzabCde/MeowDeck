@@ -49,3 +49,8 @@ next-env.d.ts
 
 # P1 headless TypeScript output
 /dist/
+
+# MeowDeck P2 browser build and local E2E artifacts
+/web-dist/
+/playwright-report/
+/test-results/
