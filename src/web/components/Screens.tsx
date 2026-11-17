@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import type { T } from '../i18n.js';
+import type { Difficulty } from '../../games/meowdeck/ai/strategies.js';
 import { Mochi } from './Mochi.js';
 import { CardBack } from './PixelCard.js';
 import { cardImage } from '../game/assets.js';
@@ -35,10 +37,18 @@ export function GameSelection({ t, onBack, onNext }: { t:T; onBack:()=>void; onN
   </main>;
 }
 
-export function DifficultySelection({ t, onBack, onStart }: { t:T; onBack:()=>void; onStart:()=>void }) {
+export function DifficultySelection({ t, onBack, onStart }: { t:T; onBack:()=>void; onStart:(difficulty:Difficulty)=>void }) {
+  const [selected,setSelected]=useState<Difficulty>('practice');
+  const modes:readonly {id:Difficulty;key:'practice'|'easy'|'normal'|'hard'; desc:'practiceDesc'|'easyDesc'|'normalDesc'|'hardDesc'}[]=[
+    {id:'practice',key:'practice',desc:'practiceDesc'},
+    {id:'easy',key:'easy',desc:'easyDesc'},
+    {id:'normal',key:'normal',desc:'normalDesc'},
+    {id:'hard',key:'hard',desc:'hardDesc'}
+  ];
   return <main className="selection-page difficulty-page" data-testid="difficulty-selection"><header className="section-nav"><button className="link-button" onClick={onBack}>‹ {t('back')}</button><div>MEOWDECK ✦</div></header>
     <div className="selection-head"><span className="eyebrow">02 / THE OPPONENT</span><h1>{t('chooseDifficulty')}</h1></div>
-    <div className="difficulty-card"><Mochi t={t} size="large"/><div className="difficulty-info"><span className="eyebrow">MOCHI · THE CARD MASTER</span><h2>{t('practice')}</h2><p>{t('practiceDesc')}</p><button className="pixel-button button-primary button-xl" onClick={onStart} data-testid="start-match">{t('start')} ❯</button></div></div>
-    <div className="difficulty-locked"><div>{t('normal')} <span>{t('aiLater')}</span></div><div>{t('hard')} <span>{t('aiLater')}</span></div></div>
+    <div className="difficulty-card p3-difficulty-card"><Mochi t={t} size="large"/><div className="difficulty-info"><span className="eyebrow">MOCHI · THE CARD MASTER</span><h2>{t(selected)}</h2><p>{t(modes.find(x=>x.id===selected)!.desc)}</p>
+    <button className="pixel-button button-primary button-xl" onClick={()=>onStart(selected)} data-testid="start-match">{t('start')} ❯</button></div></div>
+    <div className="p3-difficulty-options" role="group" aria-label={t('chooseDifficulty')}>{modes.map(mode=><button key={mode.id} type="button" className={`p3-difficulty-option ${selected===mode.id?'is-active':''}`} data-testid={`difficulty-${mode.id}`} aria-pressed={selected===mode.id} onClick={()=>setSelected(mode.id)}><strong>{t(mode.key)}</strong><span>{t(mode.desc)}</span></button>)}</div>
   </main>;
 }

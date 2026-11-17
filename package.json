@@ -1,9 +1,9 @@
 {
   "name": "meowdeck",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
-  "description": "MeowDeck — Crazy Eights P2 Gameplay UI backed by P1 headless game engine",
+  "description": "MeowDeck — Crazy Eights with P3 fair difficulty AI and animated Mochi",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -p tsconfig.json",
@@ -14,7 +14,8 @@
     "test": "npm run build && node --test tests/*.test.mjs",
     "test:simulation": "npm run build && node examples/play-match.mjs",
     "test:e2e": "playwright test",
-    "validate:assets": "python scripts/validate_assets.py"
+    "validate:assets": "python scripts/validate_assets.py",
+    "benchmark:ai": "npm run build && node examples/benchmark-ai.mjs 1000"
   },
   "dependencies": {
     "react": "^19.1.1",
