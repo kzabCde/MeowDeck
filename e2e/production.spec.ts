@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { mkdir } from 'node:fs/promises';
 
 test('Next.js production App Router hydrates, serves canonical manifests and stays playable', async ({ page, request }) => {
   const pageErrors: string[] = [];
@@ -45,4 +46,29 @@ test('Next.js production mobile mount has no horizontal overflow', async ({ page
   await page.getByTestId('start-match').click();
   await expect(page.getByTestId('gameplay-screen')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
+});
+
+/** CI emits real production screenshots for art-direction review; tests alone cannot grade visuals. */
+test('production visual review captures original sprites on title and table, desktop and mobile', async ({ page }) => {
+  await mkdir('test-results/visual-review', { recursive: true });
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto('/');
+  await expect(page.getByTestId('main-menu')).toBeVisible();
+  await page.screenshot({ path: 'test-results/visual-review/title-desktop-1280x720.png', animations: 'disabled' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: 'test-results/visual-review/title-mobile-390x844.png', animations: 'disabled' });
+
+  await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
+  await page.getByTestId('start-match').click();
+  await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+
+  for (const [width, height] of [[1280, 720], [390, 844], [320, 568]] as const) {
+    await page.setViewportSize({ width, height });
+    await expect(page.getByTestId('top-discard')).toBeVisible();
+    await page.screenshot({
+      path: `test-results/visual-review/table-${width}x${height}.png`,
+      animations: 'disabled'
+    });
+  }
 });
