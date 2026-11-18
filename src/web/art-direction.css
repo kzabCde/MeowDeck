@@ -249,8 +249,8 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .active-suit strong{font-size:35px}
  .md4-cardroom .player-area{padding-bottom:11px}
  .md4-cardroom .hand-title{padding-inline:9px;font-size:9px}
- .md4-cardroom .player-hand{justify-content:flex-start;overflow-x:auto;gap:0;padding:10px 8px 4px}
- .md4-cardroom .card-tile{width:clamp(57px,11vh,83px);margin-left:-10px}
+ .md4-cardroom .player-hand{justify-content:safe center;overflow-x:auto;gap:0;padding:10px 8px 4px}
+ .md4-cardroom .card-tile{width:clamp(50px,17vw,69px);margin-left:calc(-1 * clamp(15px,5.5vw,23px))}
  .md4-cardroom .card-tile:first-child{margin-left:0}
  .md4-cardroom .card-tile.is-selected{transform:translateY(-8px) scale(1.02)!important}
  .md4-cardroom .action-footer{flex-basis:63px;gap:5px;padding:5px 9px max(6px,env(safe-area-inset-bottom))}
@@ -263,7 +263,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .hud-brand:before{display:none}.md4-cardroom .hud-score{gap:3px}
  .md4-cardroom .table-center{gap:6px}
  .md4-cardroom .active-suit span{font-size:7px}
- .md4-cardroom .card-tile{margin-left:-16px}
+ .md4-cardroom .card-tile{margin-left:calc(-1 * clamp(15px,5.5vw,23px))}
  .md4-mode{font-size:.78rem;padding:7px 2px}
 }
 @media(max-height:650px){
@@ -279,7 +279,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .opponent-card-fan{min-height:30px}
  .md4-cardroom .card-back-small{width:23px;max-height:34px}
  .md4-cardroom .draw-pile,.md4-cardroom .discard-pile{width:clamp(50px,10vh,72px)}
- .md4-cardroom .card-tile{width:clamp(49px,11.3vh,78px)}
+ .md4-cardroom .card-tile{width:min(clamp(50px,17vw,69px),clamp(49px,11.3vh,78px))}
  .md4-cardroom .action-footer{flex-basis:53px}
  .md4-cardroom .action-buttons .pixel-button{min-height:44px}
 }
