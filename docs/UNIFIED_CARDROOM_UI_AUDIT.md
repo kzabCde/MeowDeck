@@ -66,3 +66,11 @@ Do not merge or deploy without explicit project-owner authorization.
 - Functional tutorial, save warning, error and restart confirmation content is retained; generic decorative feedback is not added.
 - Source view-state, engine, persistence and save schemas are unchanged.
 - Phase 6 screenshot evidence is now generated for Crazy Eights and Blackjack at 320×568, 390×844, 430×932, 768×1024, desktop 1280×720, and 1920×1080. Playwright checks that HUD numbers, round labels, hands and key actions stay visible and that both tables remain separated from the control rails. These behavioral/geometry tests complement, but do not replace, human visual inspection.
+
+## Phase 7 — Mochi Animation & Character Interaction Polish
+- Kept all 10 existing sprite clips, 44 frames, manifest frame durations, 96×96 frame dimensions and anchor coordinates unchanged.
+- Fixed the animation hook so pausing **freezes** the current clip clock without resetting its action frame, and resuming continues rather than replaying an already committed cue.
+- Fixed ambient Sleep becoming permanent: after the existing 18-second idle threshold, a brief nap wakes back to Idle; sleeping/ambient blink do not progress while paused or in a hidden tab.
+- Restrained ambient blink/sleep to Idle, with randomized natural blink intervals; no speech bubbles or routine notification text added.
+- The game controller now accepts pet interactions only on a human turn without queued presentation cues and plays the pet SFX only when a reaction is actually enqueued, rather than making an empty sound on rejected taps.
+- Original cue IDs and presentation queue logic remain authoritative. No changes to card state, AI, persistence, animation metadata or audio assets.

@@ -162,15 +162,16 @@ export function App() {
     setPresentationCue(next);
     if(!next && ['round_end','match_end'].includes(sessionRef.current?.phase??''))setResultReady(true);
   },[]);
-  const petMochi=useCallback(()=>{
-    const now=performance.now();
-    if(now-petCooldown.current<1400||presentationQueue.current.count>0)return;
+  const petMochi=useCallback(():boolean=>{
+    const state=sessionRef.current,now=performance.now();
+    // Only the player's turn accepts a pet. A rejected tap must not play SFX.
+    if(!state||state.phase!=='human_turn'||presentationQueue.current.count>0||
+       now-petCooldown.current<1400)return false;
     petCooldown.current=now;
-    const state=sessionRef.current;
-    if(!state||state.phase==='ai_thinking')return;
     const id=`${state.sessionId}:pet:${Math.round(now)}`;
     presentationQueue.current.enqueue({id,clip:'pet_reaction',sessionId:state.sessionId,round:state.roundNumber,turn:state.turnId});
     setPresentationCue(presentationQueue.current.current);
+    return true;
   },[]);
   // Atomic controller. This is the only place that submits gameplay changes to P1.
   const dispatch = useCallback((action: GameAction): boolean => {
@@ -365,7 +366,7 @@ export function App() {
     {screen === 'game' && view && <GameTable view={view} t={t} selected={selected} onSelect={id=>{playUi('select');setSelected(current=>current===id?null:id);}} onPlay={playSelected}
       onDraw={() => {playUi('select');submit('draw_card','human');}} onFinish={() => {playUi('click');submit('finish_turn','human');}}
       onPass={() => {playUi();submit('pass_turn','human');}} onPause={() => {playUi();setModal('pause');}} error={lastError}
-      difficulty={difficulty} cue={presentationCue} reducedMotion={reducedMotion} paused={Boolean(modal)} onCueDone={cueComplete} onPet={()=>{playUi('pet');petMochi();}}
+      difficulty={difficulty} cue={presentationCue} reducedMotion={reducedMotion} paused={Boolean(modal)} onCueDone={cueComplete} onPet={()=>{if(petMochi())playUi('pet');}}
       tutorialHint={tutorialHintKey?t(tutorialHintKey):null} onSkipTutorial={()=>setTutorial(current=>({...current,skipped:true}))} />}
 
 

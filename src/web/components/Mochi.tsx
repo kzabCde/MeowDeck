@@ -2,12 +2,13 @@ import type { MochiClipName, PresentationCue } from '../../games/meowdeck/presen
 import { useMochiAnimation } from '../animation/useMochiAnimation.js';
 import type { T } from '../i18n.js';
 
-export function Mochi({ pose='idle',size='large',t,cue,reducedMotion=false,paused=false,onCueDone,onCueActionFrame,onPet }: {
+export function Mochi({ pose='idle',size='large',t,cue,reducedMotion=false,paused=false,onCueDone,onCueActionFrame,onPet,petDisabled=false }: {
   pose?:MochiClipName;size?:'large'|'small';t:T;cue?:PresentationCue|null;reducedMotion?:boolean;paused?:boolean;
-  onCueDone?:(id:string)=>void;onCueActionFrame?:(id:string)=>void;onPet?:()=>void;
+  onCueDone?:(id:string)=>void;onCueActionFrame?:(id:string)=>void;onPet?:()=>void;petDisabled?:boolean;
 }) {
   const {spriteRef}=useMochiAnimation({pose,cue,reducedMotion,paused,onCueDone,onCueActionFrame});
   const artwork=<span ref={spriteRef} className="mochi-frame pixel-art" />;
-  if(onPet)return <button className={`mochi-character mochi-${size} mochi-pet`} type="button" onClick={onPet} aria-label={t('petMochi')} data-testid="mochi" title={t('petMochi')}>{artwork}</button>;
+  if(onPet)return <button className={`mochi-character mochi-${size} mochi-pet`} type="button" onClick={onPet} disabled={petDisabled}
+    aria-label={t('petMochi')} data-testid="mochi" title={petDisabled?undefined:t('petMochi')}>{artwork}</button>;
   return <div className={`mochi-character mochi-${size}`} role="img" aria-label={`${t('mochi')} — ${t('mochiAppearance')}`} data-testid="mochi">{artwork}</div>;
 }

@@ -16,6 +16,10 @@ export function useMochiAnimation({pose='idle',cue=null,reducedMotion=false,paus
   const [manifest,setManifest]=useState<MochiManifest|null>(null);
   const [loadFailed,setLoadFailed]=useState(false);
   const completeRef=useRef(onCueDone),actionRef=useRef(onCueActionFrame);
+  // Pause is a clock gate, not a change of clip. Restarting an effect on pause
+  // replayed committed card cues and could shift their actionFrame timing.
+  const pausedRef=useRef(paused);
+  pausedRef.current=paused;
   completeRef.current=onCueDone;actionRef.current=onCueActionFrame;
   useEffect(()=>{
     let mounted=true;
@@ -25,10 +29,10 @@ export function useMochiAnimation({pose='idle',cue=null,reducedMotion=false,paus
   const baseDependency=cue?undefined:pose;
   useEffect(()=>{
     const target=spriteRef.current;
-    if(!target || paused)return;
+    if(!target)return;
     const initial=cue?.clip??pose;
     if(!manifest){target.style.backgroundImage='url(/assets/meowdeck/mochi/sprites/mochi_idle_4f_96x96.png)';target.style.backgroundSize='400% 100%';return;}
-    let raf=0,blinkTimer=0,sleepTimer=0,disposed=false,lastTimestamp:number|null=null;
+    let raf=0,blinkTimer=0,sleepTimer=0,wakeTimer=0,disposed=false,lastTimestamp:number|null=null;
     let currentName:MochiClipName=initial;
     let clock:ClipClock|null=null;
     let cueCompleted=false;
@@ -58,7 +62,7 @@ export function useMochiAnimation({pose='idle',cue=null,reducedMotion=false,paus
       if(disposed)return;
       const clip=manifest.get(currentName);
       if(!clip||!clock){raf=requestAnimationFrame(step);return;}
-      if(document.hidden){lastTimestamp=null;raf=requestAnimationFrame(step);return;}
+      if(document.hidden||pausedRef.current){lastTimestamp=null;raf=requestAnimationFrame(step);return;}
       const delta=lastTimestamp===null?0:Math.min(100,Math.max(0,now-lastTimestamp));
       lastTimestamp=now;
       const progress=clock.advance(delta);
@@ -80,16 +84,32 @@ export function useMochiAnimation({pose='idle',cue=null,reducedMotion=false,paus
       return ()=>{disposed=true};
     }
     if(!cue&&pose==='idle'){
+      // Natural blink intervals are ambient, never emitted as new game/status events.
       const scheduleBlink=()=>{blinkTimer=window.setTimeout(()=>{
         if(disposed)return;
-        if(currentName==='idle')changeClip('blink');
+        if(!pausedRef.current&&!document.hidden&&currentName==='idle')changeClip('blink');
         scheduleBlink();
       },3500+Math.floor(Math.random()*3500));};
-      scheduleBlink();
-      sleepTimer=window.setTimeout(()=>{if(!disposed&&(currentName==='idle'||currentName==='blink'))changeClip('sleep');},18000);
+      // A brief nap must end: the old sleep loop left Mochi asleep indefinitely.
+      // Preserve P0's original 18-second entry delay and all clip frame durations.
+      const scheduleNap=()=>{sleepTimer=window.setTimeout(()=>{
+        if(disposed)return;
+        if(pausedRef.current||document.hidden||!['idle','blink'].includes(currentName)){
+          scheduleNap();return;
+        }
+        changeClip('sleep');
+        const wake=()=>{wakeTimer=window.setTimeout(()=>{
+          if(disposed)return;
+          if(pausedRef.current||document.hidden){wake();return;}
+          if(currentName==='sleep')changeClip('idle');
+          scheduleNap();
+        },4500);};
+        wake();
+      },18000);};
+      scheduleBlink();scheduleNap();
     }
     raf=requestAnimationFrame(step);
-    return ()=>{disposed=true;cancelAnimationFrame(raf);window.clearTimeout(blinkTimer);window.clearTimeout(sleepTimer)};
-  },[manifest,pose,cue?.id,baseDependency,reducedMotion,paused,loadFailed]);
+    return ()=>{disposed=true;cancelAnimationFrame(raf);window.clearTimeout(blinkTimer);window.clearTimeout(sleepTimer);window.clearTimeout(wakeTimer)};
+  },[manifest,pose,cue?.id,baseDependency,reducedMotion,loadFailed]);
   return {spriteRef,loadFailed};
 }
