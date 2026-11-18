@@ -9,6 +9,7 @@ import { cardImage } from '../game/assets.js';
 
 interface MenuProps {
   t: T;
+  reducedMotion?:boolean;
   hasMatch: boolean;
   onPlay: () => void;
   onContinue: () => void;
@@ -20,7 +21,7 @@ interface MenuProps {
 }
 
 /** Play-first title screen: one room, real card sprites and Mochi, no passive status copy. */
-export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatistics, onRules, saved }: MenuProps) {
+export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatistics, onRules, saved, reducedMotion=false }: MenuProps) {
   return <main className="menu-page md4-title-screen" data-testid="main-menu">
     <header className="md4-menu-header">
       <nav className="md4-menu-tools" aria-label={t('mainMenu')}>
@@ -34,7 +35,7 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
       </div>
       <div className="md4-title-diorama" data-testid="title-scene">
         <div className="md4-title-room" aria-hidden="true"/>
-        <div className="md4-title-mochi"><Mochi t={t} size="large"/></div>
+        <div className="md4-title-mochi"><Mochi t={t} size="large" reducedMotion={reducedMotion}/></div>
         <div className="md4-title-table" aria-hidden="true"/>
         <div className="md4-title-card md4-card-left" aria-hidden="true"><img className="pixel-art" src={cardImage('8H', true)} alt=""/></div>
         <div className="md4-title-card md4-card-back" aria-hidden="true"><CardBack label={t('deck')}/></div>
@@ -83,8 +84,8 @@ export function GameSelection({t,onBack,onCrazyEights,onBlackjack}:{
 }
 
 /** Four existing opponent behaviors, with Mochi as the focus and tactile game choices. */
-export function DifficultySelection({t,onBack,onStart,preferredDifficulty='practice'}:{
-  t:T;onBack:()=>void;onStart:(difficulty:Difficulty)=>void;preferredDifficulty?:Difficulty;
+export function DifficultySelection({t,onBack,onStart,preferredDifficulty='practice',reducedMotion=false}:{
+  t:T;onBack:()=>void;onStart:(difficulty:Difficulty)=>void;preferredDifficulty?:Difficulty;reducedMotion?:boolean;
 }){
   const [selected,setSelected]=useState<Difficulty>(preferredDifficulty);
   const modes:readonly {id:Difficulty;key:'practice'|'easy'|'normal'|'hard';desc:'practiceDesc'|'easyDesc'|'normalDesc'|'hardDesc'}[]=[
@@ -102,7 +103,7 @@ export function DifficultySelection({t,onBack,onStart,preferredDifficulty='pract
     <section className="md4-difficulty-scene" aria-labelledby="opponent-select-title">
       <div className="md4-scene-head"><h1 id="opponent-select-title">{t('chooseDifficulty')}</h1></div>
       <div className="md4-difficulty-stage">
-        <div className="md4-difficulty-mochi"><Mochi t={t} size="large"/></div>
+        <div className="md4-difficulty-mochi"><Mochi t={t} size="large" reducedMotion={reducedMotion}/></div>
         <div className="md4-difficulty-controls">
           <div className="md4-mode-strip" role="group" aria-label={t('chooseDifficulty')} aria-describedby="difficulty-description">
             {modes.map(mode=><button key={mode.id} type="button"

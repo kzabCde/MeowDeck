@@ -89,3 +89,23 @@ test('ambient 18-second sleep wakes naturally without a new gameplay event',asyn
   await expect(page.getByTestId('main-menu')).toBeVisible();
   await expect(page.locator('[role="status"]')).toHaveCount(0);
 });
+
+// Reduced Motion must cover decorative menu and opponent-preview sprites, not just live matches.
+test('reduced-motion preference also freezes menu and difficulty Mochi',async({page})=>{
+  await page.goto('/');
+  await page.getByRole('button',{name:/Settings|ตั้งค่า/i}).click();
+  await page.getByTestId('motion-setting').selectOption('on');
+  await page.keyboard.press('Escape');
+  const menuSprite=page.getByTestId('main-menu').locator('.mochi-frame');
+  await expect(menuSprite).toHaveAttribute('data-clip','idle');
+  const before=await menuSprite.getAttribute('data-frame');
+  await page.waitForTimeout(350);
+  await expect(menuSprite).toHaveAttribute('data-frame',before??'0');
+  await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
+  const preview=page.getByTestId('difficulty-selection').locator('.mochi-frame');
+  await expect(preview).toHaveAttribute('data-clip','idle');
+  const previewFrame=await preview.getAttribute('data-frame');
+  await page.waitForTimeout(350);
+  await expect(preview).toHaveAttribute('data-frame',previewFrame??'0');
+});

@@ -353,14 +353,14 @@ export function App() {
       {(saveWarning || saveStatus==='error' || saveStatus==='unavailable') && <span className="p4-status error" role="alert" data-testid="save-status">{t(saveWarning==='conflict'?'storageConflict':saveStatus==='unavailable'?'saveUnavailable':'saveFailed')}</span>}
       {process.env.NODE_ENV==='production' && pwaStatus==='failed' && <span className="p4-status error" role="alert" data-testid="offline-status">{t('offlineFailed')}</span>}
     </div>}
-    {screen === 'menu' && <MainMenu t={t} hasMatch={!!savedMatch || (!!session && !isEnded)} saved={savedMatch} preferredDifficulty={settings.preferredDifficulty} onPlay={() => {playUi();setScreen('select');}} onContinue={() => {if(sessionRef.current&&sessionRef.current.phase!=='match_end'&&!storageConflictRef.current){setResultReady(sessionRef.current.phase==='round_end');setScreen('game');}else void continueMatch();}}
+    {screen === 'menu' && <MainMenu t={t} reducedMotion={reducedMotion} hasMatch={!!savedMatch || (!!session && !isEnded)} saved={savedMatch} preferredDifficulty={settings.preferredDifficulty} onPlay={() => {playUi();setScreen('select');}} onContinue={() => {if(sessionRef.current&&sessionRef.current.phase!=='match_end'&&!storageConflictRef.current){setResultReady(sessionRef.current.phase==='round_end');setScreen('game');}else void continueMatch();}}
       onSettings={() => setModal('settings')} onStatistics={() => setModal('statistics')} onRules={() => setModal('rules')} />}
     {screen==='menu' && process.env.NODE_ENV==='production' && <div className="p4-install" style={{padding:'8px 24px 16px',margin:'0 auto'}}>
       {pwaInstallable&&<button className="pixel-button button-secondary" onClick={()=>{void pwaRef.current?.install();}}>{t('installApp')}</button>}
       {pwaUpdate&&<button className="pixel-button button-cream" onClick={()=>{void pwaRef.current?.update();}}>{t('updateApp')}</button>}
     </div>}
     {screen === 'select' && <GameSelection t={t} onBack={() => setScreen('menu')} onCrazyEights={() => {playUi();setScreen('difficulty');}} onBlackjack={() => {playUi();setScreen('blackjack');}} />}
-    {screen === 'difficulty' && <DifficultySelection t={t} preferredDifficulty={settings.preferredDifficulty} onBack={() => setScreen('select')} onStart={startMatch} />}
+    {screen === 'difficulty' && <DifficultySelection t={t} reducedMotion={reducedMotion} preferredDifficulty={settings.preferredDifficulty} onBack={() => setScreen('select')} onStart={startMatch} />}
     {screen === 'blackjack' && <BlackjackGame t={t} reducedMotion={reducedMotion} onBack={() => {playUi();setScreen('select');}}
       onSound={(sound) => {void audioRef.current?.unlock().then(()=>audioRef.current?.play(sound));}} />}
     {screen === 'game' && view && <GameTable view={view} t={t} selected={selected} onSelect={id=>{playUi('select');setSelected(current=>current===id?null:id);}} onPlay={playSelected}
