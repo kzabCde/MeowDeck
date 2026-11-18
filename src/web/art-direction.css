@@ -287,3 +287,36 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .card-tile,.md4-title-card,.md4-game-token,.md4-mode,.pixel-button{transition:none!important}
 }
 .reduce-motion .md4-cardroom .card-tile,.reduce-motion .md4-game-token,.reduce-motion .pixel-button{transition:none!important}
+/* Screenshot QA refinement: legible Thai HUD, quieter unused labels and honest disabled actions. */
+.md4-cardroom .hud-round{font-size:12px}
+.md4-cardroom .hud-score span{font-size:12px}
+.md4-cardroom .opponent-title .difficulty-name{display:none}
+.md4-cardroom .opponent-title h2{font-size:13px}
+.md4-cardroom .hand-count{font-size:12px}
+.md4-cardroom .pile-label{font-size:12px}
+.md4-cardroom .active-suit span{font-size:12px}
+.md4-cardroom .hand-title{font-size:12px}
+.md4-cardroom .turn-banner{font-size:12px}
+.md4-cardroom .action-buttons .pixel-button{font-size:.91rem}
+.md4-cardroom .action-buttons .button-primary:disabled{
+ background:#23453a;color:#cad2bb;border-color:#668773;box-shadow:0 3px #0b261d;opacity:.9
+}
+@media(max-width:720px){
+ .md4-cardroom .hud-round{font-size:10px}
+ .md4-cardroom .hud-score span{font-size:10px}
+ .md4-cardroom .opponent-title h2{font-size:11px}
+ .md4-cardroom .hand-count{font-size:11px}
+ .md4-cardroom .pile-label{font-size:10px}
+ .md4-cardroom .active-suit span{font-size:10px}
+ .md4-cardroom .hand-title{font-size:11px}
+ .md4-cardroom .turn-banner{font-size:10px}
+ .md4-cardroom .action-buttons .pixel-button{font-size:.86rem}
+}
+@media(max-width:370px){
+ .md4-cardroom .hud-score span{font-size:9px}
+ .md4-cardroom .pile-label{font-size:10px}
+ .md4-cardroom .active-suit span{font-size:9px}
+}
+@media(max-height:650px){
+ .md4-cardroom .opponent-avatar .mochi-small{transform:scale(1.13);transform-origin:center bottom}
+}
