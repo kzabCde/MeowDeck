@@ -52,6 +52,8 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
   const [shownActionFrame,setShownActionFrame]=useState<string|null>(null);
   const lastDiscardRef=useRef(view.topDiscard.id);
   const [impact,setImpact]=useState<string|null>(null);
+  const humanOrigin=useRef<{cardId:CardId;left:number;top:number;width:number;height:number}|null>(null);
+  const [humanFlight,setHumanFlight]=useState<{id:string;cardId:CardId;left:number;top:number;width:number;height:number;dx:number;dy:number;started:boolean}|null>(null);
   const lastHandRef=useRef({round:view.roundNumber,count:view.ownHand.length});
   const [handMotion,setHandMotion]=useState<string|null>(null);
   useEffect(()=>{
@@ -63,9 +65,28 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
   useEffect(()=>{
     if(lastDiscardRef.current===view.topDiscard.id)return;
     lastDiscardRef.current=view.topDiscard.id;
+    const origin=humanOrigin.current;
+    humanOrigin.current=null;
+    const flightId=`${view.roundNumber}:${view.turnId}:${view.topDiscard.id}`;
+    if(!reducedMotion&&origin?.cardId===view.topDiscard.id) {
+      const table=tableRef.current?.getBoundingClientRect();
+      const dest=discardRef.current?.getBoundingClientRect();
+      if(table&&dest) {
+        const dx=dest.left+dest.width/2-(origin.left+origin.width/2);
+        const dy=dest.top+dest.height/2-(origin.top+origin.height/2);
+        setHumanFlight({id:flightId,cardId:origin.cardId,left:origin.left-table.left,
+          top:origin.top-table.top,width:origin.width,height:origin.height,dx,dy,started:false});
+        const raf=requestAnimationFrame(()=>setHumanFlight(current=>current?.id===flightId?{...current,started:true}:current));
+        const timer=window.setTimeout(()=>{
+          setHumanFlight(current=>current?.id===flightId?null:current);
+          setImpact(flightId);
+        },310);
+        return()=>{cancelAnimationFrame(raf);window.clearTimeout(timer);};
+      }
+    }
     const aiFlight=cue?.clip==='play_card'&&cue.actor==='ai'&&cue.cardId===view.topDiscard.id;
-    if(!reducedMotion&&!aiFlight)setImpact(`${view.roundNumber}:${view.turnId}:${view.topDiscard.id}`);
-  },[view.topDiscard.id,view.roundNumber,view.turnId,reducedMotion,cue?.id]);
+    if(!reducedMotion&&!aiFlight)setImpact(flightId);
+  },[view.topDiscard.id,view.roundNumber,view.turnId,reducedMotion]);
   useEffect(()=>{
     if(reducedMotion||!cue||!['draw_card','play_card'].includes(cue.clip)) {setFlight(null);return;}
     const table=tableRef.current;
@@ -91,6 +112,14 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
   const canDraw = view.legalActions.some(a=>a.type==='draw_card');
   const canFinish = view.legalActions.some(a=>a.type==='finish_turn');
   const canPass = view.legalActions.some(a=>a.type==='pass_turn');
+  function playFromHand() {
+    if(selected&&canPlay&&!reducedMotion){
+      const tile=handRef.current?.querySelector<HTMLButtonElement>(`[data-testid="card-${selected}"]`);
+      const rect=tile?.getBoundingClientRect();
+      if(rect)humanOrigin.current={cardId:selected,left:rect.left,top:rect.top,width:rect.width,height:rect.height};
+    }
+    onPlay();
+  }
   const currentPose: MochiClipName = view.phase === 'match_end' || view.phase === 'round_end'
     ? view.roundResult?.winner === 'ai' ? 'victory' : view.roundResult?.winner === 'human' ? 'defeat' : 'idle'
     : view.phase === 'ai_thinking' ? 'thinking' : 'idle';
@@ -117,10 +146,15 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
         style={{left:flight.left,top:flight.top,transitionDuration:`${flight.duration}ms`,transform:flight.started?`translate(${flight.dx}px,${flight.dy}px)`:'translate(0px,0px)'}}>
           <img className="pixel-art" src={flight.cardId?cardImage(flight.cardId,true):cardImage('card_back',true)} alt="" />
       </div>}
+      {humanFlight&&<div key={humanFlight.id} aria-hidden="true" className="p3-card-flight md-human-card-flight"
+        style={{left:humanFlight.left,top:humanFlight.top,width:humanFlight.width,height:humanFlight.height,transitionDuration:'310ms',
+          transform:humanFlight.started?`translate(${humanFlight.dx}px,${humanFlight.dy}px) rotate(-5deg)`:'translate(0px,0px)'}}>
+        <img className="pixel-art" src={cardImage(humanFlight.cardId,true)} alt="" />
+      </div>}
       <section className="table-center" aria-label={t('discard')}>
         <div className="pile-group"><span className="pile-label">{t('draw')}</span><div className="draw-pile" ref={drawRef}><button type="button" className="draw-pile-action" onClick={onDraw} disabled={!canDraw} aria-label={t('drawCard')}><CardBack label={t('deck')}/></button><span className="pile-count" data-testid="draw-count">{view.drawPileCount}</span></div></div>
         <div className="table-center-symbol">✦</div>
-        <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" ref={discardRef} data-testid="top-discard"><img className="pixel-art card-image" style={cue?.clip==='play_card'&&cue.cardId===view.topDiscard.id&&shownActionFrame!==cue.id&&!reducedMotion?{visibility:'hidden'}:undefined} src={cardImage(view.topDiscard.id, true)} alt={`${view.topDiscard.rank} ${SUIT_SYMBOL[view.topDiscard.suit]}`} />{impact&&<span key={impact} className={view.topDiscard.rank==='8'?`md-card-impact md-wild-impact md-wild-${SUIT_CLASS[view.activeSuit]}`:'md-card-impact'} aria-hidden="true" onAnimationEnd={()=>setImpact(null)}/>}</div></div>
+        <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" ref={discardRef} data-testid="top-discard"><img className="pixel-art card-image" style={((cue?.clip==='play_card'&&cue.cardId===view.topDiscard.id&&shownActionFrame!==cue.id&&!reducedMotion)||(humanFlight?.cardId===view.topDiscard.id))?{visibility:'hidden'}:undefined} src={cardImage(view.topDiscard.id, true)} alt={`${view.topDiscard.rank} ${SUIT_SYMBOL[view.topDiscard.suit]}`} />{impact&&<span key={impact} className={view.topDiscard.rank==='8'?`md-card-impact md-wild-impact md-wild-${SUIT_CLASS[view.activeSuit]}`:'md-card-impact'} aria-hidden="true" onAnimationEnd={()=>setImpact(null)}/>}</div></div>
         <div className="active-suit"><span>{t('activeSuit')}</span><strong className={`suit-${SUIT_CLASS[view.activeSuit]}`} data-testid="active-suit" aria-label={t(({ S:'spades', H:'hearts', D:'diamonds', C:'clubs' } as const)[view.activeSuit])}>{SUIT_SYMBOL[view.activeSuit]}</strong></div>
       </section>
       <div className={`turn-banner ${isHumanTurn?'your-turn':'opponent-turn'}`} aria-live="polite" data-testid="turn-status"><span className="md-turn-dot" aria-hidden="true"/><strong>{isHumanTurn?t('yourTurn'):t('mochiTurn')}</strong></div>
@@ -131,7 +165,7 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
       </section>
     </div></div>
     <footer className="action-footer"><div className="action-status" aria-live="polite" role="status">{error?<span className="status-error">{t('invalidAction')}: {error}</span>:gameHint(view,t)}</div>
-      <div className="action-buttons"><button className="pixel-button button-primary" type="button" data-testid="play-selected" onClick={onPlay} disabled={!isHumanTurn||!canPlay}>{t('playCard')} <span>❯</span></button>
+      <div className="action-buttons"><button className="pixel-button button-primary" type="button" data-testid="play-selected" onClick={playFromHand} disabled={!isHumanTurn||!canPlay}>{t('playCard')} <span>❯</span></button>
         {canDraw && <button className="pixel-button button-cream" type="button" onClick={onDraw} data-testid="draw-card">{t('drawCard')}</button>}
         {canFinish && <button className="pixel-button button-cream" type="button" onClick={onFinish} data-testid="finish-turn">{t('endTurn')}</button>}
         {canPass && <button className="pixel-button button-cream" type="button" onClick={onPass} data-testid="pass-turn">{t('passTurn')}</button>}
