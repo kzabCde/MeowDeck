@@ -325,3 +325,36 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .md4-cardroom .draw-pile-action:disabled{opacity:1;filter:none;cursor:default}
 .md4-cardroom .card-tile.is-disabled{opacity:.9;filter:saturate(.85) brightness(.98)}
 .md4-cardroom .card-tile.is-playable:not(.is-selected){filter:drop-shadow(0 3px 0 #e4bf7e66)}
+
+/* Game selection is an illustrated choice, never a boxed product tile. */
+.md4-selection-page .md4-game-token{
+ position:relative;flex-direction:column;justify-content:center;align-items:center;
+ width:min(570px,95vw);min-height:300px;gap:12px;padding:20px 18px 30px;
+ background:transparent;border:0;border-radius:0;box-shadow:none;text-align:center
+}
+.md4-selection-page .md4-game-token:hover{
+ background:transparent;border:0;box-shadow:none;transform:translateY(-5px)
+}
+.md4-selection-page .md4-game-token:focus-visible{outline:2px solid var(--md4-gold);outline-offset:7px}
+.md4-selection-page .md4-token-art{
+ position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+ min-height:205px;width:100%;padding:11px;isolation:isolate
+}
+.md4-selection-page .md4-token-art:before{
+ content:"";position:absolute;z-index:-1;width:235px;height:190px;border:1px dashed #a6b88e5c;
+ border-radius:50%;background:radial-gradient(ellipse at center,#4e856b29,transparent 70%)
+}
+.md4-selection-page .md4-token-art img{height:clamp(130px,21vh,175px)}
+.md4-selection-page .md4-token-info{align-items:center;text-align:center;gap:12px}
+.md4-selection-page .md4-token-info strong{font-size:clamp(1.7rem,4vw,2.15rem);line-height:1.1}
+.md4-selection-page .md4-token-info small{font-size:.93rem;max-width:350px}
+.md4-selection-page .md4-token-info em{
+ display:inline-block;padding:10px 16px;color:var(--md4-gold);background:#204d3e;
+ border-bottom:3px solid #b58e58;font-size:.9rem;font-weight:850
+}
+@media(max-width:720px){
+ .md4-selection-page .md4-game-token{min-height:0;gap:7px;padding:11px 15px 23px}
+ .md4-selection-page .md4-token-art{min-height:182px}
+ .md4-selection-page .md4-token-art:before{height:170px;width:200px}
+ .md4-selection-page .md4-token-art img{height:clamp(109px,16.5vh,143px)}
+}
