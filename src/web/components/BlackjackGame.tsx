@@ -122,7 +122,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
      </div>
    </div>
    <div className="md5-bj-frame">
-     <div className="md5-bj-felt">
+     <div className="md5-bj-felt" data-testid="blackjack-table">
        <section className="md5-bj-dealer" aria-label={t('bjDealer')}>
          <div className="md5-bj-dealer-head">
            <Mochi pose={mochiPose} t={t} size="small" reducedMotion={reducedMotion}/>
@@ -149,7 +149,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
        </section>
      </div>
    </div>
-   <footer className="md5-bj-actions">
+   <footer className="md5-bj-actions" data-testid="blackjack-action-rail">
      {externalChange && <div role="alert" className="md5-bj-warning">
        {t('bjExternalChange')}
        <GameButton variant="cream" onClick={reload} data-testid="blackjack-reload">{t('bjReload')}</GameButton>

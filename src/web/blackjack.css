@@ -9,33 +9,35 @@
 .md5-bj-header{
  min-height:60px;display:grid;grid-template-columns:1fr auto 1fr;
  align-items:center;gap:8px;padding:9px clamp(13px,3vw,45px);
- border-bottom:2px solid var(--md-border);background:var(--md-rail);
+ border-bottom:2px solid var(--md-game-trim);background:var(--md-game-hud);
 }
 .md5-bj-header>.md4-text-button{justify-self:start}
 .md5-bj-tools{justify-self:end}
 .md5-bj-brand{display:flex;flex-direction:column;text-align:center;gap:1px;line-height:1.15}
 .md5-bj-brand span{font-size:.64rem;letter-spacing:.16em;color:#a9c0ac}
 .md5-bj-brand strong{font:900 clamp(1.08rem,3vw,1.65rem) var(--md-font-display);letter-spacing:.06em;color:var(--md5-gold)}
-.md5-bj-scorebar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:9px clamp(13px,3vw,45px);font-size:.79rem;color:#f0ddaa}
-.md5-bj-round{font-weight:850;white-space:nowrap}
+.md5-bj-scorebar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px clamp(13px,3vw,45px);min-height:42px;
+ border-bottom:1px solid #68876c55;background:var(--md-game-hud);
+ font-size:.79rem;color:var(--md-cream)}
+.md5-bj-round{font-weight:850;white-space:nowrap;color:var(--md-muted)}
 .md5-bj-score-pips{display:flex;align-items:center;gap:clamp(7px,1.4vw,18px)}
-.md5-bj-score{display:flex;align-items:center;gap:6px}
+.md5-bj-score{display:flex;align-items:center;gap:6px;white-space:nowrap;font-family:var(--md-font-ui)}
 .md5-bj-score strong{font:900 1.08rem var(--md-font-number);font-variant-numeric:tabular-nums;color:var(--md-gold)}
 .md5-bj-frame{flex:1;display:flex;min-height:0;width:100%;padding:0 clamp(8px,2.3vw,30px) 10px}
 .md5-bj-felt{
- flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;
+ flex:1;display:flex;flex-direction:column;justify-content:space-evenly;gap:clamp(10px,2vh,22px);
  width:100%;max-width:1060px;min-height:470px;margin:0 auto;padding:14px clamp(12px,4vw,42px);
- border:7px solid var(--md-surface);outline:2px solid var(--md-border);border-radius:12px;
+ border:7px solid var(--md-surface);outline:2px solid var(--md-game-trim);border-radius:12px;
  box-shadow:inset 0 0 0 3px #30715d,inset 0 0 0 8px #0b3930,0 9px 0 #071b19;
- background:radial-gradient(ellipse at 50% 47%,var(--md-table-light) 0%,var(--md-table) 70%,#11382f 100%);
+ background:var(--md-game-felt);
 }
-.md5-bj-dealer,.md5-bj-player{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+.md5-bj-dealer,.md5-bj-player{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:0;min-height:0}
 .md5-bj-dealer-head{display:flex;align-items:center;gap:15px;justify-content:center}
 .md5-bj-dealer-head .mochi-small{width:clamp(70px,10vw,105px);height:clamp(70px,10vw,105px)}
 .md5-bj-hand-head{display:flex;align-items:center;gap:12px;text-align:center;font-size:.85rem;font-weight:900}
-.md5-bj-hand-head>strong{min-width:38px;padding:4px 9px;border:2px solid var(--md-border);color:var(--md-cream);background:var(--md-rail);font:900 1.25rem var(--md-font-number)}
+.md5-bj-hand-head>strong{min-width:38px;padding:4px 9px;border:2px solid var(--md-game-trim);color:var(--md-gold);background:var(--md-game-hud);font:900 1.25rem var(--md-font-number)}
 .md5-bj-hand{display:flex;align-items:center;justify-content:center;gap:clamp(5px,1.2vw,12px);width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;min-height:119px;padding:3px 0 7px;scrollbar-width:thin;scrollbar-color:#b6a274 transparent}
-.md5-bj-slot{display:block;flex:0 0 auto;width:clamp(67px,8vw,85px);aspect-ratio:2/3;filter:drop-shadow(3px 4px 0 #0c2824)}
+.md5-bj-slot{display:block;flex:0 0 auto;width:clamp(67px,8vw,85px);aspect-ratio:2/3;filter:drop-shadow(var(--md-game-card-shadow))}
 .md5-bj-card-face{display:block;width:100%;height:100%;object-fit:fill;image-rendering:pixelated}
 .md5-bj-slot .card-back{width:100%;height:100%;display:block}
 .md5-bj-slot .card-back img{display:block;width:100%;height:100%;object-fit:fill}
@@ -43,11 +45,11 @@
 .md5-bj-actions{
  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
  min-height:126px;padding:13px 14px calc(13px + env(safe-area-inset-bottom));
- background:var(--md-rail);border-top:2px solid var(--md-border);text-align:center
+ background:var(--md-game-action-rail);border-top:2px solid var(--md-game-trim);text-align:center
 }
 .md5-bj-instruction{font-weight:800;font-size:.82rem;color:#d6e0c7}
-.md5-bj-action-row{display:flex;justify-content:center;gap:12px;width:100%;max-width:450px}
-.md5-bj-action-row>.pixel-button{flex:1;min-height:48px;font-size:1rem}
+.md5-bj-action-row{display:flex;justify-content:center;align-items:center;gap:12px;width:100%;max-width:450px}
+.md5-bj-action-row>.pixel-button{flex:1;min-height:48px;font-size:1rem;font-family:var(--md-font-ui)}
 .md5-bj-result{display:flex;flex-direction:column;gap:3px}
 .md5-bj-result strong{color:#fff1bf;font:900 1.2rem var(--md-font-display)}
 .md5-bj-result span{color:#b9d0bd;font-size:.83rem}
@@ -60,7 +62,7 @@
  .md5-bj-score-pips{gap:7px}
  .md5-bj-score{flex-direction:column;gap:0;line-height:1.2}
  .md5-bj-frame{padding:0 7px 7px}
- .md5-bj-felt{min-height:450px;border-width:5px;border-radius:8px;padding:15px 9px}
+ .md5-bj-felt{min-height:450px;border-width:5px;border-radius:8px;padding:12px 9px;gap:8px}
  .md5-bj-dealer-head{gap:4px}
  .md5-bj-hand{min-height:113px;justify-content:safe center}
  .md5-bj-slot{width:clamp(58px,19vw,74px)}
@@ -69,7 +71,6 @@
 @media(max-height:670px){
  .md5-bj-felt{min-height:350px}
  .md5-bj-dealer-head .mochi-small{width:60px;height:60px}
- .md5-bj-table-mark{min-height:12px}
  .md5-bj-actions{min-height:104px}
 }
 @media(prefers-reduced-motion:reduce){.md5-blackjack *{transition:none!important;animation:none!important}}
@@ -85,7 +86,6 @@
  .md5-bj-dealer-head .mochi-small{width:73px;height:73px}
  .md5-bj-hand{min-height:0;padding-block:2px}
  .md5-bj-slot{width:clamp(60px,6.3vw,80px)}
- .md5-bj-table-mark{min-height:12px}
  .md5-bj-actions{flex:0 0 auto;min-height:96px;padding-block:7px calc(9px + env(safe-area-inset-bottom))}
  .md5-bj-action-row>.pixel-button{min-height:46px}
 }

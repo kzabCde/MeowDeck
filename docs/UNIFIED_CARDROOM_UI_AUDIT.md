@@ -57,3 +57,11 @@ Do not merge or deploy without explicit project-owner authorization.
 - Added compact/desktop E2E checks, keyboard navigation and production screenshots for Game Selection and Difficulty, including 320×568.
 - No changes to gameplay engines, AI decision policies, card sprites, saved data, animations or PWA.
 - Complete visual signoff still requires reviewing the generated screenshots and testing on real devices.
+
+## Phase 6 — Gameplay HUD and Table Polish
+- Crazy Eights now groups two visible score pairs with tabular numbers and moves the round indicator into the mobile HUD instead of overlaying the felt. Pause remains a 44×44 touch target.
+- Both live tables reference shared felt, trim, HUD and action-rail materials from `design-system/tokens.css`; Blackjack still uses its own dealer/player layout and outcome rules.
+- Blackjack hands now use balanced vertical distribution rather than the large dead center zone. Score bar, numeric total chips, buttons and rail framing match the card room materials.
+- Improved physical-card affordances, mouse/keyboard focus outlines and scroll indicators without altering card assets, AI, play action handlers or animations.
+- Functional tutorial, save warning, error and restart confirmation content is retained; generic decorative feedback is not added.
+- Source view-state, engine, persistence and save schemas are unchanged.

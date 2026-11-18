@@ -92,23 +92,24 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .gameplay-page.md4-cardroom{display:flex;flex-direction:column;height:100dvh;min-height:480px;overflow:hidden;
  background:repeating-linear-gradient(130deg,#0a2422 0 42px,#09201f 42px 84px)}
 .md4-cardroom .game-hud{flex:0 0 56px;min-height:0;display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;
- gap:clamp(9px,2vw,24px);padding:0 clamp(13px,2.7vw,44px);border:0;border-bottom:2px solid var(--md-border);background:var(--md-rail);box-shadow:0 4px 0 #061715;z-index:3}
+ gap:clamp(9px,2vw,24px);padding:0 clamp(13px,2.7vw,44px);border:0;border-bottom:2px solid var(--md-game-trim);background:var(--md-game-hud);box-shadow:0 4px 0 #061715;z-index:3}
 .md4-cardroom .hud-brand{font:1000 clamp(15px,1.5vw,20px) var(--md4-font-display);letter-spacing:-.08em;color:var(--md4-cream);white-space:nowrap}
 .md4-cardroom .hud-brand span{color:var(--md4-gold)}.md4-cardroom .hud-star{display:none}
-.md4-cardroom .hud-round{font:800 12px var(--md4-font-ui);letter-spacing:.13em;color:#99b7a6;white-space:nowrap}
-.md4-cardroom .hud-round strong{font-size:18px;letter-spacing:0;color:var(--md4-cream)}
-.md4-cardroom .hud-score{justify-self:end;display:flex;align-items:center;gap:10px;background:none;border:0;box-shadow:none;padding:0}
-.md4-cardroom .hud-score span{font:800 12px var(--md4-font-ui);letter-spacing:.06em;color:var(--md4-soft)}
-.md4-cardroom .hud-score strong{font:900 23px var(--md4-font-display);color:var(--md4-gold)}
-.md4-cardroom .hud-score .score-sep{font-size:18px;color:#668a78}
+.md4-cardroom .hud-round{font:800 12px var(--md-font-ui);letter-spacing:0;color:var(--md-muted);white-space:nowrap}
+.md4-cardroom .hud-round strong{font:900 18px var(--md-font-number);letter-spacing:0;color:var(--md-gold)}
+.md4-cardroom .hud-score{justify-self:end;display:flex;align-items:center;gap:13px;background:none;border:0;box-shadow:none;padding:0}
+.md4-cardroom .hud-score-pair{display:flex;flex-direction:row;align-items:center;gap:6px;white-space:nowrap}
+.md4-cardroom .hud-score .hud-score-label{font:800 .76rem/1.25 var(--md-font-ui);letter-spacing:0;color:var(--md-muted)}
+.md4-cardroom .hud-score-pair strong{font:900 1.2rem/1.2 var(--md-font-number);font-variant-numeric:tabular-nums;color:var(--md-gold)}
+.md4-cardroom .hud-score-divider{display:block;height:17px;width:1px;background:#71968477;flex:0 0 1px}
 .md4-cardroom .pause-btn{background:transparent;border:1px solid #72917d;box-shadow:3px 3px 0 #061514;
  min-height:37px;min-width:41px;padding:3px 8px;font:900 19px var(--md4-font-ui)}
 .md4-cardroom .pause-btn span{display:none}
 .md4-cardroom .table-frame{flex:1 1 0;min-height:0;width:100%;max-width:1550px;margin:auto;padding:12px clamp(8px,2vw,28px) 9px;display:flex}
 .md4-cardroom .game-table{position:relative;isolation:isolate;display:grid;grid-template-rows:minmax(140px,29%) minmax(125px,1fr) minmax(130px,27%);
  align-items:center;justify-content:initial;width:100%;height:100%;min-height:0;flex:1;padding:0 clamp(12px,3vw,47px);overflow:hidden;
- background:radial-gradient(ellipse at 50% 47%,var(--md-table-light) 0%,var(--md-table) 70%,#11382f 100%);
- border:7px solid var(--md-surface);border-radius:12px;outline:2px solid var(--md-border);
+ background:var(--md-game-felt);
+ border:7px solid var(--md-surface);border-radius:12px;outline:2px solid var(--md-game-trim);
  box-shadow:inset 0 0 0 3px #30715d,inset 0 0 0 8px #0b3930,0 9px 0 #071b19,0 13px 17px #04151088}
 .md4-cardroom .game-table:before{content:"";position:absolute;inset:13px;border:1px solid #90b99d4a;pointer-events:none;z-index:0;
  clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 9px,100% calc(100% - 9px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px),0 9px)}
@@ -129,10 +130,10 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .md4-cardroom .card-back-small{width:37px;max-height:56px;margin-left:-18px;filter:drop-shadow(2px 3px 0 #09251f)}
 .md4-cardroom .card-back-small:first-child{margin-left:0}
 .md4-cardroom .hand-count{font:800 12px var(--md4-font-ui);color:#b9d0b9;white-space:nowrap}
-.md4-cardroom .turn-banner{position:absolute;z-index:4;right:clamp(32px,5vw,80px);top:clamp(25px,6vh,47px);left:auto;
- display:flex;align-items:center;gap:8px;min-height:0;min-width:0;width:auto;margin:0;padding:8px 12px;
- border:1px solid #90885a;background:#0a342d94;border-radius:0;box-shadow:none;
- font:900 12px var(--md4-font-display);color:var(--md4-gold);letter-spacing:.08em}
+.md4-cardroom .turn-banner{position:absolute;z-index:4;right:clamp(22px,4vw,65px);top:clamp(14px,3vh,28px);left:auto;
+ display:flex;align-items:center;gap:7px;min-height:27px;min-width:0;width:auto;margin:0;padding:5px 9px;
+ border:1px solid #90885a;background:#092e28e6;border-radius:0;box-shadow:none;
+ font:850 12px/1.2 var(--md-font-ui);color:var(--md-gold);letter-spacing:0}
 .md4-cardroom .turn-banner strong{font:inherit;color:inherit}
 .md4-cardroom .md-turn-dot{height:8px;width:8px;border-radius:0;background:var(--md4-gold);box-shadow:0 0 0 3px #e8c17c24}
 .md4-cardroom .opponent-turn{border-color:#638579;color:#d3e0c8}
@@ -142,7 +143,8 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .md4-cardroom .draw-pile,.md4-cardroom .discard-pile{position:relative;width:clamp(80px,15vh,111px);height:auto;aspect-ratio:2/3;
  filter:drop-shadow(4px 6px 0 #09251e)}
 .md4-cardroom .draw-pile-action{display:block;width:100%;height:100%;border:0;padding:0;background:none;border-radius:0}
-.md4-cardroom .draw-pile-action:not(:disabled):hover{filter:brightness(1.09) drop-shadow(0 0 5px #f7db8b);transform:translateY(-3px)}
+.md4-cardroom .draw-pile-action:not(:disabled):hover{filter:brightness(1.09);transform:translateY(-3px)}
+.md4-cardroom .draw-pile-action:focus-visible{outline:3px solid var(--md-focus);outline-offset:5px}
 .md4-cardroom .draw-pile-action:disabled{opacity:1;filter:none;cursor:default}
 .md4-cardroom .draw-pile-action>.card-back{width:100%;height:100%}
 .md4-cardroom .discard-pile img{width:100%;height:100%;object-fit:contain}
@@ -159,22 +161,26 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  margin:0 auto;padding:0 7px;color:#c5d8c0;font:800 12px var(--md4-font-ui);letter-spacing:.16em}
 .md4-cardroom .hand-title .hand-count{color:var(--md4-gold)}
 .md4-cardroom .player-hand{width:100%;min-height:0;display:flex;align-items:flex-end;justify-content:safe center;
- gap:clamp(3px,.7vw,9px);padding:12px 7px 4px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
-.md4-cardroom .player-hand::-webkit-scrollbar{display:none}
+ gap:clamp(3px,.7vw,9px);padding:14px 7px 8px;overflow-x:auto;overflow-y:hidden;
+ scrollbar-width:thin;scrollbar-color:#bda06f transparent;scroll-snap-type:x proximity}
+.md4-cardroom .player-hand::-webkit-scrollbar{height:4px}
+.md4-cardroom .player-hand::-webkit-scrollbar-thumb{background:#bda06f}
+.md4-cardroom .player-hand .card-tile{scroll-snap-align:center}
 .md4-cardroom .card-tile{position:relative;display:block;flex:0 0 auto;width:clamp(62px,12vh,101px);height:auto;aspect-ratio:2/3;
  border:0;border-radius:0;background:none;padding:0;box-shadow:0 3px 0 #072722;
  transition:transform .12s cubic-bezier(.22,1.4,.26,1),filter .12s}
 .md4-cardroom .card-tile.is-playable{box-shadow:0 3px 0 #cbac6c}
-.md4-cardroom .card-tile.is-playable:hover,.md4-cardroom .card-tile.is-playable:focus-visible{transform:translateY(-9px);z-index:4;filter:drop-shadow(0 0 5px #f9d588)}
-.md4-cardroom .card-tile.is-selected{transform:translateY(-14px) scale(1.035)!important;z-index:5;
- filter:drop-shadow(0 0 5px #f7d98a);box-shadow:0 3px 0 #f5dfab}
+.md4-cardroom .card-tile.is-playable:hover,.md4-cardroom .card-tile.is-playable:focus-visible{transform:translateY(-9px);z-index:4;filter:drop-shadow(0 3px 0 #f9d588)}
+.md4-cardroom .card-tile:focus-visible{outline:3px solid var(--md-focus);outline-offset:2px}
+.md4-cardroom .card-tile.is-selected{transform:translateY(-12px) scale(1.02)!important;z-index:5;
+ filter:drop-shadow(0 3px 0 #f7d98a);box-shadow:0 0 0 3px var(--md-gold),0 3px 0 #f5dfab}
 .md4-cardroom .card-tile.is-disabled{opacity:.9;filter:saturate(.85) brightness(.98)}
 .md4-cardroom .card-tile.is-playable:not(.is-selected){filter:drop-shadow(0 3px 0 #e4bf7e66)}
 .md4-cardroom .playable-mark{display:none}
 .md4-cardroom .scroll-hint{display:none}
 .md4-cardroom .action-footer{flex:0 0 70px;min-height:0;display:flex;flex-direction:row;align-items:center;justify-content:space-between;
  gap:14px;padding:6px clamp(14px,3.5vw,55px) max(9px,env(safe-area-inset-bottom));
- border:0;border-top:2px solid var(--md-border);background:var(--md-rail);box-shadow:none}
+ border:0;border-top:2px solid var(--md-game-trim);background:var(--md-game-action-rail);box-shadow:none}
 .md4-cardroom .action-status{min-height:0;max-width:44%;color:#d1dcc9;font-size:.76rem}
 .md4-cardroom .action-status:empty{display:none}
 .md4-cardroom .action-buttons{display:flex;gap:12px;justify-content:flex-end;margin-left:auto}
@@ -200,11 +206,19 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .result-stats{background:#173f35;border-color:#6c8875}.p4-status.error{background:#49302d;border-color:var(--md4-coral)}
 
 @media(max-width:720px){
- .md4-cardroom .game-hud{flex-basis:47px;grid-template-columns:1fr auto auto;gap:7px;padding:0 9px}
- .md4-cardroom .hud-brand{font-size:14px} .md4-cardroom .hud-round{position:absolute;z-index:6;top:49px;left:20px;font-size:11px;background:#11382fa0;padding:5px 7px}
- .md4-cardroom .hud-round strong{font-size:12px}
- .md4-cardroom .hud-score{gap:5px}.md4-cardroom .hud-score span{font-size:11px}.md4-cardroom .hud-score strong{font-size:17px}
- .md4-cardroom .pause-btn{min-height:35px;min-width:35px;font-size:17px;padding:3px 7px}
+ .md4-cardroom .game-hud{flex-basis:68px;min-height:68px;
+  grid-template-columns:auto minmax(0,1fr) 44px;grid-template-rows:29px 23px;
+  gap:1px 7px;padding:3px 9px}
+ .md4-cardroom .hud-brand{grid-column:1;grid-row:1;align-self:center;font-size:14px}
+ .md4-cardroom .hud-round{position:static;grid-column:1;grid-row:2;align-self:center;
+  font-size:11px;background:transparent;padding:0}
+ .md4-cardroom .hud-round strong{font-size:14px}
+ .md4-cardroom .hud-score{grid-column:2;grid-row:1/3;justify-self:end;gap:9px}
+ .md4-cardroom .hud-score-pair{flex-direction:column;gap:1px;min-width:29px}
+ .md4-cardroom .hud-score .hud-score-label{font-size:10px}
+ .md4-cardroom .hud-score-pair strong{font-size:17px}
+ .md4-cardroom .hud-score-divider{height:20px}
+ .md4-cardroom .pause-btn{grid-column:3;grid-row:1/3;align-self:center;min-height:44px;min-width:44px;font-size:17px;padding:7px 9px}
  .md4-cardroom .table-frame{padding:7px 5px 5px}
  .md4-cardroom .game-table{grid-template-rows:minmax(128px,30%) minmax(128px,1fr) minmax(120px,29%);
   padding:0 8px;border-width:4px;border-radius:8px}
@@ -216,7 +230,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .opponent-card-fan{padding-left:14px;min-height:39px}
  .md4-cardroom .card-back-small{width:26px;max-height:39px;margin-left:-13px}
  .md4-cardroom .opponent-cards{gap:6px}.md4-cardroom .hand-count{font-size:11px}
- .md4-cardroom .turn-banner{top:17px;right:10px;font-size:11px;padding:6px 8px;gap:5px}
+ .md4-cardroom .turn-banner{top:10px;right:9px;font-size:11px;padding:4px 6px;gap:5px}
  .md4-cardroom .table-center{gap:clamp(7px,3vw,20px)}
  .md4-cardroom .draw-pile,.md4-cardroom .discard-pile{width:clamp(55px,10.8vh,82px)}
  .md4-cardroom .pile-group{gap:6px}.md4-cardroom .pile-label{font-size:11px}
@@ -241,7 +255,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .card-tile{margin-left:calc(-1 * clamp(15px,5.5vw,23px))}
 }
 @media(max-height:650px){
- .md4-cardroom .game-hud{flex-basis:41px}
+ .md4-cardroom .game-hud{flex-basis:64px;min-height:64px}
  .md4-cardroom .game-table{grid-template-rows:minmax(97px,29%) minmax(94px,1fr) minmax(100px,31%)}
  .md4-cardroom .opponent-avatar,.md4-cardroom .opponent-avatar .mochi-small{width:clamp(65px,11vh,82px);height:clamp(65px,11vh,82px)}
  .md4-cardroom .opponent-card-fan{min-height:30px}

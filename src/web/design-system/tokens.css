@@ -8,6 +8,12 @@
  --md-font-ui:"Noto Sans Thai","Thonburi",Tahoma,system-ui,sans-serif;
  --md-font-display:"Courier New","Noto Sans Thai",Tahoma,monospace;
  --md-font-number:ui-monospace,"Cascadia Mono",Consolas,monospace;
+ /* Phase 6: physically consistent HUD, felt, frame and action-rail vocabulary. */
+ --md-game-hud:var(--md-rail);
+ --md-game-action-rail:var(--md-rail);
+ --md-game-trim:var(--md-border);
+ --md-game-felt:radial-gradient(ellipse at 50% 47%,var(--md-table-light) 0%,var(--md-table) 70%,#11382f 100%);
+ --md-game-card-shadow:3px 4px 0 #0c2824;
  --md4-ink:var(--md-bg);--md4-night:var(--md-night);
  --md4-felt:var(--md-table);--md4-felt-lit:var(--md-table-light);
  --md4-cream:var(--md-cream);--md4-gold:var(--md-gold);
