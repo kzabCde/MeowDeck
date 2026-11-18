@@ -112,3 +112,72 @@ test('title scene play and auxiliary controls remain functional after redesign',
   await page.getByTestId('play-now').click();
   await expect(page.getByTestId('game-selection')).toBeVisible();
 });
+
+// Phase 5: both physical table choices must be visible, fully tappable,
+// display actual pixel-card assets and leave no horizontal overflow.
+for(const [width,height] of [[320,568],[390,844],[430,932],[768,1024],[1280,800]] as const){
+  test(`game selection is accessible at ${width}x${height}`,async({page})=>{
+    await page.setViewportSize({width,height});
+    await page.goto('/?qaSeed=62&fastAI=1');
+    await page.getByTestId('play-now').click();
+    await expect(page.getByTestId('game-selection')).toBeVisible();
+    const choices=page.getByTestId('game-choice-list').locator('button');
+    await expect(choices).toHaveCount(2);
+    for(const button of await choices.all()){
+      await expect(button).toBeVisible();
+      const box=await button.boundingBox();
+      expect(box?.width).toBeGreaterThanOrEqual(100);
+      expect(box?.height).toBeGreaterThanOrEqual(44);
+      expect(box?.y??Infinity).toBeGreaterThanOrEqual(0);
+      expect((box?.y??Infinity)+(box?.height??0)).toBeLessThanOrEqual(height+1);
+      const art=button.locator('img');
+      await expect(art).toHaveCount(3);
+      await expect.poll(()=>art.evaluateAll(imgs=>imgs.every(el=>(el as HTMLImageElement).naturalWidth>0))).toBe(true);
+    }
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
+  });
+}
+
+for(const [width,height] of [[320,568],[390,844],[1280,800]] as const){
+  test(`difficulty grid stays playable at ${width}x${height}`,async({page})=>{
+    await page.setViewportSize({width,height});
+    await page.goto('/?qaSeed=62&fastAI=1');
+    await page.getByTestId('play-now').click();
+    await page.getByTestId('select-crazy-eights').click();
+    await expect(page.getByTestId('difficulty-selection')).toBeVisible();
+    await expect(page.getByTestId('difficulty-selection').getByTestId('mochi')).toBeVisible();
+    const modes=page.locator('.md4-mode-strip button');
+    await expect(modes).toHaveCount(4);
+    for(const button of await modes.all()){
+      const bounds=await button.boundingBox();
+      expect(bounds?.height).toBeGreaterThanOrEqual(44);
+    }
+    const start=page.getByTestId('start-match');
+    const bounds=await start.boundingBox();
+    expect(bounds?.height).toBeGreaterThanOrEqual(44);
+    expect((bounds?.y??Infinity)+(bounds?.height??0)).toBeLessThanOrEqual(height+1);
+    const desc=page.locator('#difficulty-description');
+    const before=await desc.innerText();
+    await page.getByTestId('difficulty-hard').click();
+    await expect(page.getByTestId('difficulty-hard')).toHaveAttribute('aria-pressed','true');
+    await expect(page.getByTestId('difficulty-practice')).toHaveAttribute('aria-pressed','false');
+    expect(await desc.innerText()).not.toBe(before);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
+    await start.click();
+    await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+  });
+}
+
+test('keyboard choice routes Blackjack directly and Crazy Eights through opponent selection',async({page})=>{
+  await page.goto('/?qaSeed=62&fastAI=1');
+  await page.getByTestId('play-now').click();
+  await page.getByTestId('select-blackjack').focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByTestId('blackjack-screen')).toBeVisible();
+  await page.getByTestId('blackjack-back').click();
+  await page.getByTestId('select-crazy-eights').click();
+  await expect(page.getByTestId('difficulty-selection')).toBeVisible();
+  await page.getByTestId('difficulty-hard').focus();
+  await page.keyboard.press('Space');
+  await expect(page.getByTestId('difficulty-hard')).toHaveAttribute('aria-pressed','true');
+});

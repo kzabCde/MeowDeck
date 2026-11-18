@@ -48,3 +48,12 @@ Do not merge or deploy without explicit project-owner authorization.
 - Moved the title-specific responsive rules next to the title scene's authoritative CSS declarations rather than adding new override layers.
 - Added six viewport E2E checks for visible Play, the Mochi image, card loading, 44px action size and horizontal overflow, plus direct navigation checks.
 - Manual screenshot-based composition review, actual Thai glyph quality, and real iOS/Android PWA testing remain required for signoff.
+
+## Phase 5 — Game Selection & Difficulty Redesign
+- Consolidated both choice screens into `src/web/selection.css`, removing unused `md4-game-token` styles and legacy game-choice declarations in `blackjack.css`. No extra override layer was added over the old styles.
+- Game Selection now offers two equally tappable in-world felt-and-wood tables with the original 52-card sprites, an emphasized hover/focus state and a vertically balanced responsive composition.
+- Difficulty selection keeps the real Practice/Easy/Normal/Hard opponents, displays Mochi beside a 2×2 choice grid on desktop and above it on mobile. Active state is communicated through both a gold indicator and `aria-pressed`.
+- Removed the decorative `MEOWDECK / 01` numbering. Both Thai/English copy and the existing game flow remain intact.
+- Added compact/desktop E2E checks, keyboard navigation and production screenshots for Game Selection and Difficulty, including 320×568.
+- No changes to gameplay engines, AI decision policies, card sprites, saved data, animations or PWA.
+- Complete visual signoff still requires reviewing the generated screenshots and testing on real devices.

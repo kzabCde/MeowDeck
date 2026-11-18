@@ -45,11 +45,26 @@ test('Next.js production mobile mount has no horizontal overflow', async ({ page
   await page.getByTestId('play-now').click();
   await expect(page.getByTestId('game-selection')).toBeVisible();
   await page.screenshot({ path: 'test-results/visual-review/game-select-mobile-390x844.png', animations: 'disabled' });
+  for(const [width,height] of [[320,568],[430,932],[1280,800]] as const){
+    await page.setViewportSize({width,height});
+    await expect(page.getByTestId('select-crazy-eights')).toBeVisible();
+    await page.screenshot({
+      path: `test-results/visual-review/game-select-${width}x${height}.png`,animations:'disabled'
+    });
+  }
+  await page.setViewportSize({width:390,height:844});
   await page.getByTestId('select-crazy-eights').click();
   await expect(page.getByTestId('difficulty-selection')).toBeVisible();
   
   await expect(page.getByTestId('difficulty-selection')).toBeVisible();
   await page.screenshot({ path: 'test-results/visual-review/difficulty-mobile-390x844.png', animations: 'disabled' });
+  for(const [width,height] of [[320,568],[430,932]] as const){
+    await page.setViewportSize({width,height});
+    await expect(page.getByTestId('start-match')).toBeVisible();
+    await page.screenshot({
+      path: `test-results/visual-review/difficulty-${width}x${height}.png`,animations:'disabled'
+    });
+  }
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.screenshot({ path: 'test-results/visual-review/difficulty-desktop-1280x720.png', animations: 'disabled' });
   await page.getByTestId('start-match').click();
