@@ -5,6 +5,7 @@ import '../web/design-system/tokens.css';
 import '../web/styles.css';
 import '../web/art-direction.css';
 import '../web/blackjack.css';
+import '../web/selection.css';
 
 export const metadata: Metadata = {
   title: 'MeowDeck',

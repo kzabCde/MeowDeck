@@ -88,38 +88,6 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 @media(prefers-reduced-motion:reduce){.md4-title-choices .md4-start{transition:none}}
 .reduce-motion .md4-title-choices .md4-start{transition:none}
 
-/* Flow screens: short, unmistakably playable game decisions. */
-.md4-selection-page{min-height:100dvh;max-width:100%;padding:0;display:flex;flex-direction:column;position:relative;
- background:radial-gradient(ellipse at 50% 52%,#17483d,var(--md-night) 64%,var(--md-bg))}
-.md4-section-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #6a8c7540;
- padding:15px clamp(20px,4vw,50px);color:#9cbaa8;font:800 .7rem var(--md4-font-ui);letter-spacing:.14em}
-.md4-selection-scene,.md4-difficulty-scene{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
- padding:24px 18px 40px;gap:18px}
-.md4-scene-head{text-align:center}.md4-scene-head h1{font:900 clamp(1.5rem,4vw,2.3rem)/1.25 var(--md-font-display);letter-spacing:-.035em;margin:4px 0 10px}
-.md4-game-token{appearance:none;display:flex;align-items:center;gap:clamp(15px,5vw,65px);text-align:left;
- width:min(640px,94vw);min-height:255px;padding:25px clamp(16px,4vw,35px);
- border:3px solid #ba9660;border-bottom-width:8px;border-radius:2px;background:#1c483d;color:var(--md4-cream);
- box-shadow:inset 0 0 0 6px #265d4d,0 12px 0 #071d1b;transition:transform 130ms,box-shadow 130ms}
-.md4-game-token:hover{transform:translateY(-4px);box-shadow:inset 0 0 0 6px #317059,0 16px 0 #071d1b}
-.md4-token-art{display:flex;align-items:center;justify-content:center;flex:0 0 45%;min-width:0;padding:12px}
-.md4-token-art img{height:clamp(125px,21vh,180px);max-width:none;filter:drop-shadow(4px 7px 0 #102c25)}
-.md4-token-art img:nth-child(1){transform:translateX(18px) rotate(-14deg);z-index:1}
-.md4-token-art img:nth-child(2){transform:translateY(-13px);z-index:3}
-.md4-token-art img:nth-child(3){transform:translateX(-19px) rotate(13deg);z-index:2}
-.md4-token-info{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
-.md4-token-info strong{font:950 1.7rem var(--md4-font-display)}
-.md4-token-info small{color:#bad1ba;line-height:1.5;font-size:.87rem}
-.md4-token-info em{color:var(--md4-gold);font-style:normal;font-weight:850;letter-spacing:.03em}
-.md4-difficulty-scene{gap:12px}.md4-difficulty-mochi{width:clamp(148px,24vh,218px);height:clamp(148px,24vh,218px);display:grid;place-items:center;
- border-bottom:3px solid #987b4d;border-radius:50% 50% 5% 5%;background:radial-gradient(circle at 50% 70%,#77996327,transparent 65%)}
-.md4-difficulty-mochi .mochi-large{width:100%;height:100%}
-.md4-mode-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;width:min(680px,95vw);margin-top:5px}
-.md4-mode{min-height:62px;border:2px solid #5a7565;border-bottom:5px solid #18342c;background:#21453b;color:#c6d7c7;
- padding:8px 5px;font-size:.92rem;font-weight:850;cursor:pointer;transition:transform 120ms}
-.md4-mode:hover{transform:translateY(-3px)}.md4-mode.is-active{border-color:var(--md4-gold);background:#365c45;color:#ffedb7;box-shadow:inset 0 0 0 2px #e8c17c31}
-.md4-mode-description{text-align:center;color:#c0d1c0;max-width:540px;min-height:40px;margin:3px 0 5px;font-size:.87rem;line-height:1.55}
-.md4-difficulty-start{min-width:210px;display:flex;justify-content:space-between;align-items:center;font-size:1rem}
-
 /* Live match: all available space belongs to cards, Mochi and the felt. */
 .gameplay-page.md4-cardroom{display:flex;flex-direction:column;height:100dvh;min-height:480px;overflow:hidden;
  background:repeating-linear-gradient(130deg,#0a2422 0 42px,#09201f 42px 84px)}
@@ -232,10 +200,6 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .result-stats{background:#173f35;border-color:#6c8875}.p4-status.error{background:#49302d;border-color:var(--md4-coral)}
 
 @media(max-width:720px){
- .md4-game-token{flex-direction:column;gap:6px;padding:18px;min-height:0}
- .md4-token-art{flex-basis:auto}.md4-token-art img{height:clamp(100px,17vh,139px)}
- .md4-token-info{align-items:center;text-align:center;gap:7px}
- .md4-game-token .md4-token-info strong{font-size:1.45rem}
  .md4-cardroom .game-hud{flex-basis:47px;grid-template-columns:1fr auto auto;gap:7px;padding:0 9px}
  .md4-cardroom .hud-brand{font-size:14px} .md4-cardroom .hud-round{position:absolute;z-index:6;top:49px;left:20px;font-size:11px;background:#11382fa0;padding:5px 7px}
  .md4-cardroom .hud-round strong{font-size:12px}
@@ -275,7 +239,6 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .table-center{gap:6px}
  .md4-cardroom .active-suit span{font-size:10px}
  .md4-cardroom .card-tile{margin-left:calc(-1 * clamp(15px,5.5vw,23px))}
- .md4-mode{font-size:.86rem;padding:7px 2px}
 }
 @media(max-height:650px){
  .md4-cardroom .game-hud{flex-basis:41px}
@@ -290,9 +253,9 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .opponent-avatar .mochi-small{transform:scale(1.13);transform-origin:center bottom}
 }
 @media(prefers-reduced-motion:reduce){
- .md4-cardroom .card-tile,.md4-title-card,.md4-game-token,.md4-mode,.pixel-button{transition:none!important}
+  .md4-cardroom .card-tile,.md4-title-card,.pixel-button{transition:none!important}
 }
-.reduce-motion .md4-cardroom .card-tile,.reduce-motion .md4-game-token,.reduce-motion .pixel-button{transition:none!important}
+.reduce-motion .md4-cardroom .card-tile,.reduce-motion .pixel-button{transition:none!important}
 /* Portrait cardrooms have room for larger physical art.
    Short screens retain the existing max-height reductions below. */
 @media (max-width:720px) and (min-height:720px){
@@ -300,39 +263,6 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .opponent-avatar .mochi-small{width:clamp(98px,15vh,126px);height:clamp(98px,15vh,126px)}
  .md4-cardroom .draw-pile,.md4-cardroom .discard-pile{width:clamp(80px,12vh,96px)}
  .md4-cardroom .player-area{align-self:center;padding-bottom:0}
-}
-
-/* Game selection is an illustrated choice, never a boxed product tile. */
-.md4-selection-page .md4-game-token{
- position:relative;flex-direction:column;justify-content:center;align-items:center;
- width:min(570px,95vw);min-height:300px;gap:12px;padding:20px 18px 30px;
- background:transparent;border:0;border-radius:0;box-shadow:none;text-align:center
-}
-.md4-selection-page .md4-game-token:hover{
- background:transparent;border:0;box-shadow:none;transform:translateY(-5px)
-}
-.md4-selection-page .md4-game-token:focus-visible{outline:2px solid var(--md4-gold);outline-offset:7px}
-.md4-selection-page .md4-token-art{
- position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
- min-height:205px;width:100%;padding:11px;isolation:isolate
-}
-.md4-selection-page .md4-token-art:before{
- content:"";position:absolute;z-index:-1;width:235px;height:190px;border:1px dashed #a6b88e5c;
- border-radius:50%;background:radial-gradient(ellipse at center,#4e856b29,transparent 70%)
-}
-.md4-selection-page .md4-token-art img{height:clamp(130px,21vh,175px)}
-.md4-selection-page .md4-token-info{align-items:center;text-align:center;gap:12px}
-.md4-selection-page .md4-token-info strong{font-size:clamp(1.7rem,4vw,2.15rem);line-height:1.1}
-.md4-selection-page .md4-token-info small{font-size:.93rem;max-width:350px}
-.md4-selection-page .md4-token-info em{
- display:inline-block;padding:10px 16px;color:var(--md4-gold);background:#204d3e;
- border-bottom:3px solid #b58e58;font-size:.9rem;font-weight:850
-}
-@media(max-width:720px){
- .md4-selection-page .md4-game-token{min-height:0;gap:7px;padding:11px 15px 23px}
- .md4-selection-page .md4-token-art{min-height:182px}
- .md4-selection-page .md4-token-art:before{height:170px;width:200px}
- .md4-selection-page .md4-token-art img{height:clamp(109px,16.5vh,143px)}
 }
 
 /* P4.6: contextual guidance in the action rail; never obscure interactive cards. */
