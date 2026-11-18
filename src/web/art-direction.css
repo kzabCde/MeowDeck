@@ -388,3 +388,23 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 }
 .reduce-motion .md4-cardroom .md-card-impact{display:none}
 .reduce-motion .md4-cardroom .player-hand.md-hand-drawn .card-tile:last-child{animation:none}
+
+/* P4.8 release QA: essential errors remain readable on mobile; functional touch targets. */
+.md4-cardroom .pause-btn{min-width:44px;min-height:44px}
+.md4-text-button{min-height:44px}
+.md4-cardroom .action-footer.has-error .action-status{display:block;max-width:min(50%,480px)}
+@media(max-width:720px){
+ .md4-cardroom .pause-btn{min-height:44px;min-width:44px;padding:7px 9px}
+ .md4-cardroom .action-footer.has-error{flex-basis:auto;min-height:90px;gap:5px}
+ .md4-cardroom .action-footer.has-error .action-status{width:100%;max-width:none;font-size:12px}
+}
+/* A compact landscape/zoomed CSS viewport may scroll vertically, never hide game actions.
+   Portrait layout and original P0 card dimensions remain unchanged. */
+@media(max-height:479px){
+ .md4-title-screen{height:auto;min-height:480px;overflow-y:auto}
+ .md4-selection-page{height:auto;min-height:480px}
+ .gameplay-page.md4-cardroom{height:auto;min-height:100dvh;overflow:visible}
+ .md4-cardroom .table-frame{flex:none;height:415px;min-height:415px}
+ .md4-cardroom .game-table{height:100%;min-height:0}
+ .md4-cardroom .action-footer{flex:none;position:relative;bottom:auto}
+}

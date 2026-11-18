@@ -3,7 +3,7 @@
   "version": "0.4.0",
   "private": true,
   "type": "module",
-  "description": "MeowDeck \u2014 offline-first Crazy Eights Next.js PWA",
+  "description": "MeowDeck — offline-first Crazy Eights Next.js PWA",
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack && node scripts/build-offline.mjs",
@@ -18,7 +18,8 @@
     "validate:assets": "python scripts/validate_assets.py",
     "benchmark:ai": "npm run build:engine && node examples/benchmark-ai.mjs 1000",
     "test:offline": "playwright test --config=playwright.production.config.ts e2e/offline.spec.ts",
-    "build:p4": "tsc -p tsconfig.p4-test.json"
+    "build:p4": "tsc -p tsconfig.p4-test.json",
+    "test:e2e:cross-browser": "playwright test --config=playwright.cross-browser.config.ts"
   },
   "dependencies": {
     "next": "16.4.6",

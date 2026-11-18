@@ -1,5 +1,21 @@
 name: Validate MeowDeck Next.js Gameplay
 on:
+  push:
+    branches: ['main']
+    paths:
+      - 'src/app/**'
+      - 'src/web/**'
+      - 'public/icons/**'
+      - 'scripts/build-offline.mjs'
+      - 'scripts/sw.template.js'
+      - 'src/games/**'
+      - 'e2e/**'
+      - 'next.config.*'
+      - 'tsconfig*.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'playwright*.ts'
+      - '.github/workflows/validate-ui.yml'
   pull_request:
     paths:
       - 'src/app/**'
@@ -46,8 +62,8 @@ jobs:
           npm run validate:assets
       - name: Build Next.js production app
         run: npm run build
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
       - name: Verify Playwright development/production suite separation
         run: |
           npx playwright test --config=playwright.config.ts --list > /tmp/meowdeck-dev-tests.txt
@@ -61,6 +77,8 @@ jobs:
           grep -q 'production.spec.ts' /tmp/meowdeck-prod-tests.txt
       - name: Run seeded development E2E
         run: npm run test:e2e
+      - name: Run focused cross-browser gameplay smoke
+        run: npm run test:e2e:cross-browser
       - name: Run production build E2E
         run: npm run test:e2e:production
       - name: Upload production UI screenshots
