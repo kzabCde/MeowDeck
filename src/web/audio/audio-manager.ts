@@ -52,6 +52,8 @@ export class GameAudio {
   private sequenceOrder:string[]=[];
   private music:HTMLAudioElement|null=null;
   private musicPending=false;
+  private musicPlaying=false;
+  private musicRequest=0;
   private visible=true;
   constructor(settings:GameSettingsV1){this.settings=settings;}
   setSettings(settings:GameSettingsV1){
@@ -113,16 +115,27 @@ export class GameAudio {
       this.music=audio;
     }
     const audio=this.music;
-    if(!audio.paused||this.musicPending)return;
+    if(!audio.paused||this.musicPending||this.musicPlaying)return;
+    const request=++this.musicRequest;
     this.musicPending=true;
     // Browser autoplay restrictions or missing assets must never break gameplay.
     try{
-      void audio.play().then(()=>{this.musicPending=false;}).catch(()=>{this.musicPending=false;});
-    }catch{this.musicPending=false;}
+      void audio.play().then(()=>{
+        if(request!==this.musicRequest)return;
+        this.musicPending=false;
+        this.musicPlaying=true;
+      }).catch(()=>{
+        if(request!==this.musicRequest)return;
+        this.musicPending=false;
+        this.musicPlaying=false;
+      });
+    }catch{this.musicPending=false;this.musicPlaying=false;}
   }
   private stopMusic(){
+    this.musicRequest++;
     this.music?.pause(); // Preserve playback position when muted or tab-hidden.
     this.musicPending=false;
+    this.musicPlaying=false;
   }
   dispose(){
     this.stopMusic();
