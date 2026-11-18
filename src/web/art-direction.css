@@ -320,3 +320,8 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 @media(max-height:650px){
  .md4-cardroom .opponent-avatar .mochi-small{transform:scale(1.13);transform-origin:center bottom}
 }
+
+/* Physical deck remains visible even when a draw is not legal; never wash out the art. */
+.md4-cardroom .draw-pile-action:disabled{opacity:1;filter:none;cursor:default}
+.md4-cardroom .card-tile.is-disabled{opacity:.9;filter:saturate(.85) brightness(.98)}
+.md4-cardroom .card-tile.is-playable:not(.is-selected){filter:drop-shadow(0 3px 0 #e4bf7e66)}
