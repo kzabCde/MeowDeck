@@ -27,8 +27,9 @@ function qaRandom():RandomInt{
    return (value>>>0)%max;
  };
 }
-function Face({card}:{card:Card}){
- return <img className="pixel-art md5-bj-card-face" draggable={false} alt={`${card.rank} ${card.suit}`} src={cardImage(card.id,true)}/>;
+const suitLabels={S:'spades',H:'hearts',D:'diamonds',C:'clubs'} as const;
+function Face({card,t}:{card:Card;t:T}){
+ return <img className="pixel-art md5-bj-card-face" draggable={false} alt={`${card.rank} ${t(suitLabels[card.suit])}`} src={cardImage(card.id,true)}/>;
 }
 function Score({label,count,testId}:{label:string;count:number;testId:string}){
  return <span className="md5-bj-score"><span>{label}</span><strong data-testid={testId}>{count}</strong></span>;
@@ -131,7 +132,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
          </div>
          <div className="md5-bj-hand" data-testid="blackjack-dealer-hand">
            {view.dealerCards.map((card,index)=><span key={card?.id??'hole'} className="md5-bj-slot">
-             {card?<Face card={card}/>:<CardBack label={t('bjHiddenCard')}/>}
+             {card?<Face card={card} t={t}/>:<CardBack label={t('bjHiddenCard')}/>}
            </span>)}
          </div>
        </section>
@@ -142,7 +143,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
            <strong data-testid="blackjack-player-total">{view.playerTotal}</strong>
          </div>
          <div className="md5-bj-hand" data-testid="blackjack-player-hand">
-           {view.player.map(card=><span key={card.id} className="md5-bj-slot"><Face card={card}/></span>)}
+           {view.player.map(card=><span key={card.id} className="md5-bj-slot"><Face card={card} t={t}/></span>)}
          </div>
        </section>
      </div>

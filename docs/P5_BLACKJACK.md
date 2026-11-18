@@ -28,3 +28,7 @@ This P5 branch is stacked on P4.9 PR #13, which is not in main. P5 must not be m
 Engine unit tests, 52-card conservation, natural hands, Ace/Soft 17, Dealer/Player Bust, legal/stale actions, saved-round recovery, TH/EN UI, responsive 320px/mobile, PWA production, and no Crazy Eights regressions.
 
 **Physical-device and art/audio sign-off remain manual.**
+
+## Save and statistics boundary
+
+P5 tracks Blackjack results in its separate versioned browser-local saved round. It does not silently insert Blackjack outcomes into the Crazy Eights-only IndexedDB match history or existing global Statistics panel. Reopening Blackjack through the game catalog restores its last validated round. This first P5 MVP does not yet offer per-game historical Blackjack analytics or robust atomic cross-tab IndexedDB locking. Those are explicit post-MVP improvements, not claimed as implemented.
