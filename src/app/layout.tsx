@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
+import '../web/design-system/tokens.css';
 import '../web/styles.css';
 import '../web/art-direction.css';
 import '../web/blackjack.css';

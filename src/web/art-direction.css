@@ -1,33 +1,28 @@
 /* MeowDeck V4 — single-source art direction.
    The table is a game scene, not a product dashboard. Real card/Mochi sprites remain untouched. */
-:root{
- --md4-ink:#061c1b;--md4-night:#0b2323;--md4-felt:#194b40;--md4-felt-lit:#246557;
- --md4-cream:#f8ecd3;--md4-gold:#e8c17c;--md4-soft:#b0cbb4;--md4-coral:#ed817c;
- /* Typography is intentional: Thai-safe interface and readable retro display. */
- --md4-font-ui:"Noto Sans Thai","Thonburi",Tahoma,system-ui,sans-serif;
- --md4-font-display:"Trebuchet MS","Noto Sans Thai",Tahoma,system-ui,sans-serif;
- font-family:var(--md4-font-ui);
- color:var(--md4-cream);background:var(--md4-ink);
-}
+:root{font-family:var(--md-font-ui);color:var(--md-cream);background:var(--md-bg)}
 html,body{min-width:320px}
 .meowdeck-app{background:#091f1e;color:var(--md4-cream)}
 .pixel-art,.card-image,.mochi-frame{image-rendering:pixelated}
-.pixel-button{border:2px solid #816647;border-radius:2px;background:#234a3e;color:var(--md4-cream);
- box-shadow:inset 0 2px #fff3d70d,0 4px #031613;min-height:44px;padding:9px 18px;
- font-family:inherit;font-size:.87rem;font-weight:800;letter-spacing:.025em;text-shadow:none;transition:transform 120ms ease,box-shadow 120ms ease,background 120ms ease}
-.pixel-button:not(:disabled):hover{filter:none;background:#335c4d;transform:translateY(-2px);box-shadow:inset 0 2px #ffffff1e,0 6px #031613}
-.pixel-button:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px #031613}
-.button-primary{background:var(--md4-gold);border-color:#ffedbf;color:#2e271e;box-shadow:inset 0 2px #ffffff62,0 5px #83603b}
-.button-primary:not(:disabled):hover{background:#f9d895;box-shadow:inset 0 2px #ffffff70,0 7px #83603b}
-.button-cream{background:#305246;border-color:#769783;color:var(--md4-cream);box-shadow:0 4px #10251f}
-.button-secondary{background:#244439;border-color:#81917d}
-button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #f6d88d;outline-offset:3px}
+/* Shared buttons: one readable pixel-step control system for every game mode. */
+.pixel-button{appearance:none;min-height:44px;padding:9px 18px;border:2px solid var(--md-border);
+ border-radius:var(--md-radius);background:var(--md-surface);color:var(--md-cream);
+ box-shadow:var(--md-step-shadow);font:800 .9rem/1.25 var(--md-font-ui);letter-spacing:0;
+ text-shadow:none;cursor:pointer;transition:transform 120ms steps(2,end),box-shadow 120ms steps(2,end),background-color 120ms}
+.pixel-button:not(:disabled):hover{background:#28594b;transform:translateY(-2px);box-shadow:0 6px 0 #041815}
+.pixel-button:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 #041815}
+.pixel-button:disabled{cursor:not-allowed;opacity:.64}
+.button-primary{background:var(--md-gold);border-color:#ffecb8;color:#2e271e;box-shadow:0 4px 0 #805735}
+.button-primary:not(:disabled):hover{background:#f5d596;box-shadow:0 6px 0 #805735}
+.button-primary:not(:disabled):active{box-shadow:0 1px 0 #805735}
+.button-cream,.button-secondary{background:#23483c;border-color:#799b84;color:var(--md-cream);box-shadow:var(--md-step-shadow)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--md-focus);outline-offset:3px}
 .suit-hearts,.suit-diamonds{color:var(--md4-coral)!important}
 .suit-spades,.suit-clubs{color:var(--md4-cream)!important}
 
 /* Title scene: a physical little card room, with a poster-like composition. */
 .md4-title-screen{position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:100dvh;overflow:hidden;
- background:radial-gradient(ellipse at 50% 52%,#17483d 0%,#0b2a29 45%,#061b1b 78%)}
+ background:radial-gradient(ellipse at 50% 52%,#17483d 0%,var(--md-night) 57%,var(--md-bg) 85%)}
 .md4-title-screen:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.28;
  background:repeating-linear-gradient(90deg,transparent 0 91px,#a8c49a15 91px 92px),repeating-linear-gradient(0deg,transparent 0 91px,#a8c49a0b 91px 92px)}
 .md4-title-screen:after{content:"";position:absolute;z-index:-1;inset:18px;border:1px solid #a7c09c33;pointer-events:none;
@@ -36,18 +31,15 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  padding:clamp(12px,2vh,19px) clamp(27px,4vw,58px)}
 .md4-menu-header{z-index:5;flex:0 0 auto}.md4-menu-edition,.md4-menu-footer{font:800 .64rem/1.4 var(--md4-font-ui);letter-spacing:.17em;color:#9bb6a6}
 .md4-menu-edition{color:var(--md4-gold)}.md4-menu-tools{display:flex;gap:15px}
-.md4-text-button{border:0;background:transparent;color:#d0dac9;cursor:pointer;font-family:inherit;font-size:.83rem;font-weight:750;padding:8px 4px;letter-spacing:0}
+.md4-text-button{border:0;background:transparent;color:var(--md-cream);cursor:pointer;font:750 .86rem/1.3 var(--md-font-ui);padding:8px 6px;letter-spacing:0}
 .md4-text-button:hover{color:var(--md4-gold)}
 .md4-title-composition{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:0 22px;position:relative}
 .md4-title-mark{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;margin-bottom:-7px;pointer-events:none}
-.md4-title-ornament{font:800 .66rem var(--md4-font-ui);letter-spacing:.18em;color:var(--md4-gold)}
-.md4-title-mark .brand-title{display:flex;flex-direction:column;align-items:center;margin:3px 0 0;line-height:.8;letter-spacing:-.085em;
- font-family:var(--md4-font-display);font-size:clamp(3.6rem,7.2vw,6.1rem);font-weight:1000;color:var(--md4-cream);
+.md4-title-mark .brand-title{display:flex;flex-direction:column;align-items:center;margin:3px 0 0;line-height:.9;letter-spacing:-.065em;
+ font-family:var(--md-font-display);font-size:clamp(3.35rem,7vw,5.8rem);font-weight:900;color:var(--md-cream);
  text-shadow:3px 3px 0 #507362,6px 6px 0 #09221e,9px 9px 0 #071714}
 .md4-title-mark .brand-title span{color:inherit}
 .md4-title-mark .brand-title span:last-child{color:var(--md4-gold)}
-.md4-title-suits{font:900 1rem Georgia,serif;letter-spacing:1em;color:var(--md4-gold);margin-top:17px;padding-left:1em}
-.md4-title-suits i{font-style:normal;color:var(--md4-coral)}
 .md4-title-diorama{width:min(600px,95vw);height:clamp(175px,34vh,295px);position:relative;flex:0 0 auto;isolation:isolate}
 .md4-title-halo{position:absolute;left:50%;top:0;transform:translateX(-50%);height:clamp(178px,32vh,276px);aspect-ratio:1;
  border:2px solid #eac98239;border-radius:50%;background:radial-gradient(circle,#75a86b18 0 28%,transparent 72%);box-shadow:inset 0 0 0 17px #e0c17c09}
@@ -72,13 +64,13 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 
 /* Flow screens: short, unmistakably playable game decisions. */
 .md4-selection-page{min-height:100dvh;max-width:100%;padding:0;display:flex;flex-direction:column;position:relative;
- background:radial-gradient(ellipse at 50% 58%,#1c493f,#0b2826 67%,#071b1b)}
+ background:radial-gradient(ellipse at 50% 52%,#17483d,var(--md-night) 64%,var(--md-bg))}
 .md4-section-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #6a8c7540;
  padding:15px clamp(20px,4vw,50px);color:#9cbaa8;font:800 .7rem var(--md4-font-ui);letter-spacing:.14em}
 .md4-selection-scene,.md4-difficulty-scene{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
  padding:24px 18px 40px;gap:18px}
 .md4-scene-head{text-align:center}.md4-scene-head>span{font:800 .7rem var(--md4-font-ui);color:var(--md4-gold);letter-spacing:.22em}
-.md4-scene-head h1{font:950 clamp(1.5rem,4vw,2.4rem) var(--md4-font-display);letter-spacing:-.02em;margin:12px 0 4px}
+.md4-scene-head h1{font:900 clamp(1.5rem,4vw,2.3rem)/1.25 var(--md-font-display);letter-spacing:-.035em;margin:4px 0 10px}
 .md4-game-token{appearance:none;display:flex;align-items:center;gap:clamp(15px,5vw,65px);text-align:left;
  width:min(640px,94vw);min-height:255px;padding:25px clamp(16px,4vw,35px);
  border:3px solid #ba9660;border-bottom-width:8px;border-radius:2px;background:#1c483d;color:var(--md4-cream);
@@ -93,7 +85,6 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .md4-token-info strong{font:950 1.7rem var(--md4-font-display)}
 .md4-token-info small{color:#bad1ba;line-height:1.5;font-size:.87rem}
 .md4-token-info em{color:var(--md4-gold);font-style:normal;font-weight:850;letter-spacing:.03em}
-.md4-scene-foot{font:900 1.15rem Georgia,serif;letter-spacing:1.4em;color:#d3b5777c;padding-left:1.4em;margin-top:15px}
 .md4-difficulty-scene{gap:12px}.md4-difficulty-mochi{width:clamp(148px,24vh,218px);height:clamp(148px,24vh,218px);display:grid;place-items:center;
  border-bottom:3px solid #987b4d;border-radius:50% 50% 5% 5%;background:radial-gradient(circle at 50% 70%,#77996327,transparent 65%)}
 .md4-difficulty-mochi .mochi-large{width:100%;height:100%}
@@ -108,7 +99,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .gameplay-page.md4-cardroom{display:flex;flex-direction:column;height:100dvh;min-height:480px;overflow:hidden;
  background:repeating-linear-gradient(130deg,#0a2422 0 42px,#09201f 42px 84px)}
 .md4-cardroom .game-hud{flex:0 0 56px;min-height:0;display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;
- gap:clamp(9px,2vw,24px);padding:0 clamp(13px,2.7vw,44px);border:0;border-bottom:2px solid #426559;background:#071e1e;box-shadow:0 5px 0 #061715;z-index:3}
+ gap:clamp(9px,2vw,24px);padding:0 clamp(13px,2.7vw,44px);border:0;border-bottom:2px solid var(--md-border);background:var(--md-rail);box-shadow:0 4px 0 #061715;z-index:3}
 .md4-cardroom .hud-brand{font:1000 clamp(15px,1.5vw,20px) var(--md4-font-display);letter-spacing:-.08em;color:var(--md4-cream);white-space:nowrap}
 .md4-cardroom .hud-brand:before{content:"♣";font:24px Georgia,serif;margin-right:8px;color:var(--md4-gold);vertical-align:middle}
 .md4-cardroom .hud-brand span{color:var(--md4-gold)}.md4-cardroom .hud-star{display:none}
@@ -124,8 +115,8 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .md4-cardroom .table-frame{flex:1 1 0;min-height:0;width:100%;max-width:1550px;margin:auto;padding:12px clamp(8px,2vw,28px) 9px;display:flex}
 .md4-cardroom .game-table{position:relative;isolation:isolate;display:grid;grid-template-rows:minmax(140px,29%) minmax(125px,1fr) minmax(130px,27%);
  align-items:center;justify-content:initial;width:100%;height:100%;min-height:0;flex:1;padding:0 clamp(12px,3vw,47px);overflow:hidden;
- background:radial-gradient(ellipse at 50% 47%,#205a4e 0%,#19493f 61%,#11382f 100%);
- border:7px solid #103c34;border-radius:13px;outline:2px solid #987750;
+ background:radial-gradient(ellipse at 50% 47%,var(--md-table-light) 0%,var(--md-table) 70%,#11382f 100%);
+ border:7px solid var(--md-surface);border-radius:12px;outline:2px solid var(--md-border);
  box-shadow:inset 0 0 0 3px #30715d,inset 0 0 0 8px #0b3930,0 9px 0 #071b19,0 13px 17px #04151088}
 .md4-cardroom .game-table:before{content:"";position:absolute;inset:13px;border:1px solid #90b99d4a;pointer-events:none;z-index:0;
  clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 9px,100% calc(100% - 9px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px),0 9px)}
@@ -166,7 +157,6 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .md4-cardroom .pile-label{font:800 12px var(--md4-font-ui);color:#c3d1b9;letter-spacing:.17em}
 .md4-cardroom .pile-count{position:absolute;bottom:-10px;right:-12px;width:27px;height:24px;border:2px solid #c59e68;
  background:#09251f;color:var(--md4-cream);border-radius:0;font:900 12px var(--md4-font-ui);box-shadow:2px 2px 0 #061514}
-.md4-cardroom .table-center-symbol{font-size:17px;color:#c9af6a94}
 .md4-cardroom .active-suit{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;
  padding:0 0 0 clamp(10px,2vw,22px);border-left:1px dashed #9cc29a69}
 .md4-cardroom .active-suit span{font:800 12px var(--md4-font-ui);letter-spacing:.04em;color:#bad2b9;white-space:nowrap}
@@ -192,27 +182,27 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .md4-cardroom .scroll-hint{display:none}
 .md4-cardroom .action-footer{flex:0 0 70px;min-height:0;display:flex;flex-direction:row;align-items:center;justify-content:space-between;
  gap:14px;padding:6px clamp(14px,3.5vw,55px) max(9px,env(safe-area-inset-bottom));
- border:0;border-top:2px solid #355a4e;background:#071d1c;box-shadow:none}
+ border:0;border-top:2px solid var(--md-border);background:var(--md-rail);box-shadow:none}
 .md4-cardroom .action-status{min-height:0;max-width:44%;color:#d1dcc9;font-size:.76rem}
 .md4-cardroom .action-status:empty{display:none}
 .md4-cardroom .action-buttons{display:flex;gap:12px;justify-content:flex-end;margin-left:auto}
-.md4-cardroom .action-buttons .pixel-button{min-width:121px;text-transform:uppercase;font-size:.91rem}
+.md4-cardroom .action-buttons .pixel-button{min-width:121px;text-transform:none;font-size:.91rem}
 .md4-cardroom .action-buttons .button-primary{min-width:170px}
 .md4-cardroom .action-buttons .button-primary:disabled{background:#23453a;color:#cad2bb;border-color:#668773;box-shadow:0 3px #0b261d;opacity:.9}
 .md4-cardroom .status-error{color:var(--md4-coral)}
 /* Keep event effects in the stage and never over text or controls. */
 .md4-cardroom .md-card-impact{border-color:var(--md4-gold)}
 .md4-cardroom .p3-card-flight{z-index:5}
-.game-dialog{border:2px solid #c29c60;outline:4px solid #091d1b;border-radius:2px;background:#183d33;
+.game-dialog{border:3px solid var(--md-border);outline:3px solid #091d1b;border-radius:var(--md-radius);background:var(--md-surface);
  color:var(--md4-cream);box-shadow:0 10px 0 #071715;width:min(440px,calc(100vw - 25px))}
 .game-dialog::backdrop{background:#041512d9;backdrop-filter:none}
-.dialog-header{background:#12342b;border-color:#698671;padding:13px 18px}
-.dialog-header h2{font:900 1.12rem var(--md4-font-display)}
+.dialog-header{background:var(--md-rail);border-color:var(--md-border);padding:13px 18px}
+.dialog-header h2{font:900 1.12rem/1.3 var(--md-font-display)}
 .dialog-content{padding:18px}.dialog-content p{color:#d1dfc7}
 .suit-choice{background:#255344;border:2px solid #6d987f;border-bottom:5px solid #0d2823;border-radius:2px;box-shadow:none}
 .suit-choice:hover{border-color:var(--md4-gold)}
-.p4-settings select,.p4-settings input[type=range]{background:#12382f;border:1px solid #71957d;color:var(--md4-cream)}
-.p4-stats-grid>div{background:transparent;border-bottom:1px solid #6c887555}
+.p4-settings select,.p4-settings input[type=range]{background:#10362e;border:2px solid #71957d;color:var(--md-cream);border-radius:var(--md-radius);font-family:var(--md-font-ui)}
+.p4-stats-grid>div{background:transparent;border:0;border-bottom:1px solid #6c887577;border-radius:0}
 .p4-stats-grid strong,.result-stats strong{color:var(--md4-gold)}
 .result-stats{background:#173f35;border-color:#6c8875}.p4-status.error{background:#49302d;border-color:var(--md4-coral)}
 
@@ -249,8 +239,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .table-center{gap:clamp(7px,3vw,20px)}
  .md4-cardroom .draw-pile,.md4-cardroom .discard-pile{width:clamp(55px,10.8vh,82px)}
  .md4-cardroom .pile-group{gap:6px}.md4-cardroom .pile-label{font-size:11px}
- .md4-cardroom .table-center-symbol{font-size:12px}
- .md4-cardroom .active-suit{gap:2px;padding-left:8px}
+  .md4-cardroom .active-suit{gap:2px;padding-left:8px}
  .md4-cardroom .active-suit span{font-size:11px;max-width:51px;text-align:center;white-space:normal}
  .md4-cardroom .active-suit strong{font-size:35px}
  .md4-cardroom .player-area{padding-bottom:11px}
