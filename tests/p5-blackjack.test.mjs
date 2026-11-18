@@ -93,14 +93,14 @@ test('dealer resolution, round score, fresh shuffle and invalid replay',()=>{
 test('P5 retries cannot apply the same action id across revisions',()=>{
  const start=startBlackjack(seeded(73));
  assert.equal(start.phase,'player');
- const first=applyBlackjackAction(start,action(start,'hit','unique-id-73'),seeded(72));
+ const first=applyBlackjackAction(start,action(start,'stand','unique-id-73'),seeded(72));
  assert.equal(first.ok,true);
  const current=first.state;
- const sameId=applyBlackjackAction(current,action(current,'stand','unique-id-73'),seeded(75));
+ const sameId=applyBlackjackAction(current,action(current,'next_round','unique-id-73'),seeded(75));
  assert.equal(sameId.ok,false);
  assert.equal(sameId.error,'STALE');
  assert.deepEqual(sameId.state,current);
- const after=applyBlackjackAction(current,action(current,'stand','different-id-73'),seeded(75));
+ const after=applyBlackjackAction(current,action(current,'next_round','different-id-73'),seeded(75));
  assert.equal(after.ok,true);
  assert.equal(after.state.processedActionIds.includes('unique-id-73'),true);
  assert.equal(after.state.processedActionIds.includes('different-id-73'),true);
