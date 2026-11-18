@@ -28,7 +28,9 @@ test('menu, selection and dialogs share card-room typography and controls', asyn
 });
 
 test('Crazy Eights and Blackjack use matching table material and focus treatment', async ({ page }) => {
-  await page.goto('/');
+  // Fixed QA seed: an unseeded Blackjack can settle a natural on deal with no Hit button.
+  // Production random dealing is unchanged. The normal P5 tests use this same seed.
+  await page.goto('/?qaSeed=62&fastAI=1');
   await page.getByTestId('play-now').click();
   await page.getByTestId('select-blackjack').click();
   await expect(page.getByTestId('blackjack-screen')).toBeVisible();
