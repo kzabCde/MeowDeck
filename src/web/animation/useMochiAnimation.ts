@@ -19,7 +19,8 @@ export function useMochiAnimation({pose='idle',cue=null,reducedMotion=false,paus
   // Pause is a clock gate, not a change of clip. Restarting an effect on pause
   // replayed committed card cues and could shift their actionFrame timing.
   const pausedRef=useRef(paused);
-  pausedRef.current=paused;
+  const poseRef=useRef(pose);
+  pausedRef.current=paused;poseRef.current=pose;
   completeRef.current=onCueDone;actionRef.current=onCueActionFrame;
   useEffect(()=>{
     let mounted=true;
@@ -72,7 +73,7 @@ export function useMochiAnimation({pose='idle',cue=null,reducedMotion=false,paus
       }
       if(progress.hitActionFrame&&currentCue)actionRef.current?.(currentCue.id);
       if(progress.completed){
-        if(currentCue){settle();changeClip(pose);}
+        if(currentCue){settle();changeClip(poseRef.current);}
         else if(currentName==='blink'||currentName==='pet_reaction'||currentName==='surprise')changeClip(pose);
         else if(!clip.loop)return; // terminal one-shots freeze on the final frame
       }
@@ -110,6 +111,6 @@ export function useMochiAnimation({pose='idle',cue=null,reducedMotion=false,paus
     }
     raf=requestAnimationFrame(step);
     return ()=>{disposed=true;cancelAnimationFrame(raf);window.clearTimeout(blinkTimer);window.clearTimeout(sleepTimer);window.clearTimeout(wakeTimer)};
-  },[manifest,pose,cue?.id,baseDependency,reducedMotion,loadFailed]);
+  },[manifest,cue?.id,baseDependency,reducedMotion,loadFailed]);
   return {spriteRef,loadFailed};
 }

@@ -150,7 +150,8 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
     <div className="table-frame md4-table-frame"><div className="game-table md4-table" ref={tableRef} data-testid="crazy-eights-table">
       
       <section className="opponent-area md4-opponent" aria-label={t('mochiHand')}>
-        <div className="opponent-persona"><div className="opponent-avatar"><Mochi pose={currentPose} cue={cue} size="small" t={t} reducedMotion={reducedMotion} paused={paused} onCueDone={onCueDone} onCueActionFrame={onActionFrame} onPet={onPet}/></div><div className="opponent-title"><h2>MOCHI</h2><div className="difficulty-name">{t(difficulty)}</div></div></div>
+        <div className="opponent-persona"><div className="opponent-avatar"><Mochi pose={currentPose} cue={cue} size="small" t={t} reducedMotion={reducedMotion} paused={paused} onCueDone={onCueDone} onCueActionFrame={onActionFrame} onPet={onPet}
+          petDisabled={!isHumanTurn||paused||Boolean(cue)}/></div><div className="opponent-title"><h2>MOCHI</h2><div className="difficulty-name">{t(difficulty)}</div></div></div>
         <div className="opponent-cards" data-testid="ai-hand"><div className="opponent-card-fan" ref={enemyRef} aria-hidden="true">{Array.from({length:Math.min(view.handCounts.ai,7)},(_,i)=><CardBack key={i} small label={t('mochiHand')} />)}</div>
           <div className="hand-count"><b data-testid="ai-card-count">{view.handCounts.ai}</b> {t('cards')}</div></div>
       </section>

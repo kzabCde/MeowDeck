@@ -10,6 +10,7 @@ import {GameButton} from './GameButton.js';
 import type {T} from '../i18n.js';
 import type {SoundName} from '../audio/audio-manager.js';
 import type {Card} from '../../games/meowdeck/core/cards.js';
+import type {PresentationCue} from '../../games/meowdeck/presentation/mochi-animation.js';
 
 const SAVE_KEY='meowdeck:blackjack:1';
 function storedGame():BlackjackState|null{
@@ -61,6 +62,8 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
  const [externalChange,setExternalChange]=useState(false);
  const [rulesOpen,setRulesOpen]=useState(false);
  const [resetOpen,setResetOpen]=useState(false);
+ const [petCue,setPetCue]=useState<PresentationCue|null>(null);
+ const petCooldown=useRef(-100000);
  useEffect(()=>{
    rngRef.current=qaRandom();
    const saved=storedGame();
@@ -86,16 +89,27 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
    const result=applyBlackjackAction(current,action,rngRef.current);
    if(!result.ok)return;
    stateRef.current=result.state;setState(result.state);
+   // Cosmetic pet reactions never delay or intercept a committed Blackjack action.
+   setPetCue(null);
    onSound(soundFor(result.state,type));
  },[onSound,externalChange]);
  const reset=useCallback(()=>{
    const fresh=startBlackjack(rngRef.current);
-   stateRef.current=fresh;setState(fresh);setResetOpen(false);
+   stateRef.current=fresh;setState(fresh);setResetOpen(false);setPetCue(null);
    onSound('confirm');
  },[onSound]);
  const reload=()=>{
    const latest=storedGame()??startBlackjack(rngRef.current);
-   stateRef.current=latest;setState(latest);setExternalChange(false);
+   stateRef.current=latest;setState(latest);setExternalChange(false);setPetCue(null);
+ };
+ const petDealer=()=>{
+   const current=stateRef.current,now=performance.now();
+   if(!current||current.phase!=='player'||externalChange||petCue||
+      now-petCooldown.current<1400)return;
+   petCooldown.current=now;
+   setPetCue({id:`blackjack:${current.round}:${current.revision}:pet:${Math.round(now)}`,
+     clip:'pet_reaction',sessionId:'blackjack',round:current.round,turn:current.revision});
+   onSound('pet');
  };
  if(!hydrated||!state)return <main className="md5-blackjack" role="status">{t('saveLoading')}</main>;
  const view=getBlackjackView(state);
@@ -125,7 +139,11 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
      <div className="md5-bj-felt" data-testid="blackjack-table">
        <section className="md5-bj-dealer" aria-label={t('bjDealer')}>
          <div className="md5-bj-dealer-head">
-           <Mochi pose={mochiPose} t={t} size="small" reducedMotion={reducedMotion}/>
+           <Mochi pose={mochiPose} t={t} size="small" reducedMotion={reducedMotion}
+             cue={petCue} paused={rulesOpen||resetOpen}
+             onCueDone={id=>setPetCue(c=>c?.id===id?null:c)}
+             onPet={petDealer}
+             petDisabled={view.phase!=='player'||externalChange||Boolean(petCue)||rulesOpen||resetOpen}/>
            <div className="md5-bj-hand-head">
              <span>{t('bjDealer')}</span>
              <strong data-testid="blackjack-dealer-total">{view.dealerTotal??t('bjHidden')}</strong>
