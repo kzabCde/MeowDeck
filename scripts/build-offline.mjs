@@ -14,6 +14,10 @@ async function list(folder,base,filter=()=>true,prefix='/'){
 }
 await list(join(root,'.next/static'),join(root,'.next'),p=>!p.endsWith('.map'),'/_next/');
 await list(join(publicRoot,'assets/meowdeck'),publicRoot,p=>/\.(png|json|mp3)$/i.test(p));
+// The music option must never ship silently with a missing track. The actual
+// user-provided MP3 is required for playable and offline builds.
+const bgm='/assets/meowdeck/audio/little_cafe.mp3';
+if(!urls.includes(bgm))throw Error('Missing required background music: public'+bgm+' (copy little_cafe.mp3 before building)');
 await list(join(publicRoot,'icons'),publicRoot,p=>/\.png$/i.test(p));
 // App Router manifest is served by Next at /manifest.webmanifest. Icon paths are public immutable assets.
 const dedup=[...new Set(urls)].sort();
