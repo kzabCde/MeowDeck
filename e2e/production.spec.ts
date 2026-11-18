@@ -190,3 +190,25 @@ test('Phase 7 production captures genuine Mochi pet frames in both games without
  await page.screenshot({path:'test-results/visual-review/mochi-pet-blackjack-production-390x844.png',animations:'disabled'});
  expect(await page.evaluate(()=>localStorage.getItem('meowdeck:blackjack:1'))).toBe(before);
 });
+
+
+// Phase 8: verify production UI omits success narration while keeping tutorials.
+test('Phase 8 production keeps successful saves silent and action prompts contextual',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/');
+ await expect(page.getByTestId('main-menu')).toBeVisible();
+ await expect(page.getByTestId('save-status')).toHaveCount(0);
+ await expect(page.getByText(/บันทึกแล้ว|พร้อมเล่นแบบออฟไลน์|Saved successfully|Ready for offline play/i)).toHaveCount(0);
+ await page.getByTestId('play-now').click();
+ await expect(page.getByTestId('select-blackjack')).toContainText('ทำแต้มใกล้ 21 แต่ห้ามเกิน');
+ await page.getByTestId('select-crazy-eights').click();
+ await page.getByTestId('start-match').click();
+ await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+ await expect(page.getByTestId('tutorial-hint')).toBeVisible();
+ await page.getByTestId('tutorial-skip').click();
+ await expect(page.locator('.action-status')).toHaveText('');
+ await expect(page.locator('.action-status')).not.toHaveAttribute('role','status');
+ await expect(page.getByTestId('save-status')).toHaveCount(0);
+ await mkdir('test-results/visual-review',{recursive:true});
+ await page.screenshot({path:'test-results/visual-review/p8-clean-game-390x844.png',animations:'disabled'});
+});

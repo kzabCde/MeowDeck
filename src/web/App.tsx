@@ -340,7 +340,9 @@ export function App() {
   const isMatchEnd = session?.phase === 'match_end';
 
   if (assetStatus !== 'ready' || !storageReady) {
-    return <main className="asset-loading" role="status" aria-live="polite">
+    return <main className="asset-loading"
+      role={assetStatus==='loading'||!storageReady?'status':undefined}
+      aria-live={assetStatus==='loading'||!storageReady?'polite':undefined}>
       <div className="brand-mini">MEOWDECK</div>
       {assetStatus === 'loading' || !storageReady ? <p>{t('loadingGame')}</p>
         : <><p role="alert">{t('missingArt')}</p>

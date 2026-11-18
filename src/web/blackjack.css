@@ -14,7 +14,6 @@
 .md5-bj-header>.md4-text-button{justify-self:start}
 .md5-bj-tools{justify-self:end}
 .md5-bj-brand{display:flex;flex-direction:column;text-align:center;gap:1px;line-height:1.15}
-.md5-bj-brand span{font-size:.64rem;letter-spacing:.16em;color:#a9c0ac}
 .md5-bj-brand strong{font:900 clamp(1.08rem,3vw,1.65rem) var(--md-font-display);letter-spacing:.06em;color:var(--md5-gold)}
 .md5-bj-scorebar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px clamp(13px,3vw,45px);min-height:42px;
  border-bottom:1px solid #68876c55;background:var(--md-game-hud);
