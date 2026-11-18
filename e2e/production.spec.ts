@@ -172,7 +172,11 @@ test('Phase 7 production captures genuine Mochi pet frames in both games without
  await page.goto('/');
  await page.getByTestId('play-now').click();
  await page.getByTestId('select-blackjack').click();
- for(let tries=0;tries<6&&await page.getByTestId('blackjack-next').count();tries++){
+ // Wait for the saved-hand hydration before inspecting any action buttons.
+ // A natural Blackjack is a valid initial deal; advance only that finished round.
+ await expect(page.getByTestId('blackjack-screen')).toBeVisible();
+ for(let tries=0;tries<6;tries++){
+   if(await page.getByTestId('blackjack-hit').isVisible().catch(()=>false))break;
    await page.getByTestId('blackjack-next').click();
  }
  await expect(page.getByTestId('blackjack-hit')).toBeVisible();
