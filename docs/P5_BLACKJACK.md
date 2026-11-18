@@ -32,3 +32,9 @@ Engine unit tests, 52-card conservation, natural hands, Ace/Soft 17, Dealer/Play
 ## Save and statistics boundary
 
 P5 tracks Blackjack results in its separate versioned browser-local saved round. It does not silently insert Blackjack outcomes into the Crazy Eights-only IndexedDB match history or existing global Statistics panel. Reopening Blackjack through the game catalog restores its last validated round. This first P5 MVP does not yet offer per-game historical Blackjack analytics or robust atomic cross-tab IndexedDB locking. Those are explicit post-MVP improvements, not claimed as implemented.
+
+
+## P5 post-merge correctness hardening
+After the initial P5 implementation was merged, a review identified that `BlackjackAction.actionId` was carried through API calls but only checked for non-empty values; an already committed identity could be reused by an errant caller with a fresh revision. A bounded optional `processedActionIds` trail is now maintained on confirmed actions, so repeat identities are rejected as stale. This field is **optional on schema-1 saves** to preserve existing browser progress, and previous saves become tracked on their next valid move. Corrupt or duplicate ID trails are rejected by the save validator.
+
+This incremental hardening does not change deck order, Ace scoring, dealer soft-17 behavior, score totals, the UI, Crazy Eights, or the current localStorage limitations. Full multi-tab atomic saving requires a separate storage architecture task.
