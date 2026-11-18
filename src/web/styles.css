@@ -537,3 +537,25 @@ button:focus-visible,select:focus-visible,input:focus-visible {outline:2px solid
  .md-title-screen .menu-scene,.md-title-screen .hero-card,.md-card-impact {animation:none!important}
 }
 .reduce-motion .md-title-screen .menu-scene,.reduce-motion .md-card-impact {animation:none!important}
+
+
+/* Reference-board adjustment: the opponent is a character across the table,
+   not a profile card in a two-column dashboard. */
+.game-table .opponent-area {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:100%;max-width:100%}
+.game-table .opponent-persona {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.game-table .opponent-title {display:flex;align-items:center;gap:9px}
+.game-table .opponent-title h2 {font-size:.78rem;line-height:1;margin:0;letter-spacing:.11em}
+.game-table .opponent-title .difficulty-name {font-size:.65rem;margin:0;color:#95b9ac}
+.game-table .opponent-avatar {width:96px;height:96px}
+.game-table .opponent-cards {gap:1px}
+.game-table .opponent-card-fan {min-height:65px}
+.game-table .opponent-cards .hand-count {font-size:.67rem}
+@media(max-width:650px){
+ .game-table .opponent-avatar,.game-table .opponent-avatar .mochi-small {width:65px;height:65px}
+ .game-table .opponent-card-fan {min-height:45px}
+ .game-table .opponent-cards .hand-count {font-size:.59rem}
+}
+@media(max-height:640px){
+ .game-table .opponent-avatar,.game-table .opponent-avatar .mochi-small {width:52px;height:52px}
+ .game-table .opponent-card-fan {min-height:35px}
+}
