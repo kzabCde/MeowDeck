@@ -382,7 +382,7 @@ export function App() {
     </GameDialog>}
     {modal === 'rules' && <GameDialog title={t('rules')} onClose={() => setModal(null)} t={t}><p>{t('rulesIntro')}</p>
       <button className="pixel-button button-secondary" data-testid="tutorial-replay-rules" onClick={()=>{setTutorial({...DEFAULT_TUTORIAL});setModal(null);}}>{t('tutorialReplay')}</button>
-    </GameDialog>
+    </GameDialog>}
     {modal === 'statistics' && <GameDialog title={t('statistics')} onClose={() => setModal(null)} t={t} wide><StatisticsPanel records={records} t={t} onReset={()=>setModal('resetStats')}/></GameDialog>}
     {modal === 'pause' && <GameDialog title={t('gamePaused')} onClose={() => setModal(null)} t={t}>
       <div className="modal-buttons"><button className="pixel-button button-primary" onClick={() => setModal(null)}>{t('resume')}</button>
