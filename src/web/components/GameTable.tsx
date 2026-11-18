@@ -52,6 +52,14 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
   const [shownActionFrame,setShownActionFrame]=useState<string|null>(null);
   const lastDiscardRef=useRef(view.topDiscard.id);
   const [impact,setImpact]=useState<string|null>(null);
+  const lastHandRef=useRef({round:view.roundNumber,count:view.ownHand.length});
+  const [handMotion,setHandMotion]=useState<string|null>(null);
+  useEffect(()=>{
+    const previous=lastHandRef.current;
+    if(previous.round===view.roundNumber&&view.ownHand.length>previous.count&&!reducedMotion)
+      setHandMotion(`${view.roundNumber}:${view.turnId}:${view.ownHand.length}`);
+    lastHandRef.current={round:view.roundNumber,count:view.ownHand.length};
+  },[view.roundNumber,view.turnId,view.ownHand.length,reducedMotion]);
   useEffect(()=>{
     if(lastDiscardRef.current===view.topDiscard.id)return;
     lastDiscardRef.current=view.topDiscard.id;
@@ -112,13 +120,13 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
       <section className="table-center" aria-label={t('discard')}>
         <div className="pile-group"><span className="pile-label">{t('draw')}</span><div className="draw-pile" ref={drawRef}><button type="button" className="draw-pile-action" onClick={onDraw} disabled={!canDraw} aria-label={t('drawCard')}><CardBack label={t('deck')}/></button><span className="pile-count" data-testid="draw-count">{view.drawPileCount}</span></div></div>
         <div className="table-center-symbol">✦</div>
-        <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" ref={discardRef} data-testid="top-discard"><img className="pixel-art card-image" style={cue?.clip==='play_card'&&cue.cardId===view.topDiscard.id&&shownActionFrame!==cue.id&&!reducedMotion?{visibility:'hidden'}:undefined} src={cardImage(view.topDiscard.id, true)} alt={`${view.topDiscard.rank} ${SUIT_SYMBOL[view.topDiscard.suit]}`} />{impact&&<span key={impact} className={view.topDiscard.rank==='8'?'md-card-impact md-wild-impact':'md-card-impact'} aria-hidden="true" onAnimationEnd={()=>setImpact(null)}/>}</div></div>
+        <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" ref={discardRef} data-testid="top-discard"><img className="pixel-art card-image" style={cue?.clip==='play_card'&&cue.cardId===view.topDiscard.id&&shownActionFrame!==cue.id&&!reducedMotion?{visibility:'hidden'}:undefined} src={cardImage(view.topDiscard.id, true)} alt={`${view.topDiscard.rank} ${SUIT_SYMBOL[view.topDiscard.suit]}`} />{impact&&<span key={impact} className={view.topDiscard.rank==='8'?`md-card-impact md-wild-impact md-wild-${SUIT_CLASS[view.activeSuit]}`:'md-card-impact'} aria-hidden="true" onAnimationEnd={()=>setImpact(null)}/>}</div></div>
         <div className="active-suit"><span>{t('activeSuit')}</span><strong className={`suit-${SUIT_CLASS[view.activeSuit]}`} data-testid="active-suit" aria-label={t(({ S:'spades', H:'hearts', D:'diamonds', C:'clubs' } as const)[view.activeSuit])}>{SUIT_SYMBOL[view.activeSuit]}</strong></div>
       </section>
       <div className={`turn-banner ${isHumanTurn?'your-turn':'opponent-turn'}`} aria-live="polite" data-testid="turn-status"><span className="md-turn-dot" aria-hidden="true"/><strong>{isHumanTurn?t('yourTurn'):t('mochiTurn')}</strong></div>
       <section className="player-area" aria-label={t('yourHand')}>
         <div className="hand-title"><span>{t('yourHand')}</span><span className="hand-count">{view.ownHand.length}</span></div>
-        <div className="player-hand" ref={handRef} data-testid="player-hand">{view.ownHand.map((card,i)=><PixelCard key={card.id} card={card} t={t} playable={plays.has(card.id)} selected={selected===card.id} disabled={!isHumanTurn||!plays.has(card.id)} onSelect={()=>onSelect(card.id)} onNavigate={(direction)=>navigate(i,direction)}/>)}</div>
+        <div className={`player-hand ${handMotion?'md-hand-drawn':''}`} ref={handRef} data-testid="player-hand" onAnimationEnd={()=>setHandMotion(null)}>{view.ownHand.map((card,i)=><PixelCard key={card.id} card={card} t={t} playable={plays.has(card.id)} selected={selected===card.id} disabled={!isHumanTurn||!plays.has(card.id)} onSelect={()=>onSelect(card.id)} onNavigate={(direction)=>navigate(i,direction)}/>)}</div>
         <div className="scroll-hint">{t('zoomHint')}</div>
       </section>
     </div></div>
