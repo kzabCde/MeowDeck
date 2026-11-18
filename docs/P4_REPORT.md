@@ -1,3 +1,5 @@
+> **Historical P4 document (2026-11-17).** Its local BLOCKED/NOT VERIFIED claims describe the environment at the time of drafting, not the merged P4+V4 CI state. For present build/offline checks and outstanding manual devices, see [P4.8 Release QA](P4_8_RELEASE_QA.md) and [P4.9 Beta Readiness](P4_9_BETA_READINESS.md). The original findings below are retained as historical evidence.
+
 # P4 Implementation Report — VERIFIED / BLOCKED (2026-11-17)
 
 ## A. Baseline

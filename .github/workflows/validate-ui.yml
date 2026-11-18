@@ -56,6 +56,8 @@ jobs:
         run: npm run test:simulation
       - name: Benchmark AI strategies
         run: npm run benchmark:ai
+      - name: Evaluate paired-seed AI differentiation
+        run: npm run evaluate:ai | tee ai-evaluation.log
       - name: Validate all production art
         run: |
           python -m pip install -r requirements-assets.txt
@@ -87,6 +89,13 @@ jobs:
         with:
           name: meowdeck-visual-review
           path: test-results/visual-review/
+          if-no-files-found: ignore
+      - name: Upload AI balance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meowdeck-ai-evaluation
+          path: ai-evaluation.log
           if-no-files-found: ignore
       - name: Upload Playwright diagnostics
         if: failure()
