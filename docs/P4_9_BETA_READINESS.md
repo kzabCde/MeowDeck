@@ -9,7 +9,9 @@ This phase is stacked after P4.8 PR #12, P4.7 PR #11 and P4.6 PR #10. Merge/reba
 - `npm run evaluate:ai` compares Easy/Normal/Hard against the SAME simple baseline on 1,000 matched deterministic shuffle seeds.
 - Reports Wilson approximate 95% confidence intervals on win rates, *paired* difficulty gaps and approximate 95% intervals, and average/p95/max decision time.
 - These values measure AI versus one mechanical baseline, **not** win probability versus humans. A point estimate ordering is not statistically convincing without intervals and actual playtesting.
-- P4.9 cautiously increases Hard's follow-up/suit-control and observable denial weighting. The new tuning is provisional until evidence is reviewed. If benchmarks show a substantial regression, revert or adjust the tuning; never alter deals or leak private data to enforce win rates.
+- An experimental Hard-policy weighting change was evaluated on the same 1,000 seeds. It decreased Hard's win rate from the historical 47.2% to 43.6%. **The change has been reverted.** The original legal-information-set Hard policy is retained pending further evidence and player tests. Do not alter deals or leak private data to force a difficulty ordering.
+- The experimental run also measured Easy 42.3% and Normal 44.5%; Hard vs Normal was −0.9 percentage points (approximate paired 95% range −4.18 to +2.38), **inconclusive**. Those experimental results are kept as an audit trail, not as the final policy's current measurement.
+- Re-run `npm run evaluate:ai` on the reverted branch to confirm the final policy's updated result before using the phase as a release candidate.
 - CI emits the reproducible `meowdeck-ai-evaluation` artifact. Fill actual results from CI logs; do not invent them.
 
 ## Lightweight replayability
