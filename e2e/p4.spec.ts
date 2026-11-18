@@ -69,6 +69,21 @@ test('second tab detects active owner and prevents silent overwrite',async({cont
   await another.close();
 });
 
+test('closing the old tab immediately releases match ownership for a fresh tab',async({browser})=>{
+  const context=await browser.newContext();
+  try{
+    let owner=await context.newPage();
+    await begin(owner,'normal');
+    await owner.close();
+    const reopened=await context.newPage();
+    await reopened.goto('/');
+    await expect(reopened.getByTestId('continue')).toBeVisible();
+    await reopened.getByTestId('continue').click();
+    await expect(reopened.getByTestId('gameplay-screen')).toBeVisible();
+    await expect(reopened.getByRole('dialog')).toHaveCount(0);
+  }finally{await context.close();}
+});
+
 test('exactly-once match statistics survive refresh and rematch gets a new identity',async({page})=>{
   await begin(page,'practice');
   let won=false;
