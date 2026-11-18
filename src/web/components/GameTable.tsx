@@ -55,8 +55,9 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
   useEffect(()=>{
     if(lastDiscardRef.current===view.topDiscard.id)return;
     lastDiscardRef.current=view.topDiscard.id;
-    if(!reducedMotion)setImpact(`${view.roundNumber}:${view.turnId}:${view.topDiscard.id}`);
-  },[view.topDiscard.id,view.roundNumber,view.turnId,reducedMotion]);
+    const aiFlight=cue?.clip==='play_card'&&cue.actor==='ai'&&cue.cardId===view.topDiscard.id;
+    if(!reducedMotion&&!aiFlight)setImpact(`${view.roundNumber}:${view.turnId}:${view.topDiscard.id}`);
+  },[view.topDiscard.id,view.roundNumber,view.turnId,reducedMotion,cue?.id]);
   useEffect(()=>{
     if(reducedMotion||!cue||!['draw_card','play_card'].includes(cue.clip)) {setFlight(null);return;}
     const table=tableRef.current;
@@ -72,7 +73,10 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
     const id=requestAnimationFrame(()=>setFlight(prev=>prev?.id===cue.id?{...prev,started:true}:prev));
     return()=>{cancelAnimationFrame(id);setFlight(null);};
   },[cue?.id,reducedMotion]);
-  const onActionFrame=(id:string)=>{setShownActionFrame(id);setFlight(prev=>prev?.id===id?null:prev);};
+  const onActionFrame=(id:string)=>{setShownActionFrame(id);setFlight(prev=>prev?.id===id?null:prev);
+    if(!reducedMotion&&cue?.id===id&&cue.clip==='play_card'&&cue.cardId===view.topDiscard.id)
+      setImpact(`${view.roundNumber}:${view.turnId}:${view.topDiscard.id}`);
+  };
   const isHumanTurn = view.phase === 'human_turn';
   const plays = new Set(view.legalActions.filter((a): a is Extract<LegalAction,{type:'play_card'}>=>a.type==='play_card').map(a=>a.cardId));
   const canPlay = selected !== null && plays.has(selected);
