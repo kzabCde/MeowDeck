@@ -11,7 +11,7 @@ export interface GameSettingsV1 {
   sfxVolume:number;
   musicVolume:number;
 }
-export const DEFAULT_SETTINGS:GameSettingsV1={schemaVersion:1,language:'th',preferredDifficulty:'practice',motion:'system',sfxEnabled:true,musicEnabled:false,sfxVolume:0.45,musicVolume:0.16};
+export const DEFAULT_SETTINGS:GameSettingsV1={schemaVersion:1,language:'th',preferredDifficulty:'practice',motion:'system',sfxEnabled:true,musicEnabled:true,sfxVolume:0.45,musicVolume:0.16};
 export const SETTINGS_KEY='meowdeck:settings:1';
 export function readSettings():GameSettingsV1{
   try{

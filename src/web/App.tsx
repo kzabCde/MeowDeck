@@ -377,7 +377,14 @@ export function App() {
         <label>{t('motionPreference')}<select data-testid="motion-setting" value={settings.motion} onChange={(e:ChangeEvent<HTMLSelectElement>)=>updateSettings({motion:e.target.value as GameSettingsV1['motion']})}><option value="system">{t('motionSystem')}</option><option value="on">{t('motionOn')}</option><option value="off">{t('motionOff')}</option></select></label>
         <label className="p4-setting-check">{t('soundEffects')}<input type="checkbox" data-testid="sfx-toggle" checked={settings.sfxEnabled} onChange={(e:ChangeEvent<HTMLInputElement>)=>updateSettings({sfxEnabled:e.target.checked})}/></label>
         <label>{t('sfxVolume')}<input type="range" min="0" max="1" step="0.05" data-testid="sfx-volume" value={settings.sfxVolume} onChange={(e:ChangeEvent<HTMLInputElement>)=>updateSettings({sfxVolume:Number(e.target.value)})}/></label>
-        <label className="p4-setting-check">{t('music')}<input type="checkbox" data-testid="music-toggle" checked={settings.musicEnabled} onChange={(e:ChangeEvent<HTMLInputElement>)=>{playUi();updateSettings({musicEnabled:e.target.checked});}}/></label>
+        <label className="p4-setting-check">{t('music')}<input type="checkbox" data-testid="music-toggle" checked={settings.musicEnabled} onChange={(e:ChangeEvent<HTMLInputElement>)=>{
+          const enabled=e.target.checked;
+          // Apply inside this user gesture: mobile browsers may reject a deferred audio.play().
+          playUi();
+          audioRef.current?.setSettings({...settings,musicEnabled:enabled});
+          if(enabled)void audioRef.current?.unlock();
+          updateSettings({musicEnabled:enabled});
+        }}/></label>
         <label>{t('musicVolume')}<input type="range" min="0" max="1" step="0.05" data-testid="music-volume" value={settings.musicVolume} onChange={(e:ChangeEvent<HTMLInputElement>)=>updateSettings({musicVolume:Number(e.target.value)})}/></label>
         <button className="pixel-button button-secondary" onClick={()=>setModal('resetSettings')}>{t('resetSettings')}</button>
         {!!savedMatch && <button className="pixel-button button-secondary" data-testid="discard-match" onClick={()=>setModal('discard')}>{t('discardMatch')}</button>}

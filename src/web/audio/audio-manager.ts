@@ -40,23 +40,46 @@ export function planEventSounds(events:readonly DomainEvent[]):readonly PlannedS
   return planned;
 }
 
-/** Original, procedurally synthesized game cues. No downloaded or copyrighted audio. */
+/** The user-supplied Little Cafe loop is served locally for offline PWA use.
+ * UI and SFX keep their original sound pipeline; background music is one shared media element. */
+export const BACKGROUND_MUSIC_URL='/assets/meowdeck/audio/little_cafe.mp3';
+/** Original procedural SFX remain independent of the background music. */
 export class GameAudio {
   private ctx:AudioContext|null=null;
   private settings:GameSettingsV1;
   private unlocked=false;
   private sequence=new Set<string>();
   private sequenceOrder:string[]=[];
-  private musicTimer:number|null=null;
-  private musicStep=0;
+  private music:HTMLAudioElement|null=null;
+  private musicPending=false;
+  private musicPlaying=false;
+  private musicRequest=0;
   private visible=true;
   constructor(settings:GameSettingsV1){this.settings=settings;}
-  setSettings(settings:GameSettingsV1){this.settings=settings;if(!settings.musicEnabled||settings.musicVolume===0)this.stopMusic();else this.startMusic();}
-  async unlock():Promise<void>{
-    if(typeof window==='undefined'||!('AudioContext' in window))return;
-    try{this.ctx??=new AudioContext();await this.ctx.resume();this.unlocked=this.ctx.state==='running';this.startMusic();}catch{/* Audio is optional. */}
+  setSettings(settings:GameSettingsV1){
+    this.settings=settings;
+    if(this.music)this.music.volume=Math.max(0,Math.min(1,settings.musicVolume));
+    if(!settings.musicEnabled||settings.musicVolume<=0)this.stopMusic();
+    else this.startMusic();
   }
-  setVisible(visible:boolean){this.visible=visible;if(!visible){this.stopMusic();void this.ctx?.suspend().catch(()=>{});}else if(this.unlocked){void this.ctx?.resume().then(()=>this.startMusic()).catch(()=>{});}}
+  async unlock():Promise<void>{
+    if(typeof window==='undefined')return;
+    // Start the HTML audio inside the user's click/tap, before awaiting AudioContext.
+    // Mobile Safari may reject play() if it is delayed beyond the user gesture.
+    this.unlocked=true;
+    this.startMusic();
+    if(!('AudioContext' in window))return;
+    try{this.ctx??=new AudioContext();await this.ctx.resume();}
+    catch{/* Optional effects must not block gameplay or background music. */}
+  }
+  setVisible(visible:boolean){
+    this.visible=visible;
+    if(!visible){this.stopMusic();void this.ctx?.suspend().catch(()=>{});}
+    else if(this.unlocked){
+      this.startMusic();
+      void this.ctx?.resume().catch(()=>{});
+    }
+  }
   private tone(sound:Tone,volume:number,offset:number){
     if(!this.ctx||this.ctx.state!=='running')return;
     const now=this.ctx.currentTime+offset,osc=this.ctx.createOscillator(),gain=this.ctx.createGain();
@@ -83,12 +106,41 @@ export class GameAudio {
     for(const event of planEventSounds(events))this.play(event.name,`${identity}:${event.eventIndex}`,event.offsetMs);
   }
   private startMusic(){
-    if(!this.unlocked||!this.settings.musicEnabled||this.settings.musicVolume<=0||!this.visible||this.musicTimer!==null)return;
-    // Original ambient four-note motif; independent from SFX and never triggered before unlock.
-    const notes=[261.63,329.63,392,329.63,293.66,349.23,440,349.23];
-    const step=()=>{if(!this.ctx||this.ctx.state!=='running')return;this.tone({frequency:notes[this.musicStep++%notes.length]!,duration:.45,wave:'sine',gain:.10},this.settings.musicVolume,0);};
-    step();this.musicTimer=window.setInterval(step,830);
+    if(!this.unlocked||!this.settings.musicEnabled||this.settings.musicVolume<=0||!this.visible||typeof window==='undefined')return;
+    if(!this.music){
+      const audio=new Audio(BACKGROUND_MUSIC_URL);
+      audio.loop=true;
+      audio.preload='auto';
+      audio.volume=Math.max(0,Math.min(1,this.settings.musicVolume));
+      this.music=audio;
+    }
+    const audio=this.music;
+    if(!audio.paused||this.musicPending||this.musicPlaying)return;
+    const request=++this.musicRequest;
+    this.musicPending=true;
+    // Browser autoplay restrictions or missing assets must never break gameplay.
+    try{
+      void audio.play().then(()=>{
+        if(request!==this.musicRequest)return;
+        this.musicPending=false;
+        this.musicPlaying=true;
+      }).catch(()=>{
+        if(request!==this.musicRequest)return;
+        this.musicPending=false;
+        this.musicPlaying=false;
+      });
+    }catch{this.musicPending=false;this.musicPlaying=false;}
   }
-  private stopMusic(){if(this.musicTimer!==null){clearInterval(this.musicTimer);this.musicTimer=null;}}
-  dispose(){this.stopMusic();this.sequence.clear();this.sequenceOrder=[];this.unlocked=false;if(this.ctx){void this.ctx.close().catch(()=>{});this.ctx=null;}}
+  private stopMusic(){
+    this.musicRequest++;
+    this.music?.pause(); // Preserve playback position when muted or tab-hidden.
+    this.musicPending=false;
+    this.musicPlaying=false;
+  }
+  dispose(){
+    this.stopMusic();
+    if(this.music){this.music.removeAttribute('src');this.music.load();this.music=null;}
+    this.sequence.clear();this.sequenceOrder=[];this.unlocked=false;
+    if(this.ctx){void this.ctx.close().catch(()=>{});this.ctx=null;}
+  }
 }
