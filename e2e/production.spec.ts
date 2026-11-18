@@ -42,7 +42,13 @@ test('Next.js production mobile mount has no horizontal overflow', async ({ page
   await page.goto('/');
   await expect(page.getByTestId('main-menu')).toBeVisible();
   await page.getByTestId('play-now').click();
+  await expect(page.getByTestId('game-selection')).toBeVisible();
+  await page.screenshot({ path: 'test-results/visual-review/game-select-mobile-390x844.png', animations: 'disabled' });
   await page.getByTestId('select-crazy-eights').click();
+  await expect(page.getByTestId('difficulty-selection')).toBeVisible();
+  await page.screenshot({ path: 'test-results/visual-review/difficulty-mobile-390x844.png', animations: 'disabled' });
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.screenshot({ path: 'test-results/visual-review/difficulty-desktop-1280x720.png', animations: 'disabled' });
   await page.getByTestId('start-match').click();
   await expect(page.getByTestId('gameplay-screen')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
