@@ -77,18 +77,19 @@
 /* Two playable tables are physical objects, not SaaS product cards. */
 .md5-game-choice .md5-choice-scene{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:17px;padding:22px 14px 30px}
 .md5-game-choice .md5-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:min(960px,100%);gap:clamp(11px,2.7vw,24px)}
-.md5-game-choice .md5-choice-tile{appearance:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;min-height:300px;border:3px solid var(--md-border);border-bottom-width:6px;border-radius:var(--md-radius);padding:17px 15px 20px;background:var(--md-surface);color:var(--md-cream);box-shadow:inset 0 0 0 3px #285c4c,0 7px 0 #071e1c}
-.md5-game-choice .md5-choice-tile:hover{transform:translateY(-3px);box-shadow:inset 0 0 0 3px #327058,0 10px 0 #071e1c}
-.md5-game-choice .md5-choice-tile:focus-visible{outline:3px solid #f1d99c;outline-offset:3px}
-.md5-game-choice .md5-choice-art{display:flex;align-items:center;justify-content:center;width:100%;height:160px;flex:0 0 auto}
+.md5-game-choice .md5-choice-tile{appearance:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;min-height:300px;border:0;border-bottom:3px solid transparent;border-radius:0;padding:17px 15px 20px;background:transparent;color:var(--md-cream);box-shadow:none;transition:transform 130ms steps(3,end),border-color 130ms}
+.md5-game-choice .md5-choice-tile:hover{transform:translateY(-4px);box-shadow:none;border-bottom-color:var(--md-gold)}
+.md5-game-choice .md5-choice-tile:focus-visible{outline:3px solid var(--md-focus);outline-offset:3px;border-bottom-color:var(--md-gold)}
+.md5-game-choice .md5-choice-art{display:flex;align-items:center;justify-content:center;width:100%;height:160px;flex:0 0 auto;position:relative;isolation:isolate}
+.md5-game-choice .md5-choice-art:before{content:"";position:absolute;z-index:-1;inset:14px 18%;background:radial-gradient(ellipse,#4b806a35,transparent 70%);border-bottom:2px solid #876b45}
 .md5-game-choice .md5-choice-art img{position:relative;width:clamp(68px,9vw,92px);height:auto;max-height:146px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(4px 6px 0 #102c25)}
 .md5-game-choice .md5-choice-art img:nth-child(1){transform:translateX(17px) rotate(-12deg);z-index:1}
 .md5-game-choice .md5-choice-art img:nth-child(2){transform:translateY(-10px);z-index:3}
 .md5-game-choice .md5-choice-art img:nth-child(3){transform:translateX(-17px) rotate(12deg);z-index:2}
-.md5-game-choice .md5-choice-copy{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center}
+.md5-game-choice .md5-choice-copy{display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;max-width:33ch}
 .md5-game-choice .md5-choice-copy small{font-size:.7rem;letter-spacing:.12em;color:#b4c8ab}
 .md5-game-choice .md5-choice-copy strong{font:900 clamp(1.2rem,2.4vw,1.65rem) var(--md-font-display);color:#ffdf9d}
-.md5-game-choice .md5-choice-copy span{font-size:.82rem;line-height:1.5;max-width:30ch}
+.md5-game-choice .md5-choice-copy span{font-size:.86rem;line-height:1.55;max-width:30ch;color:var(--md-muted)}
 .md5-game-choice .md5-choice-copy em{font-size:.75rem;font-style:normal;color:#f4cf8d;font-weight:850}
 @media(max-width:560px){
  .md5-game-choice .md5-choice-scene{justify-content:flex-start;padding:15px 12px}
