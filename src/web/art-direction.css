@@ -281,7 +281,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .draw-pile,.md4-cardroom .discard-pile{width:clamp(50px,10vh,72px)}
  .md4-cardroom .card-tile{width:clamp(49px,11.3vh,78px)}
  .md4-cardroom .action-footer{flex-basis:53px}
- .md4-cardroom .action-buttons .pixel-button{min-height:36px}
+ .md4-cardroom .action-buttons .pixel-button{min-height:44px}
 }
 @media(prefers-reduced-motion:reduce){
  .md4-cardroom .card-tile,.md4-title-card,.md4-game-token,.md4-mode,.pixel-button{transition:none!important}
