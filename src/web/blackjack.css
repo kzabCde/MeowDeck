@@ -89,3 +89,14 @@
  .md5-bj-actions{flex:0 0 auto;min-height:96px;padding-block:7px calc(9px + env(safe-area-inset-bottom))}
  .md5-bj-action-row>.pixel-button{min-height:46px}
 }
+
+/* Short portrait phones: reserve the complete Hit/Stand rail within 568px.
+   Shrink decorative spacing rather than the 48px buttons or card hit targets. */
+@media(max-width:600px) and (max-height:600px){
+ .md5-bj-header{min-height:50px;padding-block:4px}
+ .md5-bj-scorebar{min-height:35px;padding-block:4px}
+ .md5-bj-frame{padding-bottom:4px}
+ .md5-bj-felt{min-height:330px;padding-block:7px;gap:6px}
+ .md5-bj-actions{min-height:96px;padding:7px 10px calc(7px + env(safe-area-inset-bottom))}
+ .md5-bj-action-row>.pixel-button{min-height:48px}
+}
