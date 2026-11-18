@@ -21,6 +21,8 @@ export interface BlackjackState {
  readonly outcome:BlackjackOutcome|null;
  readonly reason:BlackjackReason|null;
  readonly score:BlackjackScore;
+ /** Recent committed action identities. Optional for backwards-compatible P5 schema-1 saves. */
+ readonly processedActionIds?:readonly string[];
 }
 export type BlackjackAction={readonly type:'hit'|'stand'|'next_round';readonly expectedRevision:number;readonly actionId:string};
 export type BlackjackResult={readonly ok:true;readonly state:BlackjackState}|{readonly ok:false;readonly state:BlackjackState;readonly error:'STALE'|'ILLEGAL'};
@@ -57,7 +59,7 @@ function deal(round:number,revision:number,score:BlackjackScore,rng:RandomInt):B
  }
  const state:BlackjackState={
   game:'blackjack',schemaVersion:1,round,revision,deck,player,dealer,
-  phase:'player',outcome:null,reason:null,score
+  phase:'player',outcome:null,reason:null,score,processedActionIds:[]
  };
  const humanNatural=isNatural(player),dealerNatural=isNatural(dealer);
  if(humanNatural&&dealerNatural)return finish(state,'push','both_natural');
@@ -81,23 +83,31 @@ function playDealer(state:BlackjackState):BlackjackState{
  if(player<house)return finish(updated,'dealer','higher_total');
  return finish(updated,'push','equal_total');
 }
+/** A unique action id is rejected even when a client retries it with the new revision.
+ * Retain only recent IDs to prevent unbounded browser saves after long sessions. */
+function committed(previous:BlackjackState,next:BlackjackState,id:string):BlackjackResult{
+ const ids=previous.processedActionIds??[];
+ return {ok:true,state:{...next,processedActionIds:[...ids.slice(-127),id]}};
+}
 export function applyBlackjackAction(state:BlackjackState,action:BlackjackAction,rng:RandomInt=secureRandomInt):BlackjackResult{
- if(!Number.isInteger(action.expectedRevision)||action.expectedRevision!==state.revision||!action.actionId||action.actionId.length>128)
+ if(!Number.isInteger(action.expectedRevision)||action.expectedRevision!==state.revision||
+   typeof action.actionId!=='string'||!action.actionId.trim()||action.actionId.length>128||
+   state.processedActionIds?.includes(action.actionId))
    return {ok:false,state,error:'STALE'};
  if(action.type==='next_round'){
    if(state.phase!=='finished')return {ok:false,state,error:'ILLEGAL'};
-   return {ok:true,state:deal(state.round+1,state.revision+1,state.score,rng)};
+   return committed(state,deal(state.round+1,state.revision+1,state.score,rng),action.actionId);
  }
  if(state.phase!=='player')return {ok:false,state,error:'ILLEGAL'};
- if(action.type==='stand')return {ok:true,state:playDealer({...state,revision:state.revision+1})};
+ if(action.type==='stand')return committed(state,playDealer({...state,revision:state.revision+1}),action.actionId);
  if(action.type==='hit'){
    if(!state.deck.length)return {ok:false,state,error:'ILLEGAL'};
    const draw=fromTop(state.deck);
    const updated:BlackjackState={...state,revision:state.revision+1,deck:draw.deck,player:[...state.player,draw.card]};
    const total=blackjackValue(updated.player).total;
-   if(total>21)return {ok:true,state:finish(updated,'dealer','player_bust')};
-   if(total===21)return {ok:true,state:playDealer(updated)};
-   return {ok:true,state:updated};
+   if(total>21)return committed(state,finish(updated,'dealer','player_bust'),action.actionId);
+   if(total===21)return committed(state,playDealer(updated),action.actionId);
+   return committed(state,updated,action.actionId);
  }
  return {ok:false,state,error:'ILLEGAL'};
 }
@@ -148,5 +158,13 @@ export function validateBlackjackSave(value:unknown):BlackjackState|null{
  if(v.phase==='finished'&&(!['human','dealer','push'].includes(String(v.outcome))||
  !['player_natural','dealer_natural','both_natural','player_bust','dealer_bust','higher_total','equal_total'].includes(String(v.reason))))return null;
  if(Number(v.revision)<Number(v.round)-1)return null;
+ // New saves track a bounded list of recent action IDs. Old schema-1 saves
+ // omit the field and remain readable; they start tracking on their next move.
+ if(v.processedActionIds!==undefined){
+   if(!Array.isArray(v.processedActionIds)||v.processedActionIds.length>128)return null;
+   const ids=v.processedActionIds as unknown[];
+   if(ids.some(id=>typeof id!=='string'||!id.trim()||id.length>128)||new Set(ids).size!==ids.length)return null;
+   if(ids.length>Number(v.revision))return null;
+ }
  return value as BlackjackState;
 }

@@ -88,3 +88,51 @@ test('dealer resolution, round score, fresh shuffle and invalid replay',()=>{
  }
  assert.ok(state.round>30);
 });
+
+
+test('P5 retries cannot apply the same action id across revisions',()=>{
+ const start=startBlackjack(seeded(73));
+ assert.equal(start.phase,'player');
+ const first=applyBlackjackAction(start,action(start,'hit','unique-id-73'),seeded(72));
+ assert.equal(first.ok,true);
+ const current=first.state;
+ const sameId=applyBlackjackAction(current,action(current,'stand','unique-id-73'),seeded(75));
+ assert.equal(sameId.ok,false);
+ assert.equal(sameId.error,'STALE');
+ assert.deepEqual(sameId.state,current);
+ const after=applyBlackjackAction(current,action(current,'stand','different-id-73'),seeded(75));
+ assert.equal(after.ok,true);
+ assert.equal(after.state.processedActionIds.includes('unique-id-73'),true);
+ assert.equal(after.state.processedActionIds.includes('different-id-73'),true);
+});
+test('P5 action identity persists through save/restore and next-round boundaries',()=>{
+ const base=startBlackjack(seeded(73));
+ const stood=applyBlackjackAction(base,action(base,'stand','stand-original'),seeded(88));
+ assert.equal(stood.ok,true);
+ const restored=validateBlackjackSave(JSON.parse(JSON.stringify(stood.state)));
+ assert.ok(restored);
+ const next=applyBlackjackAction(restored,action(restored,'next_round','round-new'),seeded(90));
+ assert.equal(next.ok,true);
+ const duplicate=applyBlackjackAction(next.state,action(next.state,'stand','stand-original'),seeded(2));
+ assert.equal(duplicate.ok,false);
+ assert.equal(duplicate.error,'STALE');
+ assert.equal(validateBlackjackSave(JSON.parse(JSON.stringify(next.state)))?.round,2);
+});
+test('old P5 schema 1 saves without action IDs remain readable and get upgraded on action',()=>{
+ const legacy=startBlackjack(seeded(73));
+ const snapshot=structuredClone(legacy);
+ delete snapshot.processedActionIds;
+ assert.ok(validateBlackjackSave(snapshot));
+ const next=applyBlackjackAction(snapshot,action(snapshot,'stand','legacy-upgrade'),seeded(74));
+ assert.equal(next.ok,true);
+ assert.deepEqual(next.state.processedActionIds,['legacy-upgrade']);
+});
+test('P5 rejects malformed action id history without rejecting existing saves',()=>{
+ const s=startBlackjack(seeded(73));
+ const duplicate=structuredClone(s);duplicate.processedActionIds=['same','same'];
+ assert.equal(validateBlackjackSave(duplicate),null);
+ const invalid=structuredClone(s);invalid.processedActionIds=Array(129).fill('x');
+ assert.equal(validateBlackjackSave(invalid),null);
+ const bad=applyBlackjackAction(s,{type:'stand',expectedRevision:s.revision,actionId:'   '},seeded(75));
+ assert.equal(bad.ok,false);
+});
