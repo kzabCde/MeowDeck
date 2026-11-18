@@ -5,6 +5,7 @@ import { applyAction, createAIObservation, createMatch, getHumanView, type CardI
 import { GameDialog } from './components/GameDialog.js';
 import { Mochi } from './components/Mochi.js';
 import { GameTable } from './components/GameTable.js';
+import { BlackjackGame } from './components/BlackjackGame.js';
 import { DifficultySelection, GameSelection, MainMenu } from './components/Screens.js';
 import { SUIT_SYMBOL, SUIT_CLASS, ensureCardAssets } from './game/assets.js';
 import { choosePracticeMove } from './game/practice-opponent.js';
@@ -22,7 +23,7 @@ import { GameAudio } from './audio/audio-manager.js';
 import { setupPwa, type PwaController, type PwaState } from './pwa/service-worker-register.js';
 import { DEFAULT_TUTORIAL, getTutorialHint, readTutorial, advanceTutorial, writeTutorial, type TutorialProgress } from './tutorial/tutorial.js';
 
-type Screen = 'menu' | 'select' | 'difficulty' | 'game';
+type Screen = 'menu' | 'select' | 'difficulty' | 'game' | 'blackjack';
 type Modal = 'pause' | 'settings' | 'rules' | 'statistics' | 'suit' | 'restart' | 'leave' | 'replace' | 'discard' | 'resetStats' | 'resetSettings' | 'storageConflict' | 'corrupt' | null;
 const fourSuits: readonly Suit[] = ['S', 'H', 'D', 'C'];
 
@@ -351,14 +352,16 @@ export function App() {
       {(saveWarning || saveStatus==='error' || saveStatus==='unavailable') && <span className="p4-status error" role="alert" data-testid="save-status">{t(saveWarning==='conflict'?'storageConflict':saveStatus==='unavailable'?'saveUnavailable':'saveFailed')}</span>}
       {process.env.NODE_ENV==='production' && pwaStatus==='failed' && <span className="p4-status error" role="alert" data-testid="offline-status">{t('offlineFailed')}</span>}
     </div>}
-    {screen === 'menu' && <MainMenu t={t} hasMatch={!!savedMatch || (!!session && !isEnded)} saved={savedMatch} preferredDifficulty={settings.preferredDifficulty} onPlay={() => {playUi();setScreen('difficulty');}} onContinue={() => {if(sessionRef.current&&sessionRef.current.phase!=='match_end'&&!storageConflictRef.current){setResultReady(sessionRef.current.phase==='round_end');setScreen('game');}else void continueMatch();}}
+    {screen === 'menu' && <MainMenu t={t} hasMatch={!!savedMatch || (!!session && !isEnded)} saved={savedMatch} preferredDifficulty={settings.preferredDifficulty} onPlay={() => {playUi();setScreen('select');}} onContinue={() => {if(sessionRef.current&&sessionRef.current.phase!=='match_end'&&!storageConflictRef.current){setResultReady(sessionRef.current.phase==='round_end');setScreen('game');}else void continueMatch();}}
       onSettings={() => setModal('settings')} onStatistics={() => setModal('statistics')} onRules={() => setModal('rules')} />}
     {screen==='menu' && process.env.NODE_ENV==='production' && <div className="p4-install" style={{padding:'8px 24px 16px',margin:'0 auto'}}>
       {pwaInstallable&&<button className="pixel-button button-secondary" onClick={()=>{void pwaRef.current?.install();}}>{t('installApp')}</button>}
       {pwaUpdate&&<button className="pixel-button button-cream" onClick={()=>{void pwaRef.current?.update();}}>{t('updateApp')}</button>}
     </div>}
-    {screen === 'select' && <GameSelection t={t} onBack={() => setScreen('menu')} onNext={() => setScreen('difficulty')} />}
-    {screen === 'difficulty' && <DifficultySelection t={t} preferredDifficulty={settings.preferredDifficulty} onBack={() => setScreen('menu')} onStart={startMatch} />}
+    {screen === 'select' && <GameSelection t={t} onBack={() => setScreen('menu')} onCrazyEights={() => {playUi();setScreen('difficulty');}} onBlackjack={() => {playUi();setScreen('blackjack');}} />}
+    {screen === 'difficulty' && <DifficultySelection t={t} preferredDifficulty={settings.preferredDifficulty} onBack={() => setScreen('select')} onStart={startMatch} />}
+    {screen === 'blackjack' && <BlackjackGame t={t} reducedMotion={reducedMotion} onBack={() => {playUi();setScreen('select');}}
+      onSound={(sound) => {void audioRef.current?.unlock().then(()=>audioRef.current?.play(sound));}} />}
     {screen === 'game' && view && <GameTable view={view} t={t} selected={selected} onSelect={id=>{playUi('select');setSelected(current=>current===id?null:id);}} onPlay={playSelected}
       onDraw={() => {playUi('select');submit('draw_card','human');}} onFinish={() => {playUi('click');submit('finish_turn','human');}}
       onPass={() => {playUi();submit('pass_turn','human');}} onPause={() => {playUi();setModal('pause');}} error={lastError}

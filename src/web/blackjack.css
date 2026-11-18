@@ -1,0 +1,120 @@
+
+/* P5 BLACKJACK — a dedicated pixel-cardroom table, not a dashboard or casino wallet. */
+.md5-blackjack{
+ --md5-cream:#f8ecd3;--md5-gold:#e8c17c;--md5-green:#123e33;
+ min-height:100dvh;display:flex;flex-direction:column;max-width:100%;overflow-x:clip;
+ background:radial-gradient(ellipse at 50% 38%,#265748 0%,#123e33 52%,#071e1c 100%);
+ color:var(--md5-cream);font-family:var(--md4-font-ui,"Noto Sans Thai",Tahoma,sans-serif)
+}
+.md5-bj-header{
+ min-height:60px;display:grid;grid-template-columns:1fr auto 1fr;
+ align-items:center;gap:8px;padding:9px clamp(13px,3vw,45px);
+ border-bottom:2px solid #b48e5b;background:#112c28;
+}
+.md5-bj-header>.md4-text-button{justify-self:start}
+.md5-bj-tools{justify-self:end}
+.md5-bj-brand{display:flex;flex-direction:column;text-align:center;gap:1px;line-height:1.15}
+.md5-bj-brand span{font-size:.64rem;letter-spacing:.16em;color:#a9c0ac}
+.md5-bj-brand strong{font:950 clamp(1.08rem,3vw,1.65rem) var(--md4-font-display,"Trebuchet MS",sans-serif);letter-spacing:.06em;color:var(--md5-gold)}
+.md5-bj-scorebar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:9px clamp(13px,3vw,45px);font-size:.79rem;color:#f0ddaa}
+.md5-bj-round{font-weight:850;white-space:nowrap}
+.md5-bj-score-pips{display:flex;align-items:center;gap:clamp(7px,1.4vw,18px)}
+.md5-bj-score{display:flex;align-items:center;gap:6px}
+.md5-bj-score strong{font-size:1.07rem;font-variant-numeric:tabular-nums;color:#fff0c4}
+.md5-bj-score-sep{opacity:.55}
+.md5-bj-frame{flex:1;display:flex;min-height:0;width:100%;padding:0 clamp(8px,2.3vw,30px) 10px}
+.md5-bj-felt{
+ flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:12px;
+ width:100%;max-width:1060px;min-height:470px;margin:0 auto;padding:14px clamp(12px,4vw,42px);
+ border:7px solid #805735;outline:2px solid #b58d59;border-radius:36px 36px 85px 85px;
+ box-shadow:inset 0 0 0 4px #325846,inset 0 0 35px #071b1d,0 11px 0 #241d19;
+ background:radial-gradient(ellipse at 50% 50%,#256b50 0%,#205b49 44%,#144638 75%,#0c352d 100%);
+}
+.md5-bj-dealer,.md5-bj-player{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+.md5-bj-dealer-head{display:flex;align-items:center;gap:15px;justify-content:center}
+.md5-bj-dealer-head .mochi-small{width:clamp(70px,10vw,105px);height:clamp(70px,10vw,105px)}
+.md5-bj-hand-head{display:flex;align-items:center;gap:12px;text-align:center;font-size:.85rem;font-weight:900}
+.md5-bj-hand-head>strong{min-width:38px;padding:4px 9px;border:2px solid #a88a56;color:#fff3cf;background:#11352e;font:900 1.25rem var(--md4-font-display,"Trebuchet MS",sans-serif)}
+.md5-bj-hand{display:flex;align-items:center;justify-content:center;gap:clamp(5px,1.2vw,12px);width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;min-height:119px;padding:3px 0 7px;scrollbar-width:thin;scrollbar-color:#b6a274 transparent}
+.md5-bj-slot{display:block;flex:0 0 auto;width:clamp(67px,8vw,85px);aspect-ratio:2/3;filter:drop-shadow(3px 4px 0 #0c2824)}
+.md5-bj-card-face{display:block;width:100%;height:100%;object-fit:fill;image-rendering:pixelated}
+.md5-bj-slot .card-back{width:100%;height:100%;display:block}
+.md5-bj-slot .card-back img{display:block;width:100%;height:100%;object-fit:fill}
+.md5-bj-table-mark{display:flex;align-items:center;justify-content:center;min-height:28px;font-size:clamp(.9rem,3vw,1.3rem);letter-spacing:.32em;color:#c9ad72;opacity:.5}
+.md5-bj-player-label{gap:13px}
+.md5-bj-actions{
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+ min-height:126px;padding:13px 14px calc(13px + env(safe-area-inset-bottom));
+ background:#112a26;border-top:2px solid #b08a53;text-align:center
+}
+.md5-bj-instruction{font-weight:800;font-size:.82rem;color:#d6e0c7}
+.md5-bj-action-row{display:flex;justify-content:center;gap:12px;width:100%;max-width:450px}
+.md5-bj-action-row>.pixel-button{flex:1;min-height:48px;font-size:1rem}
+.md5-bj-result{display:flex;flex-direction:column;gap:3px}
+.md5-bj-result strong{color:#fff1bf;font:950 1.2rem var(--md4-font-display,"Trebuchet MS",sans-serif)}
+.md5-bj-result span{color:#b9d0bd;font-size:.83rem}
+.md5-bj-warning{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;color:#ffd0c0}
+.md5-bj-storage-warning{margin:0;font-size:.75rem;color:#ffd0c0}
+@media(max-width:600px){
+ .md5-bj-header{padding:7px 11px;min-height:57px}
+ .md5-bj-header .md4-text-button{font-size:.8rem;padding:7px 3px}
+ .md5-bj-scorebar{padding:8px 12px;font-size:.7rem}
+ .md5-bj-score-pips{gap:7px}
+ .md5-bj-score{flex-direction:column;gap:0;line-height:1.2}
+ .md5-bj-frame{padding:0 7px 7px}
+ .md5-bj-felt{min-height:450px;border-width:5px;border-radius:22px 22px 42px 42px;padding:15px 9px}
+ .md5-bj-dealer-head{gap:4px}
+ .md5-bj-hand{min-height:113px;justify-content:safe center}
+ .md5-bj-slot{width:clamp(58px,19vw,74px)}
+ .md5-bj-actions{min-height:118px}
+}
+@media(max-height:670px){
+ .md5-bj-felt{min-height:350px}
+ .md5-bj-dealer-head .mochi-small{width:60px;height:60px}
+ .md5-bj-table-mark{min-height:12px}
+ .md5-bj-actions{min-height:104px}
+}
+@media(prefers-reduced-motion:reduce){.md5-blackjack *{transition:none!important;animation:none!important}}
+
+/* Two playable tables are physical objects, not SaaS product cards. */
+.md5-game-choice .md5-choice-scene{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:17px;padding:22px 14px 30px}
+.md5-game-choice .md5-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:min(960px,100%);gap:clamp(11px,2.7vw,24px)}
+.md5-game-choice .md5-choice-tile{appearance:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0;min-height:320px;border:3px solid #b38a53;border-bottom-width:8px;border-radius:3px;padding:17px 15px 20px;background:#1b4a3d;color:#fff1d5;box-shadow:inset 0 0 0 5px #285c4c,0 9px #071e1c}
+.md5-game-choice .md5-choice-tile:hover{transform:translateY(-3px);box-shadow:inset 0 0 0 5px #327058,0 12px #071e1c}
+.md5-game-choice .md5-choice-tile:focus-visible{outline:3px solid #f1d99c;outline-offset:3px}
+.md5-game-choice .md5-choice-art{display:flex;align-items:center;justify-content:center;width:100%;height:160px;flex:0 0 auto}
+.md5-game-choice .md5-choice-art img{position:relative;width:clamp(68px,9vw,92px);height:auto;max-height:146px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(4px 6px 0 #102c25)}
+.md5-game-choice .md5-choice-art img:nth-child(1){transform:translateX(17px) rotate(-12deg);z-index:1}
+.md5-game-choice .md5-choice-art img:nth-child(2){transform:translateY(-10px);z-index:3}
+.md5-game-choice .md5-choice-art img:nth-child(3){transform:translateX(-17px) rotate(12deg);z-index:2}
+.md5-game-choice .md5-choice-copy{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center}
+.md5-game-choice .md5-choice-copy small{font-size:.7rem;letter-spacing:.12em;color:#b4c8ab}
+.md5-game-choice .md5-choice-copy strong{font:950 clamp(1.2rem,2.4vw,1.65rem) var(--md4-font-display,"Trebuchet MS",sans-serif);color:#ffdf9d}
+.md5-game-choice .md5-choice-copy span{font-size:.82rem;line-height:1.5;max-width:30ch}
+.md5-game-choice .md5-choice-copy em{font-size:.75rem;font-style:normal;color:#f4cf8d;font-weight:850}
+@media(max-width:560px){
+ .md5-game-choice .md5-choice-scene{justify-content:flex-start;padding:15px 12px}
+ .md5-game-choice .md5-choice-grid{grid-template-columns:1fr;gap:12px;max-width:440px}
+ .md5-game-choice .md5-choice-tile{min-height:175px;padding:13px;flex-direction:row;gap:10px;justify-content:space-between}
+ .md5-game-choice .md5-choice-art{width:42%;height:134px;flex:0 0 42%}
+ .md5-game-choice .md5-choice-art img{width:clamp(55px,15vw,75px);max-height:116px}
+ .md5-game-choice .md5-choice-copy{flex:1;align-items:flex-start;text-align:left;gap:5px}
+ .md5-game-choice .md5-choice-copy strong{font-size:1.22rem}
+ .md5-game-choice .md5-choice-copy span{font-size:.76rem}
+}
+
+/* P5 screenshot QA: fit the complete action rail inside a 720px desktop viewport.
+   Avoid a beautiful table whose primary Hit/Stand buttons fall below the fold. */
+@media(min-width:721px) and (min-height:620px) and (max-height:820px){
+ .md5-blackjack{height:100dvh;min-height:0}
+ .md5-bj-header{min-height:54px;padding-block:6px;flex:0 0 auto}
+ .md5-bj-scorebar{padding-block:5px;flex:0 0 auto}
+ .md5-bj-frame{flex:1 1 0;min-height:0;overflow:hidden;padding-bottom:7px}
+ .md5-bj-felt{min-height:0;height:100%;gap:4px;padding-block:8px}
+ .md5-bj-dealer-head .mochi-small{width:73px;height:73px}
+ .md5-bj-hand{min-height:0;padding-block:2px}
+ .md5-bj-slot{width:clamp(60px,6.3vw,80px)}
+ .md5-bj-table-mark{min-height:12px}
+ .md5-bj-actions{flex:0 0 auto;min-height:96px;padding-block:7px calc(9px + env(safe-area-inset-bottom))}
+ .md5-bj-action-row>.pixel-button{min-height:46px}
+}

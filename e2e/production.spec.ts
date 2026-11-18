@@ -28,6 +28,7 @@ test('Next.js production App Router hydrates, serves canonical manifests and sta
   }
 
   await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
   
   await page.getByTestId('difficulty-hard').click();
   await page.getByTestId('start-match').click();
@@ -42,6 +43,9 @@ test('Next.js production mobile mount has no horizontal overflow', async ({ page
   await page.goto('/');
   await expect(page.getByTestId('main-menu')).toBeVisible();
   await page.getByTestId('play-now').click();
+  await expect(page.getByTestId('game-selection')).toBeVisible();
+  await page.screenshot({ path: 'test-results/visual-review/game-select-mobile-390x844.png', animations: 'disabled' });
+  await page.getByTestId('select-crazy-eights').click();
   await expect(page.getByTestId('difficulty-selection')).toBeVisible();
   
   await expect(page.getByTestId('difficulty-selection')).toBeVisible();
@@ -64,6 +68,7 @@ test('production visual review captures original sprites on title and table, des
   await page.screenshot({ path: 'test-results/visual-review/title-mobile-390x844.png', animations: 'disabled' });
 
   await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
   
   await page.getByTestId('start-match').click();
   await expect(page.getByTestId('gameplay-screen')).toBeVisible();
@@ -76,4 +81,32 @@ test('production visual review captures original sprites on title and table, des
       animations: 'disabled'
     });
   }
+});
+
+test('P5 production Blackjack runs without test seed and restores a finished round',async({page})=>{
+ await page.goto('/?qaSeed=62&fastAI=1');
+ await page.getByTestId('play-now').click();
+ await expect(page.getByTestId('game-selection')).toBeVisible();
+ await page.getByTestId('select-blackjack').click();
+ await expect(page.getByTestId('blackjack-screen')).toBeVisible();
+ await mkdir('test-results/visual-review',{recursive:true});
+ await page.setViewportSize({width:390,height:844});
+ await page.screenshot({path:'test-results/visual-review/blackjack-mobile-390x844.png',animations:'disabled'});
+ await page.setViewportSize({width:1280,height:720});
+ await page.screenshot({path:'test-results/visual-review/blackjack-desktop-1280x720.png',animations:'disabled'});
+ // A responsive table is not acceptable if its primary actions are below the fold.
+ const action=await page.getByTestId('blackjack-hit').boundingBox();
+ expect(action).not.toBeNull();
+ expect((action?.y??0)+(action?.height??0)).toBeLessThanOrEqual(720);
+ const cards=page.getByTestId('blackjack-player-hand').locator('img');
+ await expect(cards).toHaveCount(2);
+ if(await page.getByTestId('blackjack-stand').isVisible().catch(()=>false))
+   await page.getByTestId('blackjack-stand').click();
+ await expect(page.getByTestId('blackjack-result')).toBeVisible();
+ const persisted=await page.evaluate(()=>JSON.parse(localStorage.getItem('meowdeck:blackjack:1')||'null'));
+ expect(persisted?.game).toBe('blackjack');
+ await page.reload();
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-blackjack').click();
+ await expect(page.getByTestId('blackjack-result')).toBeVisible();
 });

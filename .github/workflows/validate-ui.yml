@@ -1,5 +1,21 @@
 name: Validate MeowDeck Next.js Gameplay
 on:
+  push:
+    branches: ['main']
+    paths:
+      - 'src/app/**'
+      - 'src/web/**'
+      - 'public/icons/**'
+      - 'scripts/build-offline.mjs'
+      - 'scripts/sw.template.js'
+      - 'src/games/**'
+      - 'e2e/**'
+      - 'next.config.*'
+      - 'tsconfig*.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'playwright*.ts'
+      - '.github/workflows/validate-ui.yml'
   pull_request:
     paths:
       - 'src/app/**'
@@ -40,14 +56,16 @@ jobs:
         run: npm run test:simulation
       - name: Benchmark AI strategies
         run: npm run benchmark:ai
+      - name: Evaluate paired-seed AI differentiation
+        run: npm run evaluate:ai | tee ai-evaluation.log
       - name: Validate all production art
         run: |
           python -m pip install -r requirements-assets.txt
           npm run validate:assets
       - name: Build Next.js production app
         run: npm run build
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
       - name: Verify Playwright development/production suite separation
         run: |
           npx playwright test --config=playwright.config.ts --list > /tmp/meowdeck-dev-tests.txt
@@ -61,6 +79,8 @@ jobs:
           grep -q 'production.spec.ts' /tmp/meowdeck-prod-tests.txt
       - name: Run seeded development E2E
         run: npm run test:e2e
+      - name: Run focused cross-browser gameplay smoke
+        run: npm run test:e2e:cross-browser
       - name: Run production build E2E
         run: npm run test:e2e:production
       - name: Upload production UI screenshots
@@ -69,6 +89,13 @@ jobs:
         with:
           name: meowdeck-visual-review
           path: test-results/visual-review/
+          if-no-files-found: ignore
+      - name: Upload AI balance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meowdeck-ai-evaluation
+          path: ai-evaluation.log
           if-no-files-found: ignore
       - name: Upload Playwright diagnostics
         if: failure()
