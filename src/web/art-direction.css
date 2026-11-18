@@ -1,0 +1,360 @@
+/* MeowDeck V4 — single-source art direction.
+   The table is a game scene, not a product dashboard. Real card/Mochi sprites remain untouched. */
+:root{
+ --md4-ink:#061c1b;--md4-night:#0b2323;--md4-felt:#194b40;--md4-felt-lit:#246557;
+ --md4-cream:#f8ecd3;--md4-gold:#e8c17c;--md4-soft:#b0cbb4;--md4-coral:#ed817c;
+ font-family:"Noto Sans Thai","Thonburi",Tahoma,system-ui,sans-serif;
+ color:var(--md4-cream);background:var(--md4-ink);
+}
+html,body{min-width:320px}
+.meowdeck-app{background:#091f1e;color:var(--md4-cream)}
+.pixel-art,.card-image,.mochi-frame{image-rendering:pixelated}
+.pixel-button{border:2px solid #816647;border-radius:2px;background:#234a3e;color:var(--md4-cream);
+ box-shadow:inset 0 2px #fff3d70d,0 4px #031613;min-height:44px;padding:9px 18px;
+ font-family:inherit;font-size:.87rem;font-weight:800;letter-spacing:.025em;text-shadow:none;transition:transform 120ms ease,box-shadow 120ms ease,background 120ms ease}
+.pixel-button:not(:disabled):hover{filter:none;background:#335c4d;transform:translateY(-2px);box-shadow:inset 0 2px #ffffff1e,0 6px #031613}
+.pixel-button:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px #031613}
+.button-primary{background:var(--md4-gold);border-color:#ffedbf;color:#2e271e;box-shadow:inset 0 2px #ffffff62,0 5px #83603b}
+.button-primary:not(:disabled):hover{background:#f9d895;box-shadow:inset 0 2px #ffffff70,0 7px #83603b}
+.button-cream{background:#305246;border-color:#769783;color:var(--md4-cream);box-shadow:0 4px #10251f}
+.button-secondary{background:#244439;border-color:#81917d}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #f6d88d;outline-offset:3px}
+.suit-hearts,.suit-diamonds{color:var(--md4-coral)!important}
+.suit-spades,.suit-clubs{color:var(--md4-cream)!important}
+
+/* Title scene: a physical little card room, with a poster-like composition. */
+.md4-title-screen{position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:100dvh;overflow:hidden;
+ background:radial-gradient(ellipse at 50% 52%,#17483d 0%,#0b2a29 45%,#061b1b 78%)}
+.md4-title-screen:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.28;
+ background:repeating-linear-gradient(90deg,transparent 0 91px,#a8c49a15 91px 92px),repeating-linear-gradient(0deg,transparent 0 91px,#a8c49a0b 91px 92px)}
+.md4-title-screen:after{content:"";position:absolute;z-index:-1;inset:18px;border:1px solid #a7c09c33;pointer-events:none;
+ clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 13px,100% calc(100% - 13px),calc(100% - 13px) 100%,13px 100%,0 calc(100% - 13px),0 13px)}
+.md4-menu-header,.md4-menu-footer{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:1400px;margin:0 auto;
+ padding:clamp(12px,2vh,19px) clamp(27px,4vw,58px)}
+.md4-menu-header{z-index:5;flex:0 0 auto}.md4-menu-edition,.md4-menu-footer{font:800 .64rem/1.4 "Courier New",monospace;letter-spacing:.17em;color:#9bb6a6}
+.md4-menu-edition{color:var(--md4-gold)}.md4-menu-tools{display:flex;gap:15px}
+.md4-text-button{border:0;background:transparent;color:#d0dac9;cursor:pointer;font-family:inherit;font-size:.83rem;font-weight:750;padding:8px 4px;letter-spacing:0}
+.md4-text-button:hover{color:var(--md4-gold)}
+.md4-title-composition{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;padding:0 22px;position:relative}
+.md4-title-mark{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;margin-bottom:-7px;pointer-events:none}
+.md4-title-ornament{font:800 .66rem "Courier New",monospace;letter-spacing:.18em;color:var(--md4-gold)}
+.md4-title-mark .brand-title{display:flex;flex-direction:column;align-items:center;margin:3px 0 0;line-height:.8;letter-spacing:-.085em;
+ font-family:"Trebuchet MS",Tahoma,system-ui,sans-serif;font-size:clamp(3.6rem,7.2vw,6.1rem);font-weight:1000;color:var(--md4-cream);
+ text-shadow:3px 3px 0 #507362,6px 6px 0 #09221e,9px 9px 0 #071714}
+.md4-title-mark .brand-title span{color:inherit}
+.md4-title-mark .brand-title span:last-child{color:var(--md4-gold)}
+.md4-title-suits{font:900 1rem Georgia,serif;letter-spacing:1em;color:var(--md4-gold);margin-top:17px;padding-left:1em}
+.md4-title-suits i{font-style:normal;color:var(--md4-coral)}
+.md4-title-diorama{width:min(600px,95vw);height:clamp(175px,34vh,295px);position:relative;flex:0 0 auto;isolation:isolate}
+.md4-title-halo{position:absolute;left:50%;top:0;transform:translateX(-50%);height:clamp(178px,32vh,276px);aspect-ratio:1;
+ border:2px solid #eac98239;border-radius:50%;background:radial-gradient(circle,#75a86b18 0 28%,transparent 72%);box-shadow:inset 0 0 0 17px #e0c17c09}
+.md4-title-halo:after{content:"";position:absolute;inset:19px;border:1px dashed #e9c57f58;border-radius:50%}
+.md4-title-mochi{position:absolute;z-index:3;left:50%;bottom:17px;transform:translateX(-50%)}
+.md4-title-mochi .mochi-large{width:clamp(165px,28vh,255px);height:clamp(165px,28vh,255px);
+ filter:drop-shadow(0 9px 0 #061b1888)}
+.md4-title-table{position:absolute;z-index:2;left:50%;bottom:0;transform:translateX(-50%);width:94%;height:66px;
+ background:#28624f;border:4px solid #b79358;border-bottom:12px solid #102a22;border-radius:50%;box-shadow:0 12px 0 #031714;
+ clip-path:polygon(7% 9%,93% 9%,100% 46%,97% 84%,87% 100%,13% 100%,3% 84%,0 46%)}
+.md4-title-card{position:absolute;z-index:4;bottom:22px;width:clamp(59px,7.6vw,91px);aspect-ratio:2/3;filter:drop-shadow(4px 6px 0 #092019)}
+.md4-title-card img,.md4-title-card .card-back{width:100%;height:100%}
+.md4-card-left{left:13%;transform:rotate(-16deg)}.md4-card-back{left:25%;transform:rotate(6deg)}.md4-card-right{right:15%;transform:rotate(15deg)}
+.md4-title-choices{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:19px}
+.md4-title-choices .md4-start{display:flex;align-items:center;justify-content:space-between;width:clamp(210px,28vw,282px);min-height:57px;padding:10px 20px;
+ font-size:1.12rem;letter-spacing:.03em;text-transform:uppercase}
+.md4-start span:last-child{font-size:1.9rem;line-height:1}
+.md4-resume{border:0;background:transparent;color:var(--md4-cream);font-size:.89rem;font-weight:750;padding:9px 12px;cursor:pointer}
+.md4-resume span{color:#a9bca7;font:700 .74rem "Courier New",monospace}
+.md4-stats-link{font-size:.74rem;color:#8ea99b}
+.md4-menu-footer{z-index:5;flex:0 0 auto;padding-block:12px;opacity:.75}
+
+/* Flow screens: short, unmistakably playable game decisions. */
+.md4-selection-page{min-height:100dvh;max-width:100%;padding:0;display:flex;flex-direction:column;position:relative;
+ background:radial-gradient(ellipse at 50% 58%,#1c493f,#0b2826 67%,#071b1b)}
+.md4-section-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #6a8c7540;
+ padding:15px clamp(20px,4vw,50px);color:#9cbaa8;font:800 .7rem "Courier New",monospace;letter-spacing:.14em}
+.md4-selection-scene,.md4-difficulty-scene{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ padding:24px 18px 40px;gap:18px}
+.md4-scene-head{text-align:center}.md4-scene-head>span{font:800 .7rem "Courier New",monospace;color:var(--md4-gold);letter-spacing:.22em}
+.md4-scene-head h1{font:950 clamp(1.5rem,4vw,2.4rem) "Trebuchet MS",Tahoma,sans-serif;letter-spacing:-.02em;margin:12px 0 4px}
+.md4-game-token{appearance:none;display:flex;align-items:center;gap:clamp(15px,5vw,65px);text-align:left;
+ width:min(640px,94vw);min-height:255px;padding:25px clamp(16px,4vw,35px);
+ border:3px solid #ba9660;border-bottom-width:8px;border-radius:2px;background:#1c483d;color:var(--md4-cream);
+ box-shadow:inset 0 0 0 6px #265d4d,0 12px 0 #071d1b;transition:transform 130ms,box-shadow 130ms}
+.md4-game-token:hover{transform:translateY(-4px);box-shadow:inset 0 0 0 6px #317059,0 16px 0 #071d1b}
+.md4-token-art{display:flex;align-items:center;justify-content:center;flex:0 0 45%;min-width:0;padding:12px}
+.md4-token-art img{height:clamp(125px,21vh,180px);max-width:none;filter:drop-shadow(4px 7px 0 #102c25)}
+.md4-token-art img:nth-child(1){transform:translateX(18px) rotate(-14deg);z-index:1}
+.md4-token-art img:nth-child(2){transform:translateY(-13px);z-index:3}
+.md4-token-art img:nth-child(3){transform:translateX(-19px) rotate(13deg);z-index:2}
+.md4-token-info{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.md4-token-info strong{font:950 1.7rem "Trebuchet MS",Tahoma,sans-serif}
+.md4-token-info small{color:#bad1ba;line-height:1.5;font-size:.87rem}
+.md4-token-info em{color:var(--md4-gold);font-style:normal;font-weight:850;letter-spacing:.03em}
+.md4-scene-foot{font:900 1.15rem Georgia,serif;letter-spacing:1.4em;color:#d3b5777c;padding-left:1.4em;margin-top:15px}
+.md4-difficulty-scene{gap:12px}.md4-difficulty-mochi{width:clamp(148px,24vh,218px);height:clamp(148px,24vh,218px);display:grid;place-items:center;
+ border-bottom:3px solid #987b4d;border-radius:50% 50% 5% 5%;background:radial-gradient(circle at 50% 70%,#77996327,transparent 65%)}
+.md4-difficulty-mochi .mochi-large{width:100%;height:100%}
+.md4-mode-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;width:min(680px,95vw);margin-top:5px}
+.md4-mode{min-height:62px;border:2px solid #5a7565;border-bottom:5px solid #18342c;background:#21453b;color:#c6d7c7;
+ padding:8px 5px;font-size:.92rem;font-weight:850;cursor:pointer;transition:transform 120ms}
+.md4-mode:hover{transform:translateY(-3px)}.md4-mode.is-active{border-color:var(--md4-gold);background:#365c45;color:#ffedb7;box-shadow:inset 0 0 0 2px #e8c17c31}
+.md4-mode-description{text-align:center;color:#c0d1c0;max-width:540px;min-height:40px;margin:3px 0 5px;font-size:.87rem;line-height:1.55}
+.md4-difficulty-start{min-width:210px;display:flex;justify-content:space-between;align-items:center;font-size:1rem}
+
+/* Live match: all available space belongs to cards, Mochi and the felt. */
+.gameplay-page.md4-cardroom{display:flex;flex-direction:column;height:100dvh;min-height:480px;overflow:hidden;
+ background:repeating-linear-gradient(130deg,#0a2422 0 42px,#09201f 42px 84px)}
+.md4-cardroom .game-hud{flex:0 0 56px;min-height:0;display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;
+ gap:clamp(9px,2vw,24px);padding:0 clamp(13px,2.7vw,44px);border:0;border-bottom:2px solid #426559;background:#071e1e;box-shadow:0 5px 0 #061715;z-index:3}
+.md4-cardroom .hud-brand{font:1000 clamp(15px,1.5vw,20px) "Trebuchet MS",Tahoma,sans-serif;letter-spacing:-.08em;color:var(--md4-cream);white-space:nowrap}
+.md4-cardroom .hud-brand:before{content:"♣";font:24px Georgia,serif;margin-right:8px;color:var(--md4-gold);vertical-align:middle}
+.md4-cardroom .hud-brand span{color:var(--md4-gold)}.md4-cardroom .hud-star{display:none}
+.md4-cardroom .hud-round{font:800 11px "Courier New",monospace;letter-spacing:.13em;color:#99b7a6;white-space:nowrap}
+.md4-cardroom .hud-round strong{font-size:18px;letter-spacing:0;color:var(--md4-cream)}
+.md4-cardroom .hud-score{justify-self:end;display:flex;align-items:center;gap:10px;background:none;border:0;box-shadow:none;padding:0}
+.md4-cardroom .hud-score span{font:800 11px "Courier New",monospace;letter-spacing:.06em;color:var(--md4-soft)}
+.md4-cardroom .hud-score strong{font:900 23px "Trebuchet MS",sans-serif;color:var(--md4-gold)}
+.md4-cardroom .hud-score .score-sep{font-size:18px;color:#668a78}
+.md4-cardroom .pause-btn{background:transparent;border:1px solid #72917d;box-shadow:3px 3px 0 #061514;
+ min-height:37px;min-width:41px;padding:3px 8px;font:900 19px "Courier New",monospace}
+.md4-cardroom .pause-btn span{display:none}
+.md4-cardroom .table-frame{flex:1 1 0;min-height:0;width:100%;max-width:1550px;margin:auto;padding:12px clamp(8px,2vw,28px) 9px;display:flex}
+.md4-cardroom .game-table{position:relative;isolation:isolate;display:grid;grid-template-rows:minmax(140px,29%) minmax(125px,1fr) minmax(130px,27%);
+ align-items:center;justify-content:initial;width:100%;height:100%;min-height:0;flex:1;padding:0 clamp(12px,3vw,47px);overflow:hidden;
+ background:radial-gradient(ellipse at 50% 47%,#205a4e 0%,#19493f 61%,#11382f 100%);
+ border:7px solid #103c34;border-radius:13px;outline:2px solid #987750;
+ box-shadow:inset 0 0 0 3px #30715d,inset 0 0 0 8px #0b3930,0 9px 0 #071b19,0 13px 17px #04151088}
+.md4-cardroom .game-table:before{content:"";position:absolute;inset:13px;border:1px solid #90b99d4a;pointer-events:none;z-index:0;
+ clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 9px,100% calc(100% - 9px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px),0 9px)}
+.md4-cardroom .game-table:after{content:"";position:absolute;inset:0;border:0;border-radius:0;z-index:0;
+ background-image:radial-gradient(#cce6bc12 1px,transparent 1px);background-size:8px 8px;pointer-events:none}
+.md4-cardroom .opponent-area,.md4-cardroom .table-center,.md4-cardroom .player-area{position:relative;z-index:1}
+.md4-cardroom .opponent-area{width:100%;min-height:0;max-width:none;align-self:start;display:flex;flex-direction:column;align-items:center;
+ justify-content:flex-start;gap:1px;padding-top:0}
+.md4-cardroom .opponent-persona{display:flex;flex-direction:column;align-items:center;gap:0}
+.md4-cardroom .opponent-avatar{width:clamp(92px,14.5vh,140px);height:clamp(92px,14.5vh,140px);border:0;border-radius:0;
+ background:radial-gradient(circle at 50% 78%,#ddb96d20,transparent 70%);filter:drop-shadow(0 6px 0 #082822)}
+.md4-cardroom .opponent-avatar .mochi-small{width:100%;height:100%}
+.md4-cardroom .opponent-title{display:flex;align-items:center;gap:12px;min-height:17px}
+.md4-cardroom .opponent-title h2{font:900 12px "Trebuchet MS",Tahoma,sans-serif;color:var(--md4-cream);margin:0;letter-spacing:.19em}
+.md4-cardroom .difficulty-name{font:800 9px "Courier New",monospace;color:#acd1b4;letter-spacing:.09em;margin:0}
+.md4-cardroom .opponent-cards{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:11px}
+.md4-cardroom .opponent-card-fan{display:flex;min-height:54px;align-items:center;justify-content:center;padding-left:20px}
+.md4-cardroom .card-back-small{width:37px;max-height:56px;margin-left:-18px;filter:drop-shadow(2px 3px 0 #09251f)}
+.md4-cardroom .card-back-small:first-child{margin-left:0}
+.md4-cardroom .hand-count{font:800 10px "Courier New",monospace;color:#b9d0b9;white-space:nowrap}
+.md4-cardroom .turn-banner{position:absolute;z-index:4;right:clamp(32px,5vw,80px);top:clamp(25px,6vh,47px);left:auto;
+ display:flex;align-items:center;gap:8px;min-height:0;min-width:0;width:auto;margin:0;padding:8px 12px;
+ border:1px solid #90885a;background:#0a342d94;border-radius:0;box-shadow:none;
+ font:900 11px "Trebuchet MS",Tahoma,sans-serif;color:var(--md4-gold);letter-spacing:.08em}
+.md4-cardroom .turn-banner strong{font:inherit;color:inherit}
+.md4-cardroom .md-turn-dot{height:8px;width:8px;border-radius:0;background:var(--md4-gold);box-shadow:0 0 0 3px #e8c17c24}
+.md4-cardroom .opponent-turn{border-color:#638579;color:#d3e0c8}
+.md4-cardroom .table-center{width:100%;min-height:0;display:flex;flex:initial;align-self:center;justify-content:center;align-items:center;
+ gap:clamp(11px,3vw,51px)}
+.md4-cardroom .pile-group{display:flex;flex-direction:column-reverse;align-items:center;gap:11px}
+.md4-cardroom .draw-pile,.md4-cardroom .discard-pile{position:relative;width:clamp(80px,15vh,111px);height:auto;aspect-ratio:2/3;
+ filter:drop-shadow(4px 6px 0 #09251e)}
+.md4-cardroom .draw-pile-action{display:block;width:100%;height:100%;border:0;padding:0;background:none;border-radius:0}
+.md4-cardroom .draw-pile-action:not(:disabled):hover{filter:brightness(1.09) drop-shadow(0 0 5px #f7db8b);transform:translateY(-3px)}
+.md4-cardroom .draw-pile-action>.card-back{width:100%;height:100%}
+.md4-cardroom .discard-pile img{width:100%;height:100%;object-fit:contain}
+.md4-cardroom .pile-label{font:800 10px "Courier New",monospace;color:#c3d1b9;letter-spacing:.17em}
+.md4-cardroom .pile-count{position:absolute;bottom:-10px;right:-12px;width:27px;height:24px;border:2px solid #c59e68;
+ background:#09251f;color:var(--md4-cream);border-radius:0;font:900 12px "Courier New",monospace;box-shadow:2px 2px 0 #061514}
+.md4-cardroom .table-center-symbol{font-size:17px;color:#c9af6a94}
+.md4-cardroom .active-suit{display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;
+ padding:0 0 0 clamp(10px,2vw,22px);border-left:1px dashed #9cc29a69}
+.md4-cardroom .active-suit span{font:800 10px "Courier New",monospace;letter-spacing:.04em;color:#bad2b9;white-space:nowrap}
+.md4-cardroom .active-suit strong{font:900 51px Georgia,serif;line-height:1;color:var(--md4-coral);filter:drop-shadow(0 3px 0 #502b2b)}
+.md4-cardroom .player-area{width:min(100%,1000px);max-width:none;min-height:0;align-self:end;display:flex;
+ flex-direction:column;padding-bottom:clamp(8px,1.6vh,16px)}
+.md4-cardroom .hand-title{display:flex;justify-content:space-between;align-items:center;max-width:800px;width:100%;
+ margin:0 auto;padding:0 7px;color:#c5d8c0;font:800 10px "Courier New",monospace;letter-spacing:.16em}
+.md4-cardroom .hand-title .hand-count{color:var(--md4-gold)}
+.md4-cardroom .player-hand{width:100%;min-height:0;display:flex;align-items:flex-end;justify-content:safe center;
+ gap:clamp(3px,.7vw,9px);padding:12px 7px 4px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.md4-cardroom .player-hand::-webkit-scrollbar{display:none}
+.md4-cardroom .card-tile{position:relative;display:block;flex:0 0 auto;width:clamp(62px,12vh,101px);height:auto;aspect-ratio:2/3;
+ border:0;border-radius:0;background:none;padding:0;box-shadow:0 3px 0 #072722;
+ transition:transform .12s cubic-bezier(.22,1.4,.26,1),filter .12s}
+.md4-cardroom .card-tile.is-playable{box-shadow:0 3px 0 #cbac6c}
+.md4-cardroom .card-tile.is-playable:hover,.md4-cardroom .card-tile.is-playable:focus-visible{transform:translateY(-9px);z-index:4;filter:drop-shadow(0 0 5px #f9d588)}
+.md4-cardroom .card-tile.is-selected{transform:translateY(-14px) scale(1.035)!important;z-index:5;
+ filter:drop-shadow(0 0 5px #f7d98a);box-shadow:0 3px 0 #f5dfab}
+.md4-cardroom .card-tile.is-disabled{opacity:.7;filter:saturate(.78)}
+.md4-cardroom .playable-mark{display:none}
+.md4-cardroom .scroll-hint{display:none}
+.md4-cardroom .action-footer{flex:0 0 70px;min-height:0;display:flex;flex-direction:row;align-items:center;justify-content:space-between;
+ gap:14px;padding:6px clamp(14px,3.5vw,55px) max(9px,env(safe-area-inset-bottom));
+ border:0;border-top:2px solid #355a4e;background:#071d1c;box-shadow:none}
+.md4-cardroom .action-status{min-height:0;max-width:44%;color:#d1dcc9;font-size:.76rem}
+.md4-cardroom .action-status:empty{display:none}
+.md4-cardroom .action-buttons{display:flex;gap:12px;justify-content:flex-end;margin-left:auto}
+.md4-cardroom .action-buttons .pixel-button{min-width:121px;text-transform:uppercase;font-size:.81rem}
+.md4-cardroom .action-buttons .button-primary{min-width:170px}
+.md4-cardroom .status-error{color:var(--md4-coral)}
+/* Keep event effects in the stage and never over text or controls. */
+.md4-cardroom .md-card-impact{border-color:var(--md4-gold)}
+.md4-cardroom .p3-card-flight{z-index:5}
+.game-dialog{border:2px solid #c29c60;outline:4px solid #091d1b;border-radius:2px;background:#183d33;
+ color:var(--md4-cream);box-shadow:0 10px 0 #071715;width:min(440px,calc(100vw - 25px))}
+.game-dialog::backdrop{background:#041512d9;backdrop-filter:none}
+.dialog-header{background:#12342b;border-color:#698671;padding:13px 18px}
+.dialog-header h2{font:900 1.12rem "Trebuchet MS",Tahoma,sans-serif}
+.dialog-content{padding:18px}.dialog-content p{color:#d1dfc7}
+.suit-choice{background:#255344;border:2px solid #6d987f;border-bottom:5px solid #0d2823;border-radius:2px;box-shadow:none}
+.suit-choice:hover{border-color:var(--md4-gold)}
+.p4-settings select,.p4-settings input[type=range]{background:#12382f;border:1px solid #71957d;color:var(--md4-cream)}
+.p4-stats-grid>div{background:transparent;border-bottom:1px solid #6c887555}
+.p4-stats-grid strong,.result-stats strong{color:var(--md4-gold)}
+.result-stats{background:#173f35;border-color:#6c8875}.p4-status.error{background:#49302d;border-color:var(--md4-coral)}
+
+@media(max-width:720px){
+ .md4-title-mark .brand-title{font-size:clamp(3.15rem,12vw,4.8rem)}
+ .md4-menu-header,.md4-menu-footer{padding:12px 22px}
+ .md4-title-diorama{height:clamp(180px,30vh,255px)}
+ .md4-title-halo{height:clamp(155px,28vh,230px)}
+ .md4-title-mochi .mochi-large{height:clamp(150px,25vh,215px);width:clamp(150px,25vh,215px)}
+ .md4-title-card{width:clamp(50px,12vw,75px)}
+ .md4-card-left{left:8%}.md4-card-back{left:22%}.md4-card-right{right:10%}
+ .md4-game-token{flex-direction:column;gap:6px;padding:18px;min-height:0}
+ .md4-token-art{flex-basis:auto}.md4-token-art img{height:clamp(100px,17vh,139px)}
+ .md4-token-info{align-items:center;text-align:center;gap:7px}
+ .md4-game-token .md4-token-info strong{font-size:1.45rem}
+ .md4-cardroom .game-hud{flex-basis:47px;grid-template-columns:1fr auto auto;gap:7px;padding:0 9px}
+ .md4-cardroom .hud-brand{font-size:14px}.md4-cardroom .hud-brand:before{font-size:19px;margin-right:4px}
+ .md4-cardroom .hud-round{position:absolute;z-index:6;top:49px;left:20px;font-size:9px;background:#11382fa0;padding:5px 7px}
+ .md4-cardroom .hud-round strong{font-size:12px}
+ .md4-cardroom .hud-score{gap:5px}.md4-cardroom .hud-score span{font-size:8px}.md4-cardroom .hud-score strong{font-size:17px}
+ .md4-cardroom .pause-btn{min-height:35px;min-width:35px;font-size:17px;padding:3px 7px}
+ .md4-cardroom .table-frame{padding:7px 5px 5px}
+ .md4-cardroom .game-table{grid-template-rows:minmax(128px,30%) minmax(128px,1fr) minmax(120px,29%);
+  padding:0 8px;border-width:4px;border-radius:8px}
+ .md4-cardroom .game-table:before{inset:8px}
+ .md4-cardroom .opponent-area{padding-top:12px;gap:0}
+ .md4-cardroom .opponent-avatar,.md4-cardroom .opponent-avatar .mochi-small{width:clamp(74px,12vh,100px);height:clamp(74px,12vh,100px)}
+ .md4-cardroom .opponent-title{min-height:14px}
+ .md4-cardroom .opponent-title h2{font-size:10px}.md4-cardroom .difficulty-name{font-size:8px}
+ .md4-cardroom .opponent-card-fan{padding-left:14px;min-height:39px}
+ .md4-cardroom .card-back-small{width:26px;max-height:39px;margin-left:-13px}
+ .md4-cardroom .opponent-cards{gap:6px}.md4-cardroom .hand-count{font-size:9px}
+ .md4-cardroom .turn-banner{top:17px;right:10px;font-size:9px;padding:6px 8px;gap:5px}
+ .md4-cardroom .table-center{gap:clamp(7px,3vw,20px)}
+ .md4-cardroom .draw-pile,.md4-cardroom .discard-pile{width:clamp(55px,10.8vh,82px)}
+ .md4-cardroom .pile-group{gap:6px}.md4-cardroom .pile-label{font-size:8px}
+ .md4-cardroom .table-center-symbol{font-size:12px}
+ .md4-cardroom .active-suit{gap:2px;padding-left:8px}
+ .md4-cardroom .active-suit span{font-size:8px;max-width:51px;text-align:center;white-space:normal}
+ .md4-cardroom .active-suit strong{font-size:35px}
+ .md4-cardroom .player-area{padding-bottom:11px}
+ .md4-cardroom .hand-title{padding-inline:9px;font-size:9px}
+ .md4-cardroom .player-hand{justify-content:safe center;overflow-x:auto;gap:0;padding:10px 8px 4px}
+ .md4-cardroom .card-tile{width:clamp(50px,17vw,69px);margin-left:calc(-1 * clamp(15px,5.5vw,23px))}
+ .md4-cardroom .card-tile:first-child{margin-left:0}
+ .md4-cardroom .card-tile.is-selected{transform:translateY(-8px) scale(1.02)!important}
+ .md4-cardroom .action-footer{flex-basis:63px;gap:5px;padding:5px 9px max(6px,env(safe-area-inset-bottom))}
+ .md4-cardroom .action-status{display:none}
+ .md4-cardroom .action-buttons{width:100%;gap:8px}
+ .md4-cardroom .action-buttons .pixel-button,.md4-cardroom .action-buttons .button-primary{flex:1;min-width:0;padding:8px 5px;font-size:.76rem;min-height:42px}
+}
+@media(max-width:370px){
+ .md4-menu-edition{font-size:.53rem}.md4-menu-tools{gap:8px}
+ .md4-cardroom .hud-brand:before{display:none}.md4-cardroom .hud-score{gap:3px}
+ .md4-cardroom .table-center{gap:6px}
+ .md4-cardroom .active-suit span{font-size:7px}
+ .md4-cardroom .card-tile{margin-left:calc(-1 * clamp(15px,5.5vw,23px))}
+ .md4-mode{font-size:.78rem;padding:7px 2px}
+}
+@media(max-height:650px){
+ .md4-title-mark .brand-title{font-size:clamp(3rem,6vw,4rem)}
+ .md4-title-diorama{height:clamp(160px,27vh,220px)}
+ .md4-title-halo{height:clamp(152px,26vh,208px)}
+ .md4-title-mochi .mochi-large{width:clamp(155px,24vh,200px);height:clamp(155px,24vh,200px)}
+ .md4-title-choices{padding-top:13px}
+ .md4-title-choices .md4-start{min-height:49px}
+ .md4-cardroom .game-hud{flex-basis:41px}
+ .md4-cardroom .game-table{grid-template-rows:minmax(97px,29%) minmax(94px,1fr) minmax(100px,31%)}
+ .md4-cardroom .opponent-avatar,.md4-cardroom .opponent-avatar .mochi-small{width:clamp(65px,11vh,82px);height:clamp(65px,11vh,82px)}
+ .md4-cardroom .opponent-card-fan{min-height:30px}
+ .md4-cardroom .card-back-small{width:23px;max-height:34px}
+ .md4-cardroom .draw-pile,.md4-cardroom .discard-pile{width:clamp(50px,10vh,72px)}
+ .md4-cardroom .card-tile{width:min(clamp(50px,17vw,69px),clamp(49px,11.3vh,78px))}
+ .md4-cardroom .action-footer{flex-basis:53px}
+ .md4-cardroom .action-buttons .pixel-button{min-height:44px}
+}
+@media(prefers-reduced-motion:reduce){
+ .md4-cardroom .card-tile,.md4-title-card,.md4-game-token,.md4-mode,.pixel-button{transition:none!important}
+}
+.reduce-motion .md4-cardroom .card-tile,.reduce-motion .md4-game-token,.reduce-motion .pixel-button{transition:none!important}
+/* Screenshot QA refinement: legible Thai HUD, quieter unused labels and honest disabled actions. */
+.md4-cardroom .hud-round{font-size:12px}
+.md4-cardroom .hud-score span{font-size:12px}
+.md4-cardroom .opponent-title .difficulty-name{display:none}
+.md4-cardroom .opponent-title h2{font-size:13px}
+.md4-cardroom .hand-count{font-size:12px}
+.md4-cardroom .pile-label{font-size:12px}
+.md4-cardroom .active-suit span{font-size:12px}
+.md4-cardroom .hand-title{font-size:12px}
+.md4-cardroom .turn-banner{font-size:12px}
+.md4-cardroom .action-buttons .pixel-button{font-size:.91rem}
+.md4-cardroom .action-buttons .button-primary:disabled{
+ background:#23453a;color:#cad2bb;border-color:#668773;box-shadow:0 3px #0b261d;opacity:.9
+}
+@media(max-width:720px){
+ .md4-cardroom .hud-round{font-size:10px}
+ .md4-cardroom .hud-score span{font-size:10px}
+ .md4-cardroom .opponent-title h2{font-size:11px}
+ .md4-cardroom .hand-count{font-size:11px}
+ .md4-cardroom .pile-label{font-size:10px}
+ .md4-cardroom .active-suit span{font-size:10px}
+ .md4-cardroom .hand-title{font-size:11px}
+ .md4-cardroom .turn-banner{font-size:10px}
+ .md4-cardroom .action-buttons .pixel-button{font-size:.86rem}
+}
+@media(max-width:370px){
+ .md4-cardroom .hud-score span{font-size:9px}
+ .md4-cardroom .pile-label{font-size:10px}
+ .md4-cardroom .active-suit span{font-size:9px}
+}
+@media(max-height:650px){
+ .md4-cardroom .opponent-avatar .mochi-small{transform:scale(1.13);transform-origin:center bottom}
+}
+
+/* Physical deck remains visible even when a draw is not legal; never wash out the art. */
+.md4-cardroom .draw-pile-action:disabled{opacity:1;filter:none;cursor:default}
+.md4-cardroom .card-tile.is-disabled{opacity:.9;filter:saturate(.85) brightness(.98)}
+.md4-cardroom .card-tile.is-playable:not(.is-selected){filter:drop-shadow(0 3px 0 #e4bf7e66)}
+
+/* Game selection is an illustrated choice, never a boxed product tile. */
+.md4-selection-page .md4-game-token{
+ position:relative;flex-direction:column;justify-content:center;align-items:center;
+ width:min(570px,95vw);min-height:300px;gap:12px;padding:20px 18px 30px;
+ background:transparent;border:0;border-radius:0;box-shadow:none;text-align:center
+}
+.md4-selection-page .md4-game-token:hover{
+ background:transparent;border:0;box-shadow:none;transform:translateY(-5px)
+}
+.md4-selection-page .md4-game-token:focus-visible{outline:2px solid var(--md4-gold);outline-offset:7px}
+.md4-selection-page .md4-token-art{
+ position:relative;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+ min-height:205px;width:100%;padding:11px;isolation:isolate
+}
+.md4-selection-page .md4-token-art:before{
+ content:"";position:absolute;z-index:-1;width:235px;height:190px;border:1px dashed #a6b88e5c;
+ border-radius:50%;background:radial-gradient(ellipse at center,#4e856b29,transparent 70%)
+}
+.md4-selection-page .md4-token-art img{height:clamp(130px,21vh,175px)}
+.md4-selection-page .md4-token-info{align-items:center;text-align:center;gap:12px}
+.md4-selection-page .md4-token-info strong{font-size:clamp(1.7rem,4vw,2.15rem);line-height:1.1}
+.md4-selection-page .md4-token-info small{font-size:.93rem;max-width:350px}
+.md4-selection-page .md4-token-info em{
+ display:inline-block;padding:10px 16px;color:var(--md4-gold);background:#204d3e;
+ border-bottom:3px solid #b58e58;font-size:.9rem;font-weight:850
+}
+@media(max-width:720px){
+ .md4-selection-page .md4-game-token{min-height:0;gap:7px;padding:11px 15px 23px}
+ .md4-selection-page .md4-token-art{min-height:182px}
+ .md4-selection-page .md4-token-art:before{height:170px;width:200px}
+ .md4-selection-page .md4-token-art img{height:clamp(109px,16.5vh,143px)}
+}

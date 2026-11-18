@@ -43,7 +43,6 @@ export function App() {
   const [pwaStatus,setPwaStatus]=useState<PwaState>('unsupported');
   const [pwaUpdate,setPwaUpdate]=useState(false);
   const [pwaInstallable,setPwaInstallable]=useState(false);
-  const [isIos,setIsIos]=useState(false);
   const [saveWarning,setSaveWarning]=useState<string|null>(null);
   const repositoryRef=useRef<LocalGameRepository|null>(null);
   const lastSavedRef=useRef<SavedMatchV1|null>(null);
@@ -100,7 +99,6 @@ export function App() {
   useEffect(()=>{
     let alive=true;
     const audio=new GameAudio(DEFAULT_SETTINGS);audioRef.current=audio;
-    setIsIos(/iPad|iPhone|iPod/.test(navigator.userAgent));
     const media=window.matchMedia('(prefers-reduced-motion: reduce)');setSystemMotion(media.matches);
     const preference=(event:MediaQueryListEvent)=>setSystemMotion(event.matches);
     media.addEventListener('change',preference);
@@ -334,17 +332,15 @@ export function App() {
     </main>;
   }
   return <div className="meowdeck-app">
-    <div className="p4-statusbar" role="status" aria-live="polite">
-      {(session||savedMatch||saveStatus==='error'||saveStatus==='unavailable') && <span className={`p4-status ${saveStatus==='error'?'error':''}`} data-testid="save-status">{t(saveStatus==='saving'?'saving':saveStatus==='saved'?'saved':saveStatus==='unavailable'?'saveUnavailable':saveStatus==='error'?'saveFailed':'saveLoading')}</span>}
-      {process.env.NODE_ENV==='production' && <span className="p4-status" data-testid="offline-status">{t(pwaStatus==='ready'?'offlineReady':pwaStatus==='loading'?'offlinePreparing':pwaStatus==='failed'?'offlineFailed':'offlineUnsupported')}</span>}
-      {saveWarning && <span className="p4-status error" role="alert">{t(saveWarning==='conflict'?'storageConflict':'saveFailed')}</span>}
-    </div>
+    {(saveWarning || saveStatus==='error' || saveStatus==='unavailable' || pwaStatus==='failed') && <div className="p4-statusbar" role="status" aria-live="polite">
+      {(saveWarning || saveStatus==='error' || saveStatus==='unavailable') && <span className="p4-status error" role="alert" data-testid="save-status">{t(saveWarning==='conflict'?'storageConflict':saveStatus==='unavailable'?'saveUnavailable':'saveFailed')}</span>}
+      {process.env.NODE_ENV==='production' && pwaStatus==='failed' && <span className="p4-status error" role="alert" data-testid="offline-status">{t('offlineFailed')}</span>}
+    </div>}
     {screen === 'menu' && <MainMenu t={t} hasMatch={!!savedMatch || (!!session && !isEnded)} saved={savedMatch} preferredDifficulty={settings.preferredDifficulty} onPlay={() => {playUi();setScreen('select');}} onContinue={() => {if(sessionRef.current&&sessionRef.current.phase!=='match_end'&&!storageConflictRef.current){setResultReady(sessionRef.current.phase==='round_end');setScreen('game');}else void continueMatch();}}
       onSettings={() => setModal('settings')} onStatistics={() => setModal('statistics')} onRules={() => setModal('rules')} />}
     {screen==='menu' && process.env.NODE_ENV==='production' && <div className="p4-install" style={{padding:'8px 24px 16px',margin:'0 auto'}}>
       {pwaInstallable&&<button className="pixel-button button-secondary" onClick={()=>{void pwaRef.current?.install();}}>{t('installApp')}</button>}
       {pwaUpdate&&<button className="pixel-button button-cream" onClick={()=>{void pwaRef.current?.update();}}>{t('updateApp')}</button>}
-      {!pwaInstallable&&isIos&&<p className="p4-small">{t('installIos')}</p>}
     </div>}
     {screen === 'select' && <GameSelection t={t} onBack={() => setScreen('menu')} onNext={() => setScreen('difficulty')} />}
     {screen === 'difficulty' && <DifficultySelection t={t} preferredDifficulty={settings.preferredDifficulty} onBack={() => setScreen('select')} onStart={startMatch} />}
@@ -364,7 +360,6 @@ export function App() {
         <label>{t('sfxVolume')}<input type="range" min="0" max="1" step="0.05" data-testid="sfx-volume" value={settings.sfxVolume} onChange={(e:ChangeEvent<HTMLInputElement>)=>updateSettings({sfxVolume:Number(e.target.value)})}/></label>
         <label className="p4-setting-check">{t('music')}<input type="checkbox" data-testid="music-toggle" checked={settings.musicEnabled} onChange={(e:ChangeEvent<HTMLInputElement>)=>{playUi();updateSettings({musicEnabled:e.target.checked});}}/></label>
         <label>{t('musicVolume')}<input type="range" min="0" max="1" step="0.05" data-testid="music-volume" value={settings.musicVolume} onChange={(e:ChangeEvent<HTMLInputElement>)=>updateSettings({musicVolume:Number(e.target.value)})}/></label>
-        <p className="p4-small">{t('settingsSaved')}</p>
         <button className="pixel-button button-secondary" onClick={()=>setModal('resetSettings')}>{t('resetSettings')}</button>
         {!!savedMatch && <button className="pixel-button button-secondary" data-testid="discard-match" onClick={()=>setModal('discard')}>{t('discardMatch')}</button>}
       </div>
@@ -375,7 +370,7 @@ export function App() {
       <div className="modal-buttons"><button className="pixel-button button-primary" onClick={() => setModal(null)}>{t('resume')}</button>
         <button className="pixel-button button-cream" onClick={() => setModal('settings')}>{t('settings')}</button>
         <button className="pixel-button button-secondary" onClick={() => setModal('restart')}>{t('restart')}</button>
-        <button className="pixel-button button-secondary" onClick={() => setModal('leave')}>{t('leave')}</button><p className="p4-small">{t(saveStatus==='saved'?'saved':saveStatus==='saving'?'saving':saveStatus==='unavailable'?'saveUnavailable':'saveFailed')}</p></div>
+        <button className="pixel-button button-secondary" onClick={() => setModal('leave')}>{t('leave')}</button></div>
     </GameDialog>}
     {modal === 'restart' && <GameDialog title={t('confirmRestart')} onClose={() => setModal('pause')} t={t}><p>{t('confirmRestartDesc')}</p>
       <div className="modal-inline"><button className="pixel-button button-secondary" onClick={() => setModal('pause')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={restart}>{t('confirm')}</button></div></GameDialog>}
@@ -387,7 +382,7 @@ export function App() {
     {modal === 'resetSettings' && <GameDialog title={t('resetSettings')} t={t} onClose={()=>setModal('settings')}><p>{t('resetSettingsConfirm')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>setModal('settings')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{resetSettings();updateSettings(DEFAULT_SETTINGS);setModal('settings');}}>{t('confirm')}</button></div></GameDialog>}
     {modal === 'storageConflict' && <GameDialog title={t('storageConflict')} t={t} onClose={()=>{setModal(null);setScreen('menu');}}><p>{t('storageConflict')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>{setModal(null);setScreen('menu');}}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{void continueMatch(true);}}>{t('takeOver')}</button></div></GameDialog>}
     {modal === 'corrupt' && <GameDialog title={t('corruptSave')} t={t} onClose={()=>setModal(null)}><p>{t('corruptSave')}</p><button className="pixel-button button-secondary" onClick={()=>{void discardSaved();}}>{t('recoverSave')}</button></GameDialog>}
-    {modal === 'suit' && <GameDialog title={t('chooseSuit')} onClose={() => setModal(null)} t={t} initialFocusSelector='[data-testid="suit-S"]'><p>{t('chooseSuitDesc')}</p>
+    {modal === 'suit' && <GameDialog title={t('chooseSuit')} onClose={() => setModal(null)} t={t} initialFocusSelector='[data-testid="suit-S"]'>
       <div className="suit-picker">{fourSuits.map(suit=><button key={suit} type="button" data-testid={`suit-${suit}`} className={`suit-choice suit-${SUIT_CLASS[suit]}`} onClick={() => selectSuit(suit)}><span>{SUIT_SYMBOL[suit]}</span>{t(({ S:'spades', H:'hearts', D:'diamonds', C:'clubs' } as const)[suit])}</button>)}</div>
       <button className="pixel-button button-secondary dialog-bottom" onClick={() => setModal(null)}>{t('cancel')}</button>
     </GameDialog>}

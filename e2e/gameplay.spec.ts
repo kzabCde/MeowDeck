@@ -87,5 +87,28 @@ for (const [width, height] of [[320,568],[390,844],[430,932],[768,1024],[1280,72
     const actionRect = await page.getByTestId('play-selected').boundingBox();
     expect(actionRect?.width).toBeGreaterThanOrEqual(40);
     expect(actionRect?.height).toBeGreaterThanOrEqual(40);
+    // A seven-card opening hand must be fully visible on a phone. Testing
+    // document overflow alone misses clipped cards inside an overflow container.
+    if (width <= 430) {
+      const hand = page.getByTestId('player-hand').locator('button');
+      await expect(hand).toHaveCount(7);
+      const left = await hand.first().boundingBox();
+      const right = await hand.last().boundingBox();
+      expect(left?.x).toBeGreaterThanOrEqual(3);
+      expect((right?.x ?? 0) + (right?.width ?? 0)).toBeLessThanOrEqual(width - 3);
+    }
   });
 }
+
+
+test('modern game UI avoids passive status noise and retains accessible card controls', async ({ page }) => {
+  await start(page);
+  await expect(page.getByTestId('save-status')).toHaveCount(0);
+  await expect(page.getByTestId('offline-status')).toHaveCount(0);
+  await expect(page.locator('.opponent-title .p3-speech')).toHaveCount(0);
+  await expect(page.locator('.draw-pile-action')).toHaveCount(1);
+  await expect(page.locator('.draw-pile-action')).toHaveAttribute('aria-label', /.+/);
+  await expect(page.getByTestId('player-hand').locator('button')).toHaveCount(7);
+  await page.getByTestId('pause-button').click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+});

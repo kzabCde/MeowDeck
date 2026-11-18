@@ -63,6 +63,13 @@ jobs:
         run: npm run test:e2e
       - name: Run production build E2E
         run: npm run test:e2e:production
+      - name: Upload production UI screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meowdeck-visual-review
+          path: test-results/visual-review/
+          if-no-files-found: ignore
       - name: Upload Playwright diagnostics
         if: failure()
         uses: actions/upload-artifact@v4

@@ -1,11 +1,31 @@
 import { expect, test } from '@playwright/test';
+
+/** Persistence acceptance reads the source of truth, never a decorative "Saved" toast. */
+async function readActiveSave(page:import('@playwright/test').Page) {
+  return page.evaluate(async()=>{
+    const db:IDBDatabase=await new Promise<IDBDatabase>((resolve,reject)=>{
+      const request=indexedDB.open('meowdeck-local-v1');
+      request.onsuccess=()=>resolve(request.result);
+      request.onerror=()=>reject(request.error);
+    });
+    const row=await new Promise<any>((resolve,reject)=>{
+      const tx=db.transaction('active','readonly');
+      const request=tx.objectStore('active').get('active');
+      request.onsuccess=()=>resolve(request.result);
+      request.onerror=()=>reject(request.error);
+    });
+    db.close();
+    return row?.save??null;
+  });
+}
 async function begin(page:import('@playwright/test').Page,level:'practice'|'easy'|'normal'|'hard'='practice'){
   await page.goto('/?qaSeed=62&fastAI=1');
   await expect(page.getByTestId('main-menu')).toBeVisible();
   await page.getByTestId('play-now').click();await page.getByTestId('select-crazy-eights').click();
   await page.getByTestId(`difficulty-${level}`).click();await page.getByTestId('start-match').click();
   await expect(page.getByTestId('gameplay-screen')).toBeVisible();
-  await expect(page.getByTestId('save-status')).toContainText(/บันทึกแล้ว|Saved/);
+  await expect.poll(()=>readActiveSave(page),{timeout:10000}).not.toBeNull();
+  await expect(page.getByTestId('save-status')).toHaveCount(0);
 }
 async function move(page:import('@playwright/test').Page){
   const card=page.getByTestId('player-hand').locator('button[data-playable="true"]:not([disabled])').first();
@@ -13,7 +33,7 @@ async function move(page:import('@playwright/test').Page){
   else if(await page.getByTestId('draw-card').count())await page.getByTestId('draw-card').click();
   else if(await page.getByTestId('finish-turn').count())await page.getByTestId('finish-turn').click();
   if(await page.getByTestId('suit-S').isVisible().catch(()=>false))await page.getByTestId('suit-S').click();
-  await expect(page.getByTestId('save-status')).toContainText(/บันทึกแล้ว|Saved/);
+  await expect.poll(async()=>((await readActiveSave(page))?.gameState?.processedActionIds?.length??0),{timeout:10000}).toBeGreaterThan(0);
 }
 test('auto save restores exact authoritative match after refresh with original difficulty',async({page})=>{
   await begin(page,'hard');
@@ -26,7 +46,7 @@ test('auto save restores exact authoritative match after refresh with original d
   expect(before?.difficulty).toBe('hard');expect(before?.gameState?.humanHand?.length).toBeGreaterThan(0);
   await page.reload();await expect(page.getByTestId('main-menu')).toBeVisible();
   await expect(page.getByTestId('continue')).toBeVisible();
-  await expect(page.getByTestId('save-summary')).toContainText(/ยาก|Hard/);
+  await expect(page.getByTestId('continue')).toContainText(/รอบที่|ROUND/i);
   await page.getByTestId('continue').click();
   await expect(page.getByTestId('gameplay-screen')).toBeVisible();
   expect(await page.getByTestId('round-number').textContent()).toBe(String(before.gameState.roundNumber));
@@ -99,7 +119,7 @@ test('exactly-once match statistics survive refresh and rematch gets a new ident
     await page.waitForTimeout(20);
   }
   expect(won,'match completes through real P1 engine').toBe(true);
-  await expect(page.getByTestId('save-status')).toContainText(/บันทึกแล้ว|Saved/);
+  await expect.poll(async()=>await readActiveSave(page),{timeout:10000}).toBeNull();
   await page.reload();await expect(page.getByTestId('main-menu')).toBeVisible();
   await expect(page.getByTestId('continue')).toHaveCount(0);
   await page.getByRole('button',{name:/Statistics|สถิติ/i}).click();
