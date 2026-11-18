@@ -49,57 +49,74 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
   </main>;
 }
 
-/** Two genuinely playable games; Crazy Eights retains its own difficulty step. */
-export function GameSelection({ t, onBack, onCrazyEights, onBlackjack }: {
- t:T;onBack:()=>void;onCrazyEights:()=>void;onBlackjack:()=>void;
-}) {
- return <main className="selection-page md4-selection-page md5-game-choice" data-testid="game-selection">
-   <header className="md4-section-header"><GameButton variant="text" onClick={onBack}>‹ {t('back')}</GameButton><span>MEOWDECK</span></header>
-   <div className="md5-choice-scene">
-     <div className="md4-scene-head"><h1>{t('gameSelect')}</h1></div>
-     <div className="md5-choice-grid">
-       <button type="button" className="md5-choice-tile" data-testid="select-crazy-eights" onClick={onCrazyEights}>
-         <span className="md5-choice-art" aria-hidden="true">
-           <img className="pixel-art" src={cardImage('8H',true)} alt=""/>
-           <img className="pixel-art" src={cardImage('8S',true)} alt=""/>
-           <img className="pixel-art" src={cardImage('8D',true)} alt=""/>
-         </span>
-         <span className="md5-choice-copy"><strong>{t('crazyEights')}</strong><span>{t('crazyEightsDesc')}</span></span>
-       </button>
-       <button type="button" className="md5-choice-tile" data-testid="select-blackjack" onClick={onBlackjack}>
-         <span className="md5-choice-art" aria-hidden="true">
-           <img className="pixel-art" src={cardImage('AS',true)} alt=""/>
-           <img className="pixel-art" src={cardImage('KH',true)} alt=""/>
-           <img className="pixel-art" src={cardImage('card_back',true)} alt=""/>
-         </span>
-         <span className="md5-choice-copy"><strong>{t('blackjack')}</strong><span>{t('blackjackDesc')}</span></span>
-       </button>
-     </div>
-     
-   </div>
- </main>;
+/** Two tables in one card room: full artwork surfaces remain native, keyboard-accessible buttons. */
+export function GameSelection({t,onBack,onCrazyEights,onBlackjack}:{
+  t:T;onBack:()=>void;onCrazyEights:()=>void;onBlackjack:()=>void;
+}){
+  return <main className="selection-page md4-selection-page md5-game-choice" data-testid="game-selection">
+    <header className="md4-section-header">
+      <GameButton variant="text" onClick={onBack}>‹ {t('back')}</GameButton>
+      <span>MEOWDECK</span>
+    </header>
+    <section className="md5-choice-scene" aria-labelledby="game-select-title">
+      <div className="md4-scene-head"><h1 id="game-select-title">{t('gameSelect')}</h1></div>
+      <div className="md5-choice-grid" data-testid="game-choice-list">
+        <button type="button" className="md5-choice-tile" data-testid="select-crazy-eights" onClick={onCrazyEights}>
+          <span className="md5-choice-art" aria-hidden="true">
+            <img className="pixel-art" src={cardImage('8H',true)} alt=""/>
+            <img className="pixel-art" src={cardImage('8S',true)} alt=""/>
+            <img className="pixel-art" src={cardImage('8D',true)} alt=""/>
+          </span>
+          <span className="md5-choice-copy"><strong>{t('crazyEights')}</strong><span>{t('crazyEightsDesc')}</span></span>
+        </button>
+        <button type="button" className="md5-choice-tile" data-testid="select-blackjack" onClick={onBlackjack}>
+          <span className="md5-choice-art" aria-hidden="true">
+            <img className="pixel-art" src={cardImage('AS',true)} alt=""/>
+            <img className="pixel-art" src={cardImage('KH',true)} alt=""/>
+            <img className="pixel-art" src={cardImage('card_back',true)} alt=""/>
+          </span>
+          <span className="md5-choice-copy"><strong>{t('blackjack')}</strong><span>{t('blackjackDesc')}</span></span>
+        </button>
+      </div>
+    </section>
+  </main>;
 }
 
-export function DifficultySelection({ t, onBack, onStart, preferredDifficulty='practice' }: { t:T; onBack:()=>void; onStart:(difficulty:Difficulty)=>void;preferredDifficulty?:Difficulty }) {
+/** Four existing opponent behaviors, with Mochi as the focus and tactile game choices. */
+export function DifficultySelection({t,onBack,onStart,preferredDifficulty='practice'}:{
+  t:T;onBack:()=>void;onStart:(difficulty:Difficulty)=>void;preferredDifficulty?:Difficulty;
+}){
   const [selected,setSelected]=useState<Difficulty>(preferredDifficulty);
-  const modes:readonly {id:Difficulty;key:'practice'|'easy'|'normal'|'hard'; desc:'practiceDesc'|'easyDesc'|'normalDesc'|'hardDesc'}[]=[
+  const modes:readonly {id:Difficulty;key:'practice'|'easy'|'normal'|'hard';desc:'practiceDesc'|'easyDesc'|'normalDesc'|'hardDesc'}[]=[
     {id:'practice',key:'practice',desc:'practiceDesc'},
     {id:'easy',key:'easy',desc:'easyDesc'},
     {id:'normal',key:'normal',desc:'normalDesc'},
     {id:'hard',key:'hard',desc:'hardDesc'}
   ];
+  const description=modes.find(mode=>mode.id===selected)!.desc;
   return <main className="selection-page md4-selection-page md4-difficulty-page" data-testid="difficulty-selection">
-    <header className="md4-section-header"><GameButton variant="text" onClick={onBack}>‹ {t('back')}</GameButton><span>MEOWDECK / 01</span></header>
-    <div className="md4-difficulty-scene">
-      <div className="md4-scene-head"><h1>{t('chooseDifficulty')}</h1></div>
-      <div className="md4-difficulty-mochi"><Mochi t={t} size="large"/></div>
-      <div className="md4-mode-strip" role="group" aria-label={t('chooseDifficulty')}>
-        {modes.map(mode=><button key={mode.id} type="button" className={`md4-mode ${selected===mode.id?'is-active':''}`} data-testid={`difficulty-${mode.id}`} aria-pressed={selected===mode.id} onClick={()=>setSelected(mode.id)}>
-          <strong>{t(mode.key)}</strong>
-        </button>)}
+    <header className="md4-section-header">
+      <GameButton variant="text" onClick={onBack}>‹ {t('back')}</GameButton>
+      <span>MEOWDECK</span>
+    </header>
+    <section className="md4-difficulty-scene" aria-labelledby="opponent-select-title">
+      <div className="md4-scene-head"><h1 id="opponent-select-title">{t('chooseDifficulty')}</h1></div>
+      <div className="md4-difficulty-stage">
+        <div className="md4-difficulty-mochi"><Mochi t={t} size="large"/></div>
+        <div className="md4-difficulty-controls">
+          <div className="md4-mode-strip" role="group" aria-label={t('chooseDifficulty')} aria-describedby="difficulty-description">
+            {modes.map(mode=><button key={mode.id} type="button"
+              className={`md4-mode ${selected===mode.id?'is-active':''}`}
+              data-testid={`difficulty-${mode.id}`} aria-pressed={selected===mode.id}
+              onClick={()=>setSelected(mode.id)}><strong>{t(mode.key)}</strong></button>)}
+          </div>
+          <p id="difficulty-description" className="md4-mode-description" aria-live="polite">{t(description)}</p>
+          <GameButton variant="primary" className="button-xl md4-difficulty-start"
+            onClick={()=>onStart(selected)} data-testid="start-match">
+            {t('start')} <span aria-hidden="true">›</span>
+          </GameButton>
+        </div>
       </div>
-      <p className="md4-mode-description">{t(modes.find(mode=>mode.id===selected)!.desc)}</p>
-      <GameButton variant="primary" className="button-xl md4-difficulty-start" onClick={()=>onStart(selected)} data-testid="start-match">{t('start')} <span aria-hidden="true">›</span></GameButton>
-    </div>
+    </section>
   </main>;
 }
