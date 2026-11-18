@@ -65,6 +65,7 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
   useEffect(()=>{
     if(lastDiscardRef.current===view.topDiscard.id)return;
     lastDiscardRef.current=view.topDiscard.id;
+    setHumanFlight(null); // Drop a previous visual if a new committed card arrives early.
     const origin=humanOrigin.current;
     humanOrigin.current=null;
     const flightId=`${view.roundNumber}:${view.turnId}:${view.topDiscard.id}`;
@@ -146,7 +147,7 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
         style={{left:flight.left,top:flight.top,transitionDuration:`${flight.duration}ms`,transform:flight.started?`translate(${flight.dx}px,${flight.dy}px)`:'translate(0px,0px)'}}>
           <img className="pixel-art" src={flight.cardId?cardImage(flight.cardId,true):cardImage('card_back',true)} alt="" />
       </div>}
-      {humanFlight&&<div key={humanFlight.id} aria-hidden="true" className="p3-card-flight md-human-card-flight"
+      {humanFlight&&<div key={humanFlight.id} aria-hidden="true" className="p3-card-flight md-human-card-flight" onTransitionEnd={()=>setHumanFlight(null)}
         style={{left:humanFlight.left,top:humanFlight.top,width:humanFlight.width,height:humanFlight.height,transitionDuration:'310ms',
           transform:humanFlight.started?`translate(${humanFlight.dx}px,${humanFlight.dy}px) rotate(-5deg)`:'translate(0px,0px)'}}>
         <img className="pixel-art" src={cardImage(humanFlight.cardId,true)} alt="" />
