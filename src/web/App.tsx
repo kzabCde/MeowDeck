@@ -43,7 +43,6 @@ export function App() {
   const [pwaStatus,setPwaStatus]=useState<PwaState>('unsupported');
   const [pwaUpdate,setPwaUpdate]=useState(false);
   const [pwaInstallable,setPwaInstallable]=useState(false);
-  const [isIos,setIsIos]=useState(false);
   const [saveWarning,setSaveWarning]=useState<string|null>(null);
   const repositoryRef=useRef<LocalGameRepository|null>(null);
   const lastSavedRef=useRef<SavedMatchV1|null>(null);
@@ -100,7 +99,6 @@ export function App() {
   useEffect(()=>{
     let alive=true;
     const audio=new GameAudio(DEFAULT_SETTINGS);audioRef.current=audio;
-    setIsIos(/iPad|iPhone|iPod/.test(navigator.userAgent));
     const media=window.matchMedia('(prefers-reduced-motion: reduce)');setSystemMotion(media.matches);
     const preference=(event:MediaQueryListEvent)=>setSystemMotion(event.matches);
     media.addEventListener('change',preference);
@@ -343,7 +341,6 @@ export function App() {
     {screen==='menu' && process.env.NODE_ENV==='production' && <div className="p4-install" style={{padding:'8px 24px 16px',margin:'0 auto'}}>
       {pwaInstallable&&<button className="pixel-button button-secondary" onClick={()=>{void pwaRef.current?.install();}}>{t('installApp')}</button>}
       {pwaUpdate&&<button className="pixel-button button-cream" onClick={()=>{void pwaRef.current?.update();}}>{t('updateApp')}</button>}
-      {!pwaInstallable&&isIos&&<p className="p4-small">{t('installIos')}</p>}
     </div>}
     {screen === 'select' && <GameSelection t={t} onBack={() => setScreen('menu')} onNext={() => setScreen('difficulty')} />}
     {screen === 'difficulty' && <DifficultySelection t={t} preferredDifficulty={settings.preferredDifficulty} onBack={() => setScreen('select')} onStart={startMatch} />}
