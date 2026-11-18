@@ -559,3 +559,14 @@ button:focus-visible,select:focus-visible,input:focus-visible {outline:2px solid
  .game-table .opponent-avatar,.game-table .opponent-avatar .mochi-small {width:52px;height:52px}
  .game-table .opponent-card-fan {min-height:35px}
 }
+
+
+/* Event-only micro-motion: never tied to autosave, timers, or optimistic game updates. */
+.md-hand-drawn {animation:md-hand-in 285ms cubic-bezier(.2,.85,.25,1) both}
+@keyframes md-hand-in {0%{transform:translateY(5px);opacity:.83}65%{transform:translateY(-2px);opacity:1}100%{transform:translateY(0);opacity:1}}
+.md-wild-hearts,.md-wild-diamonds {border-color:var(--md-coral)}
+.md-wild-hearts:after,.md-wild-diamonds:after {border-color:var(--md-coral)}
+.md-wild-spades,.md-wild-clubs {border-color:var(--md-mint)}
+.md-wild-spades:after,.md-wild-clubs:after {border-color:var(--md-mint)}
+@media(prefers-reduced-motion:reduce){.md-hand-drawn{animation:none!important}}
+.reduce-motion .md-hand-drawn {animation:none!important}
