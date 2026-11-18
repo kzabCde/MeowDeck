@@ -79,7 +79,7 @@ export function DifficultySelection({ t, onBack, onStart, preferredDifficulty='p
     {id:'hard',key:'hard',desc:'hardDesc'}
   ];
   return <main className="selection-page md4-selection-page md4-difficulty-page" data-testid="difficulty-selection">
-    <header className="md4-section-header"><button type="button" className="md4-text-button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK / 02</span></header>
+    <header className="md4-section-header"><button type="button" className="md4-text-button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK / 01</span></header>
     <div className="md4-difficulty-scene">
       <div className="md4-scene-head"><span aria-hidden="true">♣　MOCHI　♣</span><h1>{t('chooseDifficulty')}</h1></div>
       <div className="md4-difficulty-mochi"><Mochi t={t} size="large"/></div>
