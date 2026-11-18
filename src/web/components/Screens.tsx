@@ -19,12 +19,11 @@ interface MenuProps {
   preferredDifficulty?: Difficulty;
 }
 
-/** Title-screen composition: game logo, the real opponent, and one clear start action. */
+/** Play-first title screen: one room, real card sprites and Mochi, no passive status copy. */
 export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatistics, onRules, saved }: MenuProps) {
   return <main className="menu-page md4-title-screen" data-testid="main-menu">
     <header className="md4-menu-header">
-      <span className="md4-menu-edition" aria-hidden="true">CARD ROOM</span>
-      <nav className="md4-menu-tools" aria-label={t('settings')}>
+      <nav className="md4-menu-tools" aria-label={t('mainMenu')}>
         <GameButton variant="text" onClick={onRules}>{t('rules')}</GameButton>
         <GameButton variant="text" onClick={onSettings}>{t('settings')}</GameButton>
       </nav>
@@ -33,8 +32,8 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
       <div className="md4-title-mark">
         <h1 className="brand-title"><span>MEOW</span><span>DECK</span></h1>
       </div>
-      <div className="md4-title-diorama" aria-label={t('mochiAppearance')}>
-        <div className="md4-title-halo" aria-hidden="true"/>
+      <div className="md4-title-diorama" data-testid="title-scene">
+        <div className="md4-title-room" aria-hidden="true"/>
         <div className="md4-title-mochi"><Mochi t={t} size="large"/></div>
         <div className="md4-title-table" aria-hidden="true"/>
         <div className="md4-title-card md4-card-left" aria-hidden="true"><img className="pixel-art" src={cardImage('8H', true)} alt=""/></div>

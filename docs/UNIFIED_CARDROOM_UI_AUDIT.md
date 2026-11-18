@@ -40,3 +40,11 @@ Do not merge or deploy without explicit project-owner authorization.
 - Moved Settings styling into one authoritative block in `styles.css` and removed the duplicate `art-direction.css` override.
 - Added Playwright coverage for Settings controls, toggle behavior and dialog close target.
 - The failing CI run on the previous commit was caused by the unintended Settings→Pause return change. Reverted that behavior in `e35b6e8`; all workflow jobs passed before this next-phase work began.
+
+## Phase 4 — Play-first title screen
+- Reworked `MainMenu` into a responsive composition: logo and primary action adjacent to the Mochi card-room scene on desktop, and logo → Mochi → Play on mobile.
+- Replaced the ornamental halo and backdrop grid with a crisp, stepped wooden card-room alcove and felt table made entirely with CSS and existing card/Mochi assets; no remote graphics, fake counters, badges or invented storyline.
+- Removed the passive `CARD ROOM` edition label; Rules, Settings, Play, optional Continue and Statistics remain functional with the existing localized copy.
+- Moved the title-specific responsive rules next to the title scene's authoritative CSS declarations rather than adding new override layers.
+- Added six viewport E2E checks for visible Play, the Mochi image, card loading, 44px action size and horizontal overflow, plus direct navigation checks.
+- Manual screenshot-based composition review, actual Thai glyph quality, and real iOS/Android PWA testing remain required for signoff.
