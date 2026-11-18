@@ -30,6 +30,8 @@ export interface GameTableProps {
   paused:boolean;
   onCueDone:(id:string)=>void;
   onPet:()=>void;
+  tutorialHint:string|null;
+  onSkipTutorial:()=>void;
 }
 
 
@@ -42,7 +44,7 @@ function gameHint(view: HumanView, t: T): string {
   return '';
 }
 
-export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinish, onPass, onPause, error, difficulty, cue, reducedMotion, paused, onCueDone, onPet }: GameTableProps) {
+export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinish, onPass, onPause, error, difficulty, cue, reducedMotion, paused, onCueDone, onPet, tutorialHint, onSkipTutorial }: GameTableProps) {
   const handRef = useRef<HTMLDivElement | null>(null);
   const tableRef = useRef<HTMLDivElement|null>(null);
   const drawRef = useRef<HTMLDivElement|null>(null);
@@ -165,8 +167,9 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
         <div className="scroll-hint">{t('zoomHint')}</div>
       </section>
     </div></div>
-    <footer className="action-footer md4-control-rail"><div className="action-status" aria-live="polite" role="status">{error?<span className="status-error">{t('invalidAction')}: {error}</span>:gameHint(view,t)}</div>
-      <div className="action-buttons"><button className="pixel-button button-primary" type="button" data-testid="play-selected" onClick={playFromHand} disabled={!isHumanTurn||!canPlay}>{t('playCard')} <span>❯</span></button>
+    <footer className={`action-footer md4-control-rail ${tutorialHint?'has-tutorial':''}`}><div className="action-status" aria-live="polite" role="status">{error?<span className="status-error">{t('invalidAction')}: {error}</span>:
+        tutorialHint?<div className="tutorial-guide" data-testid="tutorial-hint"><span>{tutorialHint}</span><button type="button" data-testid="tutorial-skip" onClick={onSkipTutorial}>{t('tutorialSkip')}</button></div>:gameHint(view,t)}</div>
+      <div className="action-buttons"><button className="pixel-button button-primary" type="button" data-testid="play-selected" onClick={playFromHand} disabled={!isHumanTurn||!canPlay}>{selected?t('playCard'):t('selectCard')} <span aria-hidden="true">❯</span></button>
         {canDraw && <button className="pixel-button button-cream" type="button" onClick={onDraw} data-testid="draw-card">{t('drawCard')}</button>}
         {canFinish && <button className="pixel-button button-cream" type="button" onClick={onFinish} data-testid="finish-turn">{t('endTurn')}</button>}
         {canPass && <button className="pixel-button button-cream" type="button" onClick={onPass} data-testid="pass-turn">{t('passTurn')}</button>}

@@ -20,6 +20,7 @@ import { StatisticsPanel } from './components/StatisticsPanel.js';
 import { DEFAULT_SETTINGS, readSettings, writeSettings, resetSettings, resolveReducedMotion, type GameSettingsV1 } from './settings/settings-store.js';
 import { GameAudio } from './audio/audio-manager.js';
 import { setupPwa, type PwaController, type PwaState } from './pwa/service-worker-register.js';
+import { DEFAULT_TUTORIAL, getTutorialHint, readTutorial, advanceTutorial, writeTutorial, type TutorialProgress } from './tutorial/tutorial.js';
 
 type Screen = 'menu' | 'select' | 'difficulty' | 'game';
 type Modal = 'pause' | 'settings' | 'rules' | 'statistics' | 'suit' | 'restart' | 'leave' | 'replace' | 'discard' | 'resetStats' | 'resetSettings' | 'storageConflict' | 'corrupt' | null;
@@ -33,6 +34,8 @@ function qaSeededRandom(seed: number): (maxExclusive: number) => number {
 
 export function App() {
   const [settings,setSettings]=useState<GameSettingsV1>(DEFAULT_SETTINGS);
+  const [tutorial,setTutorial]=useState<TutorialProgress>(DEFAULT_TUTORIAL);
+  const [tutorialReady,setTutorialReady]=useState(false);
   const [systemMotion,setSystemMotion]=useState(false);
   const language:Language=settings.language;
   const reducedMotion=resolveReducedMotion(settings.motion,systemMotion);
@@ -95,6 +98,8 @@ export function App() {
   },[]);
   const playUi=useCallback((sound:'click'|'select'|'confirm'|'pet'='click')=>{void audioRef.current?.unlock();audioRef.current?.play(sound);},[]);
   const reloadRecords=useCallback(()=>{void repositoryRef.current?.records().then(setRecords).catch(()=>setSaveWarning('statistics'));},[]);
+  useEffect(()=>{setTutorial(readTutorial());setTutorialReady(true);},[]);
+  useEffect(()=>{if(tutorialReady)writeTutorial(tutorial);},[tutorial,tutorialReady]);
 
   useEffect(()=>{
     let alive=true;
@@ -176,6 +181,9 @@ export function App() {
     setSession(result.state);
     setSelected(null);
     setLastError(null);
+    // Presentation hints change only after a real committed player move.
+    if((action.type==='play_card'||action.type==='draw_card')&&action.actor==='human')
+      setTutorial(progress=>advanceTutorial(progress,action.type,action.type==='play_card'?action.cardId:undefined));
     audioRef.current?.onEvents(result.events,`${previous.sessionId}:${action.actionId}`);
     void queuePersist(result.state,difficulty,action.type==='restart_match'?1:actionCounterRef.current+1);
     if(action.type==='start_next_round'||action.type==='restart_match')clearPresentation();
@@ -319,6 +327,13 @@ export function App() {
     if (success) { actionCounterRef.current = 0; setScreen('game'); setModal(null); }
   }
   function goMenu() { playUi();clearPresentation();setModal(null);setScreen('menu'); }
+  const tutorialHintKey=tutorialReady&&view?getTutorialHint(tutorial,{
+    humanTurn:view.phase==='human_turn',
+    legalPlay:view.legalActions.some(action=>action.type==='play_card'),
+    legalDraw:view.legalActions.some(action=>action.type==='draw_card'),
+    legalEight:view.legalActions.some(action=>action.type==='play_card'&&action.cardId.startsWith('8')),
+    selected:selected!==null
+  }):null;
   const isEnded = session?.phase === 'round_end' || session?.phase === 'match_end';
   const isMatchEnd = session?.phase === 'match_end';
   const modalOpen = Boolean(modal) || (screen === 'game' && isEnded);
@@ -336,18 +351,19 @@ export function App() {
       {(saveWarning || saveStatus==='error' || saveStatus==='unavailable') && <span className="p4-status error" role="alert" data-testid="save-status">{t(saveWarning==='conflict'?'storageConflict':saveStatus==='unavailable'?'saveUnavailable':'saveFailed')}</span>}
       {process.env.NODE_ENV==='production' && pwaStatus==='failed' && <span className="p4-status error" role="alert" data-testid="offline-status">{t('offlineFailed')}</span>}
     </div>}
-    {screen === 'menu' && <MainMenu t={t} hasMatch={!!savedMatch || (!!session && !isEnded)} saved={savedMatch} preferredDifficulty={settings.preferredDifficulty} onPlay={() => {playUi();setScreen('select');}} onContinue={() => {if(sessionRef.current&&sessionRef.current.phase!=='match_end'&&!storageConflictRef.current){setResultReady(sessionRef.current.phase==='round_end');setScreen('game');}else void continueMatch();}}
+    {screen === 'menu' && <MainMenu t={t} hasMatch={!!savedMatch || (!!session && !isEnded)} saved={savedMatch} preferredDifficulty={settings.preferredDifficulty} onPlay={() => {playUi();setScreen('difficulty');}} onContinue={() => {if(sessionRef.current&&sessionRef.current.phase!=='match_end'&&!storageConflictRef.current){setResultReady(sessionRef.current.phase==='round_end');setScreen('game');}else void continueMatch();}}
       onSettings={() => setModal('settings')} onStatistics={() => setModal('statistics')} onRules={() => setModal('rules')} />}
     {screen==='menu' && process.env.NODE_ENV==='production' && <div className="p4-install" style={{padding:'8px 24px 16px',margin:'0 auto'}}>
       {pwaInstallable&&<button className="pixel-button button-secondary" onClick={()=>{void pwaRef.current?.install();}}>{t('installApp')}</button>}
       {pwaUpdate&&<button className="pixel-button button-cream" onClick={()=>{void pwaRef.current?.update();}}>{t('updateApp')}</button>}
     </div>}
     {screen === 'select' && <GameSelection t={t} onBack={() => setScreen('menu')} onNext={() => setScreen('difficulty')} />}
-    {screen === 'difficulty' && <DifficultySelection t={t} preferredDifficulty={settings.preferredDifficulty} onBack={() => setScreen('select')} onStart={startMatch} />}
-    {screen === 'game' && view && <GameTable view={view} t={t} selected={selected} onSelect={id=>{playUi('select');setSelected(id);}} onPlay={playSelected}
+    {screen === 'difficulty' && <DifficultySelection t={t} preferredDifficulty={settings.preferredDifficulty} onBack={() => setScreen('menu')} onStart={startMatch} />}
+    {screen === 'game' && view && <GameTable view={view} t={t} selected={selected} onSelect={id=>{playUi('select');setSelected(current=>current===id?null:id);}} onPlay={playSelected}
       onDraw={() => {playUi('select');submit('draw_card','human');}} onFinish={() => {playUi('click');submit('finish_turn','human');}}
       onPass={() => {playUi();submit('pass_turn','human');}} onPause={() => {playUi();setModal('pause');}} error={lastError}
-      difficulty={difficulty} cue={presentationCue} reducedMotion={reducedMotion} paused={Boolean(modal)} onCueDone={cueComplete} onPet={()=>{playUi('pet');petMochi();}} />}
+      difficulty={difficulty} cue={presentationCue} reducedMotion={reducedMotion} paused={Boolean(modal)} onCueDone={cueComplete} onPet={()=>{playUi('pet');petMochi();}}
+      tutorialHint={tutorialHintKey?t(tutorialHintKey):null} onSkipTutorial={()=>setTutorial(current=>({...current,skipped:true}))} />}
 
 
     {modal === 'settings' && <GameDialog title={t('settings')} onClose={() => setModal(null)} t={t}>
@@ -364,11 +380,14 @@ export function App() {
         {!!savedMatch && <button className="pixel-button button-secondary" data-testid="discard-match" onClick={()=>setModal('discard')}>{t('discardMatch')}</button>}
       </div>
     </GameDialog>}
-    {modal === 'rules' && <GameDialog title={t('rules')} onClose={() => setModal(null)} t={t}><p>{t('rulesIntro')}</p></GameDialog>}
+    {modal === 'rules' && <GameDialog title={t('rules')} onClose={() => setModal(null)} t={t}><p>{t('rulesIntro')}</p>
+      <button className="pixel-button button-secondary" data-testid="tutorial-replay-rules" onClick={()=>{setTutorial({...DEFAULT_TUTORIAL});setModal(null);}}>{t('tutorialReplay')}</button>
+    </GameDialog>}
     {modal === 'statistics' && <GameDialog title={t('statistics')} onClose={() => setModal(null)} t={t} wide><StatisticsPanel records={records} t={t} onReset={()=>setModal('resetStats')}/></GameDialog>}
     {modal === 'pause' && <GameDialog title={t('gamePaused')} onClose={() => setModal(null)} t={t}>
       <div className="modal-buttons"><button className="pixel-button button-primary" onClick={() => setModal(null)}>{t('resume')}</button>
         <button className="pixel-button button-cream" onClick={() => setModal('settings')}>{t('settings')}</button>
+        <button className="pixel-button button-secondary" data-testid="tutorial-replay" onClick={()=>{setTutorial({...DEFAULT_TUTORIAL});setModal(null);}}>{t('tutorialReplay')}</button>
         <button className="pixel-button button-secondary" onClick={() => setModal('restart')}>{t('restart')}</button>
         <button className="pixel-button button-secondary" onClick={() => setModal('leave')}>{t('leave')}</button></div>
     </GameDialog>}

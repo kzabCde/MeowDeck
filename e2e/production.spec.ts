@@ -28,7 +28,7 @@ test('Next.js production App Router hydrates, serves canonical manifests and sta
   }
 
   await page.getByTestId('play-now').click();
-  await page.getByTestId('select-crazy-eights').click();
+  
   await page.getByTestId('difficulty-hard').click();
   await page.getByTestId('start-match').click();
   await expect(page.getByTestId('gameplay-screen')).toBeVisible();
@@ -42,9 +42,8 @@ test('Next.js production mobile mount has no horizontal overflow', async ({ page
   await page.goto('/');
   await expect(page.getByTestId('main-menu')).toBeVisible();
   await page.getByTestId('play-now').click();
-  await expect(page.getByTestId('game-selection')).toBeVisible();
-  await page.screenshot({ path: 'test-results/visual-review/game-select-mobile-390x844.png', animations: 'disabled' });
-  await page.getByTestId('select-crazy-eights').click();
+  await expect(page.getByTestId('difficulty-selection')).toBeVisible();
+  
   await expect(page.getByTestId('difficulty-selection')).toBeVisible();
   await page.screenshot({ path: 'test-results/visual-review/difficulty-mobile-390x844.png', animations: 'disabled' });
   await page.setViewportSize({ width: 1280, height: 720 });
@@ -65,7 +64,7 @@ test('production visual review captures original sprites on title and table, des
   await page.screenshot({ path: 'test-results/visual-review/title-mobile-390x844.png', animations: 'disabled' });
 
   await page.getByTestId('play-now').click();
-  await page.getByTestId('select-crazy-eights').click();
+  
   await page.getByTestId('start-match').click();
   await expect(page.getByTestId('gameplay-screen')).toBeVisible();
 

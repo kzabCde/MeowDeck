@@ -335,3 +335,15 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-selection-page .md4-token-art:before{height:170px;width:200px}
  .md4-selection-page .md4-token-art img{height:clamp(109px,16.5vh,143px)}
 }
+
+/* P4.6: contextual guidance in the action rail; never obscure interactive cards. */
+.md4-cardroom .action-footer.has-tutorial .action-status{display:block;max-width:min(48%,430px)}
+.md4-cardroom .tutorial-guide{display:flex;align-items:center;gap:12px;line-height:1.4;font-size:clamp(12px,1.15vw,14px);color:var(--md4-cream)}
+.md4-cardroom .tutorial-guide button{flex:0 0 auto;cursor:pointer;border:1px solid #819d85;background:#173d32;color:var(--md4-gold);font:inherit;font-size:12px;padding:6px 8px}
+.md4-cardroom .tutorial-guide button:hover{border-color:var(--md4-gold)}
+@media(max-width:720px){
+ .md4-cardroom .action-footer.has-tutorial{flex-basis:auto;min-height:92px;flex-direction:column;justify-content:center;gap:5px;padding-block:6px}
+ .md4-cardroom .action-footer.has-tutorial .action-status{width:100%;max-width:none;font-size:12px}
+ .md4-cardroom .tutorial-guide{justify-content:space-between;width:100%;font-size:12px}
+ .md4-cardroom .tutorial-guide button{min-height:28px}
+}

@@ -21,7 +21,7 @@ async function readActiveSave(page:import('@playwright/test').Page) {
 async function begin(page:import('@playwright/test').Page,level:'practice'|'easy'|'normal'|'hard'='practice'){
   await page.goto('/?qaSeed=62&fastAI=1');
   await expect(page.getByTestId('main-menu')).toBeVisible();
-  await page.getByTestId('play-now').click();await page.getByTestId('select-crazy-eights').click();
+  await page.getByTestId('play-now').click();
   await page.getByTestId(`difficulty-${level}`).click();await page.getByTestId('start-match').click();
   await expect(page.getByTestId('gameplay-screen')).toBeVisible();
   await expect.poll(()=>readActiveSave(page),{timeout:10000}).not.toBeNull();
