@@ -114,3 +114,43 @@ test('production PWA precaches and resumes a real offline match after reopening'
     await context.close();
   }
 });
+
+
+test('P5 Blackjack remains playable and restores a committed finished hand offline',async({browser})=>{
+ const context=await browser.newContext({serviceWorkers:'allow'});
+ try{
+  let page=await context.newPage();
+  await page.goto('/');
+  await expect(page.getByTestId('main-menu')).toBeVisible();
+  await expect.poll(()=>isOfflineShellReady(page),{timeout:90_000,intervals:[500,1000,2000]}).toBe(true);
+  await page.getByTestId('play-now').click();
+  await page.getByTestId('select-blackjack').click();
+  await expect(page.getByTestId('blackjack-screen')).toBeVisible();
+  if(await page.getByTestId('blackjack-stand').isVisible().catch(()=>false)){
+   await page.getByTestId('blackjack-stand').click();
+  }
+  await expect(page.getByTestId('blackjack-result')).toBeVisible();
+  const saved=await expect.poll(async()=>page.evaluate(()=>{
+   try{
+    const text=localStorage.getItem('meowdeck:blackjack:1');
+    if(!text)return null;
+    const state=JSON.parse(text);
+    return state?.phase==='finished'?state.round:null;
+   }catch{return null;}
+  }),{timeout:10000}).not.toBeNull();
+  const round=await page.evaluate(()=>JSON.parse(localStorage.getItem('meowdeck:blackjack:1')||'null')?.round);
+  await page.close();
+  await context.setOffline(true);
+  page=await context.newPage();
+  await page.goto('/',{waitUntil:'domcontentloaded'});
+  await expect(page.getByTestId('main-menu')).toBeVisible();
+  await page.getByTestId('play-now').click();
+  await page.getByTestId('select-blackjack').click();
+  await expect(page.getByTestId('blackjack-result')).toBeVisible();
+  const restored=await page.evaluate(()=>JSON.parse(localStorage.getItem('meowdeck:blackjack:1')||'null'));
+  expect(restored?.round).toBe(round);
+  expect(restored?.phase).toBe('finished');
+  await page.getByTestId('blackjack-next').click();
+  await expect(page.locator('.md5-bj-round')).toContainText(String(round+1));
+ }finally{await context.close();}
+});
