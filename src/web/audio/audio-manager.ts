@@ -15,12 +15,38 @@ const cues:Record<SoundName,readonly Tone[]>={
   pet:[{frequency:510,duration:.18,wave:'sine',gain:.13,slide:445}],
   confirm:[{frequency:610,duration:.11,wave:'triangle',gain:.16}]
 };
+export interface PlannedSound { readonly name:SoundName; readonly eventIndex:number; readonly offsetMs:number }
+
+/** Public, confirmed engine events are the only source of gameplay SFX.
+ * Stagger simultaneous card/suit/result cues instead of piling them at time zero.
+ * This pure planner can be tested without creating an AudioContext. */
+export function planEventSounds(events:readonly DomainEvent[]):readonly PlannedSound[] {
+  const finishedMatch=events.some(e=>e.type==='MATCH_ENDED');
+  const hasCardEvent=events.some(e=>e.type==='CARD_PLAYED'||e.type==='CARD_DRAWN');
+  const planned:PlannedSound[]=[];
+  for(const [eventIndex,event] of events.entries()){
+    if(finishedMatch&&event.type==='ROUND_ENDED')continue;
+    let name:SoundName|null=null;
+    if(event.type==='CARD_DRAWN')name='draw';
+    else if(event.type==='CARD_PLAYED')name='play';
+    else if(event.type==='SUIT_CHANGED')name='suit';
+    else if(event.type==='MATCH_ENDED')name=event.winner==='human'?'matchWin':'matchLose';
+    else if(event.type==='ROUND_ENDED')name=event.result.winner==='human'?'win':event.result.winner==='ai'?'lose':null;
+    if(!name)continue;
+    const offsetMs=name==='suit'&&hasCardEvent?100:
+      ['win','lose','matchWin','matchLose'].includes(name)&&hasCardEvent?180:0;
+    planned.push({name,eventIndex,offsetMs});
+  }
+  return planned;
+}
+
 /** Original, procedurally synthesized game cues. No downloaded or copyrighted audio. */
 export class GameAudio {
   private ctx:AudioContext|null=null;
   private settings:GameSettingsV1;
   private unlocked=false;
   private sequence=new Set<string>();
+  private sequenceOrder:string[]=[];
   private musicTimer:number|null=null;
   private musicStep=0;
   private visible=true;
@@ -40,20 +66,21 @@ export class GameAudio {
     osc.connect(gain);gain.connect(this.ctx.destination);osc.start(now);osc.stop(now+sound.duration+.02);
     osc.onended=()=>{osc.disconnect();gain.disconnect();};
   }
-  play(name:SoundName,identity?:string){
+  play(name:SoundName,identity?:string,offsetMs=0){
     if(!this.unlocked||!this.visible||!this.settings.sfxEnabled||this.settings.sfxVolume===0)return;
-    if(identity){if(this.sequence.has(identity))return;this.sequence.add(identity);if(this.sequence.size>200)this.sequence.clear();}
-    cues[name].forEach((tone,i)=>this.tone(tone,this.settings.sfxVolume,i*.10));
+    if(identity){
+      if(this.sequence.has(identity))return;
+      this.sequence.add(identity);
+      this.sequenceOrder.push(identity);
+      if(this.sequenceOrder.length>256){
+        const removed=this.sequenceOrder.shift();
+        if(removed)this.sequence.delete(removed);
+      }
+    }
+    cues[name].forEach((tone,i)=>this.tone(tone,this.settings.sfxVolume,Math.max(0,offsetMs)/1000+i*.10));
   }
   onEvents(events:readonly DomainEvent[],identity:string){
-    const terminal=events.some(e=>e.type==='MATCH_ENDED');
-    for(const [i,event] of events.entries()){
-      if(terminal&&event.type==='ROUND_ENDED')continue;
-      const sound:SoundName|null=event.type==='CARD_DRAWN'?'draw':event.type==='CARD_PLAYED'?'play':
-        event.type==='SUIT_CHANGED'?'suit':event.type==='MATCH_ENDED'?(event.winner==='human'?'matchWin':'matchLose'):
-        event.type==='ROUND_ENDED'?(event.result.winner==='human'?'win':event.result.winner==='ai'?'lose':null):null;
-      if(sound)this.play(sound,`${identity}:${i}`);
-    }
+    for(const event of planEventSounds(events))this.play(event.name,`${identity}:${event.eventIndex}`,event.offsetMs);
   }
   private startMusic(){
     if(!this.unlocked||!this.settings.musicEnabled||this.settings.musicVolume<=0||!this.visible||this.musicTimer!==null)return;
@@ -63,5 +90,5 @@ export class GameAudio {
     step();this.musicTimer=window.setInterval(step,830);
   }
   private stopMusic(){if(this.musicTimer!==null){clearInterval(this.musicTimer);this.musicTimer=null;}}
-  dispose(){this.stopMusic();this.sequence.clear();this.unlocked=false;if(this.ctx){void this.ctx.close().catch(()=>{});this.ctx=null;}}
+  dispose(){this.stopMusic();this.sequence.clear();this.sequenceOrder=[];this.unlocked=false;if(this.ctx){void this.ctx.close().catch(()=>{});this.ctx=null;}}
 }
