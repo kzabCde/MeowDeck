@@ -34,7 +34,8 @@ for(const locale of ['th','en'] as const){
       status:503,contentType:'application/json',body:'{}'
     }));
     await page.goto('/');
-    const error=page.getByRole('alert');
+    // Next.js owns a separate empty route-announcer alert; target the actual game error.
+    const error=page.locator('.asset-loading [role="alert"]');
     await expect(error).toHaveText(locale==='th'?'ไม่สามารถโหลดภาพไพ่':'Card art unavailable');
     await expect(page.getByRole('button',{name:locale==='th'?'ลองอีกครั้ง':'Retry'})).toBeVisible();
     await expect(page.getByText('Retry / ลองอีกครั้ง')).toHaveCount(0);
