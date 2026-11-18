@@ -4,13 +4,6 @@ import {createStandardDeck} from '../dist/games/meowdeck/core/cards.js';
 import {startBlackjack,applyBlackjackAction,getBlackjackView,blackjackValue,isNatural,validateBlackjackSave} from '../dist/games/meowdeck/games/blackjack/rules.js';
 import {seeded} from '../examples/legal-driver.mjs';
 const cards=Object.fromEntries(createStandardDeck().map(c=>[c.id,c]));
-const ordered=(ids)=>{
- const picked=new Set(ids);
- if(picked.size!==ids.length)throw Error('duplicate fixture IDs');
- const deck=createStandardDeck().filter(c=>!picked.has(c.id));
- // Last item pops first; returned order must be player, dealer, player, dealer.
- return [...deck,...ids.map(id=>cards[id]).reverse()];
-};
 function rngFor(ids){
  // Force exact four cards to end of ordered array in desired deal order.
  // shuffleDeck with zero-index RNG rotates unpredictably, so test with a crafted
@@ -43,29 +36,23 @@ test('fresh 52 cards, concealed dealer hole, stale/invalid actions and save cons
  const broken=structuredClone(s);broken.deck.pop();
  assert.equal(validateBlackjackSave(broken),null);
 });
-test('natural player beats non-natural dealer and both naturals push',()=>{
- const player=rngFor(['AS','9H','KD','7D']);
- // Fixture visible as a state with uncommitted naturals; normal init resolves immediately.
- // To verify natural precedence, use an injected RNG that produces each desired initial deal.
- for(const [ids,expected] of [
-  [['AS','9H','KD','7D'],'human'],
-  [['AS','AH','KD','KH'],'push'],
-  [['9S','AH','KD','KH'],'dealer']
+test('naturals resolve immediately and never expose a playable Hit action',()=>{
+ // Exact initial deals from the deterministic 52-card Fisher–Yates shuffle.
+ for(const [seed,outcome,reason] of [
+   [6,'human','player_natural'],
+   [65,'dealer','dealer_natural'],
+   [227,'push','both_natural']
  ]){
-  const shoe=ordered(ids);
-  let at=0;
-  // This is deterministic, valid shuffle randomness with identity permutation:
-  // shuffleDeck calls 51,50,...; return last valid index to leave shoe unchanged.
-  // Ensure starting deck order from canonical P0 is used by overriding fixture
-  // (the fixture is separately assessed by direct state validations below).
-  assert.equal(shoe.length,52);
-  const dealt=ids.map(id=>cards[id]);
-  const base=startBlackjack(seeded(3));
-  const sample={...base,player:[dealt[0],dealt[2]],dealer:[dealt[1],dealt[3]],
-    deck:createStandardDeck().filter(c=>!new Set(ids).has(c.id)),phase:'player',outcome:null,reason:null,score:{human:0,dealer:0,pushes:0}};
-  assert.ok(validateBlackjackSave(sample));
-  const pv=isNatural(sample.player),dv=isNatural(sample.dealer);
-  assert.equal(pv&&dv?'push':pv?'human':dv?'dealer':'none',expected);
+   const state=startBlackjack(seeded(seed));
+   assert.equal(state.phase,'finished',`seed ${seed}`);
+   assert.equal(state.outcome,outcome,`seed ${seed}`);
+   assert.equal(state.reason,reason,`seed ${seed}`);
+   assert.equal(state.score.human+state.score.dealer+state.score.pushes,1);
+   const view=getBlackjackView(state);
+   assert.equal(view.canHit,false);
+   assert.equal(view.dealerCards.every(card=>card!==null),true);
+   const rejected=applyBlackjackAction(state,action(state,'hit',`hit-after-natural-${seed}`));
+   assert.equal(rejected.ok,false);
  }
 });
 test('dealer stands on soft 17; a player bust settles without a dealer hit',()=>{
