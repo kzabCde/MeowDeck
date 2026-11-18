@@ -18,62 +18,54 @@ interface MenuProps {
   preferredDifficulty?: Difficulty;
 }
 
-/** The menu is a game title screen, not a marketing landing page. */
+/** Title-screen composition: game logo, the real opponent, and one clear start action. */
 export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatistics, onRules, saved }: MenuProps) {
-  return <main className="menu-page md-title-screen" data-testid="main-menu">
-    <header className="menu-topbar">
-      <span className="brand-mini" aria-hidden="true">MD / 01</span>
-      <nav className="top-actions" aria-label={t('settings')}>
-        <button className="link-button" onClick={onRules}>{t('rules')}</button>
-        <button className="link-button" onClick={onSettings}>{t('settings')}</button>
+  return <main className="menu-page md4-title-screen" data-testid="main-menu">
+    <header className="md4-menu-header">
+      <span className="md4-menu-edition" aria-hidden="true">♣　MOCHI'S CARD ROOM</span>
+      <nav className="md4-menu-tools" aria-label={t('settings')}>
+        <button type="button" className="md4-text-button" onClick={onRules}>{t('rules')}</button>
+        <button type="button" className="md4-text-button" onClick={onSettings}>{t('settings')}</button>
       </nav>
     </header>
-    <div className="menu-stage">
-      <section className="menu-copy">
-        <h1 className="brand-title">MEOW<span>DECK</span></h1>
-        <p className="tagline">{t('subtitle')}</p>
-        <div className="menu-buttons">
-          <button className="pixel-button button-primary button-xl" onClick={onPlay} data-testid="play-now">
-            {t('play')} <span aria-hidden="true">▶</span>
-          </button>
-          {hasMatch && <button className="pixel-button button-cream md-continue" onClick={onContinue} data-testid="continue">
-            {t('continue')}{saved ? <span className="md-progress"> · {t('round')} {saved.gameState.roundNumber}</span> : null}
-          </button>}
-          <div className="menu-secondary">
-            <button className="link-button" onClick={onStatistics}>{t('statistics')}</button>
-            <button className="link-button" onClick={onSettings}>{t('settings')}</button>
-          </div>
-        </div>
-      </section>
-      <div className="menu-scene" aria-label={t('mochiAppearance')}>
-        <div className="hero-mochi"><Mochi size="large" t={t}/></div>
-        <div className="hero-felt" aria-hidden="true">
-          <div className="hero-card hc-1"><img className="pixel-art" src={cardImage('AH', true)} alt="" /></div>
-          <div className="hero-card hc-2"><img className="pixel-art" src={cardImage('8S', true)} alt="" /></div>
-          <div className="hero-card hc-3"><CardBack label={t('deck')} /></div>
-        </div>
+    <div className="md4-title-composition">
+      <div className="md4-title-mark">
+        <span className="md4-title-ornament" aria-hidden="true">✦　♣　✦</span>
+        <h1 className="brand-title"><span>MEOW</span><span>DECK</span></h1>
+        <span className="md4-title-suits" aria-hidden="true">♠ <i>♥</i> ♦ <i>♣</i></span>
+      </div>
+      <div className="md4-title-diorama" aria-label={t('mochiAppearance')}>
+        <div className="md4-title-halo" aria-hidden="true"/>
+        <div className="md4-title-mochi"><Mochi t={t} size="large"/></div>
+        <div className="md4-title-table" aria-hidden="true"/>
+        <div className="md4-title-card md4-card-left" aria-hidden="true"><img className="pixel-art" src={cardImage('8H', true)} alt=""/></div>
+        <div className="md4-title-card md4-card-back" aria-hidden="true"><CardBack label={t('deck')}/></div>
+        <div className="md4-title-card md4-card-right" aria-hidden="true"><img className="pixel-art" src={cardImage('AS', true)} alt=""/></div>
+      </div>
+      <div className="md4-title-choices">
+        <button type="button" className="pixel-button button-primary button-xl md4-start" onClick={onPlay} data-testid="play-now"><span>{t('play')}</span><span aria-hidden="true">›</span></button>
+        {hasMatch && <button type="button" className="md4-resume" onClick={onContinue} data-testid="continue">{t('continue')}{saved && <span> · {t('round')} {saved.gameState.roundNumber}</span>}</button>}
+        <button type="button" className="md4-text-button md4-stats-link" onClick={onStatistics}>{t('statistics')}</button>
       </div>
     </div>
-    <footer className="menu-footer"><span>MEOWDECK</span><span>CRAZY EIGHTS · 01</span></footer>
+    <footer className="md4-menu-footer"><span>MEOWDECK</span><span>01 / CRAZY EIGHTS</span></footer>
   </main>;
 }
 
 export function GameSelection({ t, onBack, onNext }: { t:T; onBack:()=>void; onNext:()=>void }) {
-  return <main className="selection-page md-selection-page" data-testid="game-selection">
-    <header className="section-nav"><button className="link-button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK</span></header>
-    <div className="selection-head"><h1>{t('gameSelect')}</h1></div>
-    <div className="selection-grid">
-      <button className="game-option available-option" type="button" onClick={onNext} data-testid="select-crazy-eights">
-        <div className="selection-card-art" aria-hidden="true">
-          <img className="pixel-art" src={cardImage('8H', true)} alt="" />
-          <img className="pixel-art" src={cardImage('KS', true)} alt="" />
-        </div>
-        <div className="md-game-option-copy">
-          <strong>{t('crazyEights')}</strong>
-          <span className="option-desc">{t('crazyEightsDesc')}</span>
-          <span className="option-cta">{t('playNow')} ›</span>
-        </div>
+  return <main className="selection-page md4-selection-page" data-testid="game-selection">
+    <header className="md4-section-header"><button className="md4-text-button" type="button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK / 01</span></header>
+    <div className="md4-selection-scene">
+      <div className="md4-scene-head"><span aria-hidden="true">♣　01　♣</span><h1>{t('gameSelect')}</h1></div>
+      <button className="md4-game-token" type="button" onClick={onNext} data-testid="select-crazy-eights">
+        <span className="md4-token-art" aria-hidden="true">
+          <img className="pixel-art" src={cardImage('8H', true)} alt=""/>
+          <img className="pixel-art" src={cardImage('8S', true)} alt=""/>
+          <img className="pixel-art" src={cardImage('8D', true)} alt=""/>
+        </span>
+        <span className="md4-token-info"><strong>{t('crazyEights')}</strong><small>{t('crazyEightsDesc')}</small><em>{t('playNow')}　›</em></span>
       </button>
+      <span className="md4-scene-foot" aria-hidden="true">♠　♥　♦　♣</span>
     </div>
   </main>;
 }
@@ -86,21 +78,18 @@ export function DifficultySelection({ t, onBack, onStart, preferredDifficulty='p
     {id:'normal',key:'normal',desc:'normalDesc'},
     {id:'hard',key:'hard',desc:'hardDesc'}
   ];
-  return <main className="selection-page difficulty-page md-selection-page" data-testid="difficulty-selection">
-    <header className="section-nav"><button className="link-button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK</span></header>
-    <div className="selection-head"><h1>{t('chooseDifficulty')}</h1></div>
-    <div className="difficulty-card p3-difficulty-card">
-      <Mochi t={t} size="large" />
-      <div className="difficulty-info">
-        <h2>{t(selected)}</h2>
-        <p>{t(modes.find(x=>x.id===selected)!.desc)}</p>
-        <button className="pixel-button button-primary button-xl" onClick={()=>onStart(selected)} data-testid="start-match">{t('start')} ›</button>
+  return <main className="selection-page md4-selection-page md4-difficulty-page" data-testid="difficulty-selection">
+    <header className="md4-section-header"><button type="button" className="md4-text-button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK / 02</span></header>
+    <div className="md4-difficulty-scene">
+      <div className="md4-scene-head"><span aria-hidden="true">♣　MOCHI　♣</span><h1>{t('chooseDifficulty')}</h1></div>
+      <div className="md4-difficulty-mochi"><Mochi t={t} size="large"/></div>
+      <div className="md4-mode-strip" role="group" aria-label={t('chooseDifficulty')}>
+        {modes.map(mode=><button key={mode.id} type="button" className={`md4-mode ${selected===mode.id?'is-active':''}`} data-testid={`difficulty-${mode.id}`} aria-pressed={selected===mode.id} onClick={()=>setSelected(mode.id)}>
+          <strong>{t(mode.key)}</strong>
+        </button>)}
       </div>
-    </div>
-    <div className="p3-difficulty-options" role="group" aria-label={t('chooseDifficulty')}>
-      {modes.map(mode=><button key={mode.id} type="button" className={`p3-difficulty-option ${selected===mode.id?'is-active':''}`} data-testid={`difficulty-${mode.id}`} aria-pressed={selected===mode.id} onClick={()=>setSelected(mode.id)}>
-        <strong>{t(mode.key)}</strong><span>{t(mode.desc)}</span>
-      </button>)}
+      <p className="md4-mode-description">{t(modes.find(mode=>mode.id===selected)!.desc)}</p>
+      <button type="button" className="pixel-button button-primary button-xl md4-difficulty-start" onClick={()=>onStart(selected)} data-testid="start-match">{t('start')} <span aria-hidden="true">›</span></button>
     </div>
   </main>;
 }
