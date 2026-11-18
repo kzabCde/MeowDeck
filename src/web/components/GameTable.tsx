@@ -160,7 +160,7 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
       </div>}
       <section className="table-center md4-table-center" aria-label={t('discard')}>
         <div className="pile-group"><span className="pile-label">{t('draw')}</span><div className="draw-pile" ref={drawRef}><button type="button" className="draw-pile-action" onClick={onDraw} disabled={!canDraw} aria-label={t('drawCard')}><CardBack label={t('deck')}/></button><span className="pile-count" data-testid="draw-count">{view.drawPileCount}</span></div></div>
-        <div className="table-center-symbol" aria-hidden="true">✦</div>
+        
         <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" ref={discardRef} data-testid="top-discard"><img className="pixel-art card-image" style={((cue?.clip==='play_card'&&cue.cardId===view.topDiscard.id&&shownActionFrame!==cue.id&&!reducedMotion)||(humanFlight?.cardId===view.topDiscard.id))?{visibility:'hidden'}:undefined} src={cardImage(view.topDiscard.id, true)} alt={`${view.topDiscard.rank} ${SUIT_SYMBOL[view.topDiscard.suit]}`} />{impact&&<span key={impact} className={view.topDiscard.rank==='8'?`md-card-impact md-wild-impact md-wild-${SUIT_CLASS[view.activeSuit]}`:'md-card-impact'} aria-hidden="true" onAnimationEnd={()=>setImpact(null)}/>}</div></div>
         <div className="active-suit"><span>{t('activeSuit')}</span><strong role="img" className={`suit-${SUIT_CLASS[view.activeSuit]}`} data-testid="active-suit" aria-label={t(({ S:'spades', H:'hearts', D:'diamonds', C:'clubs' } as const)[view.activeSuit])}>{SUIT_SYMBOL[view.activeSuit]}</strong></div>
       </section>
@@ -171,7 +171,7 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
         <div className="scroll-hint">{t('zoomHint')}</div>
       </section>
     </div></div>
-    <footer className={`action-footer md4-control-rail ${tutorialHint?'has-tutorial':''} ${error?'has-error':''}`}><div className="action-status" aria-live="polite" role="status">{error?<span className="status-error">{t('invalidAction')}: {error}</span>:
+    <footer className={`action-footer md4-control-rail ${tutorialHint?'has-tutorial':''} ${error?'has-error':''}`}><div className="action-status" aria-live="polite" role="status">{error?<span className="status-error">{t('invalidAction')}</span>:
         tutorialHint?<div className="tutorial-guide" data-testid="tutorial-hint"><span>{tutorialHint}</span><button type="button" data-testid="tutorial-skip" onClick={onSkipTutorial}>{t('tutorialSkip')}</button></div>:gameHint(view,t)}</div>
       <div className="action-buttons"><button className="pixel-button button-primary" type="button" data-testid="play-selected" onClick={playFromHand} disabled={!isHumanTurn||!canPlay}>{selected?t('playCard'):t('selectCard')} <span aria-hidden="true">❯</span></button>
         {canDraw && <button className="pixel-button button-cream" type="button" onClick={onDraw} data-testid="draw-card">{t('drawCard')}</button>}

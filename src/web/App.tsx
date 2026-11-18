@@ -369,7 +369,7 @@ export function App() {
       tutorialHint={tutorialHintKey?t(tutorialHintKey):null} onSkipTutorial={()=>setTutorial(current=>({...current,skipped:true}))} />}
 
 
-    {modal === 'settings' && <GameDialog title={t('settings')} onClose={() => setModal(null)} t={t}>
+    {modal === 'settings' && <GameDialog title={t('settings')} onClose={() => setModal(screen==='game'?'pause':null)} t={t}>
       <div className="p4-settings" data-testid="persistent-settings">
         <label>{t('language')}<select value={settings.language} onChange={(e:ChangeEvent<HTMLSelectElement>)=>updateSettings({language:e.target.value as Language})}><option value="th">ไทย</option><option value="en">English</option></select></label>
         <label>{t('preferredDifficulty')}<select value={settings.preferredDifficulty} onChange={(e:ChangeEvent<HTMLSelectElement>)=>updateSettings({preferredDifficulty:e.target.value as Difficulty})}>{(['practice','easy','normal','hard'] as const).map(d=><option key={d} value={d}>{t(d)}</option>)}</select></label>
@@ -416,7 +416,7 @@ export function App() {
       <button className="pixel-button button-secondary dialog-bottom" onClick={() => setModal(null)}>{t('cancel')}</button>
     </GameDialog>}
     {screen === 'game' && isEnded && resultReady && session?.roundResult && !modal && <GameDialog title={isMatchEnd ? t('matchResult') : t('roundResult')} onClose={goMenu} t={t}>
-      <div className="p3-result-mochi"><Mochi pose={session.roundResult.winner==='ai'?'victory':session.roundResult.winner==='human'?'defeat':'idle'} reducedMotion={reducedMotion} t={t} size="small" /></div><div className="result-crest">{session.roundResult.winner === 'human' ? '✦ ♛ ✦' : session.roundResult.winner === 'ai' ? '♣ ✦ ♣' : '♢ ♢ ♢'}</div>
+      <div className="p3-result-mochi"><Mochi pose={session.roundResult.winner==='ai'?'victory':session.roundResult.winner==='human'?'defeat':'idle'} reducedMotion={reducedMotion} t={t} size="small" /></div>
       <h3 className="result-winner" data-testid="result-winner">{session.roundResult.winner === 'human' ? t('win') : session.roundResult.winner === 'ai' ? t('lose') : t('drawResult')}</h3>
       <div className="result-stats"><div><span>{t('matchScore')}</span><strong>{session.scores.human} — {session.scores.ai}</strong></div>
         <div><span>{t('penalties')}</span><strong>{session.roundResult.penalties.human} — {session.roundResult.penalties.ai}</strong></div>

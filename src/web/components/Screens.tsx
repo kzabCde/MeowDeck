@@ -22,7 +22,7 @@ interface MenuProps {
 export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatistics, onRules, saved }: MenuProps) {
   return <main className="menu-page md4-title-screen" data-testid="main-menu">
     <header className="md4-menu-header">
-      <span className="md4-menu-edition" aria-hidden="true">♣　MOCHI'S CARD ROOM</span>
+      <span className="md4-menu-edition" aria-hidden="true">CARD ROOM</span>
       <nav className="md4-menu-tools" aria-label={t('settings')}>
         <button type="button" className="md4-text-button" onClick={onRules}>{t('rules')}</button>
         <button type="button" className="md4-text-button" onClick={onSettings}>{t('settings')}</button>
@@ -30,9 +30,9 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
     </header>
     <div className="md4-title-composition">
       <div className="md4-title-mark">
-        <span className="md4-title-ornament" aria-hidden="true">✦　♣　✦</span>
+        
         <h1 className="brand-title"><span>MEOW</span><span>DECK</span></h1>
-        <span className="md4-title-suits" aria-hidden="true">♠ <i>♥</i> ♦ <i>♣</i></span>
+        
       </div>
       <div className="md4-title-diorama" aria-label={t('mochiAppearance')}>
         <div className="md4-title-halo" aria-hidden="true"/>
@@ -48,7 +48,7 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
         <button type="button" className="md4-text-button md4-stats-link" onClick={onStatistics}>{t('statistics')}</button>
       </div>
     </div>
-    <footer className="md4-menu-footer"><span>MEOWDECK</span><span>01 / CRAZY EIGHTS　·　02 / BLACKJACK</span></footer>
+    
   </main>;
 }
 
@@ -57,9 +57,9 @@ export function GameSelection({ t, onBack, onCrazyEights, onBlackjack }: {
  t:T;onBack:()=>void;onCrazyEights:()=>void;onBlackjack:()=>void;
 }) {
  return <main className="selection-page md4-selection-page md5-game-choice" data-testid="game-selection">
-   <header className="md4-section-header"><button className="md4-text-button" type="button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK / CARD ROOM</span></header>
+   <header className="md4-section-header"><button className="md4-text-button" type="button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK</span></header>
    <div className="md5-choice-scene">
-     <div className="md4-scene-head"><span aria-hidden="true">♣　01 / 02　♣</span><h1>{t('gameSelect')}</h1></div>
+     <div className="md4-scene-head"><h1>{t('gameSelect')}</h1></div>
      <div className="md5-choice-grid">
        <button type="button" className="md5-choice-tile" data-testid="select-crazy-eights" onClick={onCrazyEights}>
          <span className="md5-choice-art" aria-hidden="true">
@@ -67,7 +67,7 @@ export function GameSelection({ t, onBack, onCrazyEights, onBlackjack }: {
            <img className="pixel-art" src={cardImage('8S',true)} alt=""/>
            <img className="pixel-art" src={cardImage('8D',true)} alt=""/>
          </span>
-         <span className="md5-choice-copy"><small>01 / MOCHI</small><strong>{t('crazyEights')}</strong><span>{t('crazyEightsDesc')}</span><em>{t('chooseDifficulty')}　›</em></span>
+         <span className="md5-choice-copy"><strong>{t('crazyEights')}</strong><span>{t('crazyEightsDesc')}</span></span>
        </button>
        <button type="button" className="md5-choice-tile" data-testid="select-blackjack" onClick={onBlackjack}>
          <span className="md5-choice-art" aria-hidden="true">
@@ -75,10 +75,10 @@ export function GameSelection({ t, onBack, onCrazyEights, onBlackjack }: {
            <img className="pixel-art" src={cardImage('KH',true)} alt=""/>
            <img className="pixel-art" src={cardImage('card_back',true)} alt=""/>
          </span>
-         <span className="md5-choice-copy"><small>02 / MOCHI</small><strong>{t('blackjack')}</strong><span>{t('blackjackDesc')}</span><em>{t('bjHit')} / {t('bjStand')}　›</em></span>
+         <span className="md5-choice-copy"><strong>{t('blackjack')}</strong><span>{t('blackjackDesc')}</span></span>
        </button>
      </div>
-     <span className="md4-scene-foot" aria-hidden="true">♠　♥　♦　♣</span>
+     
    </div>
  </main>;
 }
@@ -94,7 +94,7 @@ export function DifficultySelection({ t, onBack, onStart, preferredDifficulty='p
   return <main className="selection-page md4-selection-page md4-difficulty-page" data-testid="difficulty-selection">
     <header className="md4-section-header"><button type="button" className="md4-text-button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK / 01</span></header>
     <div className="md4-difficulty-scene">
-      <div className="md4-scene-head"><span aria-hidden="true">♣　MOCHI　♣</span><h1>{t('chooseDifficulty')}</h1></div>
+      <div className="md4-scene-head"><h1>{t('chooseDifficulty')}</h1></div>
       <div className="md4-difficulty-mochi"><Mochi t={t} size="large"/></div>
       <div className="md4-mode-strip" role="group" aria-label={t('chooseDifficulty')}>
         {modes.map(mode=><button key={mode.id} type="button" className={`md4-mode ${selected===mode.id?'is-active':''}`} data-testid={`difficulty-${mode.id}`} aria-pressed={selected===mode.id} onClick={()=>setSelected(mode.id)}>

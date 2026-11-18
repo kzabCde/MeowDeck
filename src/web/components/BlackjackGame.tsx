@@ -114,9 +114,9 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
      <span className="md5-bj-round">{t('round')} {view.round}</span>
      <div className="md5-bj-score-pips">
        <Score label={t('you')} count={view.score.human} testId="blackjack-wins"/>
-       <span aria-hidden="true" className="md5-bj-score-sep">✦</span>
+       
        <Score label={t('bjPush')} count={view.score.pushes} testId="blackjack-pushes"/>
-       <span aria-hidden="true" className="md5-bj-score-sep">✦</span>
+       
        <Score label={t('mochi')} count={view.score.dealer} testId="blackjack-losses"/>
      </div>
    </div>
@@ -136,7 +136,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
            </span>)}
          </div>
        </section>
-       <div className="md5-bj-table-mark" aria-hidden="true"><span>♠　♥　♦　♣</span></div>
+       
        <section className="md5-bj-player" aria-label={t('yourHand')}>
          <div className="md5-bj-hand-head md5-bj-player-label">
            <span>{t('you')}</span>
@@ -159,7 +159,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
          <strong>{t(outcomeKeys[outcome])}</strong>
          <span>{t(reasonKeys[view.reason])}</span>
        </div>
-       :<div className="md5-bj-instruction">{t('bjYourMove')}</div>}
+       :<div className="md5-bj-instruction sr-only">{t('bjYourMove')}</div>}
      <div className="md5-bj-action-row">
        {view.phase==='player'
          ?<>
