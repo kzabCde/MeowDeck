@@ -87,7 +87,7 @@ test('production PWA precaches and resumes a real offline match after reopening'
     // explicit takeover rather than silently overwriting another session.
     await expect(page.locator('[data-testid="gameplay-screen"], dialog[open]')).toBeVisible();
     if (await page.getByRole('dialog').isVisible().catch(() => false)) {
-      await page.getByRole('button', { name: /take over|รับช่วง|เล่นต่อที่นี่|ยึด/i }).click();
+      await page.getByRole('button', { name: /take over|เล่นในแท็บนี้/i }).click();
     }
     await expect(page.getByTestId('gameplay-screen')).toBeVisible();
     await expect(page.getByTestId('player-hand').locator('button')).toHaveCount(handCount);
