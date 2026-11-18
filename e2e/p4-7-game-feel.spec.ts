@@ -2,6 +2,7 @@ import {expect,test} from '@playwright/test';
 test('P4.7 visible table uses crisp pixel event effects that cannot intercept cards',async({page})=>{
  await page.goto('/?qaSeed=62&fastAI=1');
  await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
  await page.getByTestId('start-match').click();
  await expect(page.getByTestId('gameplay-screen')).toBeVisible();
  const properties=await page.evaluate(()=>{
@@ -25,6 +26,7 @@ test('P4.7 visible table uses crisp pixel event effects that cannot intercept ca
 test('P4.7 reduced motion keeps gameplay usable with no decorative impact animation',async({page})=>{
  await page.goto('/?qaSeed=62&fastAI=1');
  await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
  await page.getByTestId('start-match').click();
  await page.getByTestId('pause-button').click();
  await page.getByRole('button',{name:/Settings|ตั้งค่า/i}).last().click();

@@ -3,6 +3,7 @@ import {expect,test} from '@playwright/test';
 async function begin(page:import('@playwright/test').Page,mode:'easy'|'normal'|'hard',fast=true){
   await page.goto(`/?qaSeed=62${fast?'&fastAI=1':''}`);
   await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
   
   await page.getByTestId(`difficulty-${mode}`).click();
   await expect(page.getByTestId(`difficulty-${mode}`)).toHaveAttribute('aria-pressed','true');

@@ -64,6 +64,7 @@ test('production PWA precaches and resumes a real offline match after reopening'
     await expect(page.getByTestId('offline-status')).toHaveCount(0);
 
     await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
     
     await page.getByTestId('difficulty-easy').click();
     await page.getByTestId('start-match').click();
