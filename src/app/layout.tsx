@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#181E1B'
+  themeColor: '#101A20'
 };
 
 /** Server Component: stable HTML and metadata, with no browser-only game logic. */
