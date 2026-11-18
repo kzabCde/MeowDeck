@@ -130,18 +130,18 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
     if (!length) return;
     buttons[(current + offset + length) % length]?.focus();
   }
-  return <main className="gameplay-page" data-testid="gameplay-screen">
-    <header className="game-hud"><div className="hud-brand">MEOW<span>DECK</span> <span className="hud-star">✦</span></div>
+  return <main className="gameplay-page md4-cardroom" data-testid="gameplay-screen">
+    <header className="game-hud md4-hud"><div className="hud-brand">MEOW<span>DECK</span></div>
       <div className="hud-round">{t('round')} <strong data-testid="round-number">{view.roundNumber}</strong></div>
       <div className="hud-score"><span>{t('you')}</span><strong data-testid="human-score">{view.scores.human}</strong><span className="score-sep">:</span><strong data-testid="mochi-score">{view.scores.ai}</strong><span>{t('mochi')}</span></div>
-      <button className="pixel-button button-secondary pause-btn" type="button" onClick={onPause} data-testid="pause-button">⚙ <span>{t('pause')}</span></button>
+      <button className="pixel-button button-secondary pause-btn" type="button" onClick={onPause} aria-label={t('pause')} data-testid="pause-button">Ⅱ</button>
     </header>
-    <div className="table-frame"><div className="game-table" ref={tableRef}>
+    <div className="table-frame md4-table-frame"><div className="game-table md4-table" ref={tableRef}>
       
-      <section className="opponent-area" aria-label={t('mochiHand')}>
+      <section className="opponent-area md4-opponent" aria-label={t('mochiHand')}>
         <div className="opponent-persona"><div className="opponent-avatar"><Mochi pose={currentPose} cue={cue} size="small" t={t} reducedMotion={reducedMotion} paused={paused} onCueDone={onCueDone} onCueActionFrame={onActionFrame} onPet={onPet}/></div><div className="opponent-title"><h2>MOCHI</h2><div className="difficulty-name">{t(difficulty)}</div></div></div>
         <div className="opponent-cards" data-testid="ai-hand"><div className="opponent-card-fan" ref={enemyRef} aria-hidden="true">{Array.from({length:Math.min(view.handCounts.ai,7)},(_,i)=><CardBack key={i} small label={t('mochiHand')} />)}</div>
-          <div className="hand-count">{t('mochi')} · <b data-testid="ai-card-count">{view.handCounts.ai}</b> {t('cards')}</div></div>
+          <div className="hand-count"><b data-testid="ai-card-count">{view.handCounts.ai}</b> {t('cards')}</div></div>
       </section>
       {flight && <div key={flight.id} aria-hidden="true" data-testid="mochi-card-flight" className="p3-card-flight"
         style={{left:flight.left,top:flight.top,transitionDuration:`${flight.duration}ms`,transform:flight.started?`translate(${flight.dx}px,${flight.dy}px)`:'translate(0px,0px)'}}>
@@ -152,20 +152,20 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
           transform:humanFlight.started?`translate(${humanFlight.dx}px,${humanFlight.dy}px) rotate(-5deg)`:'translate(0px,0px)'}}>
         <img className="pixel-art" src={cardImage(humanFlight.cardId,true)} alt="" />
       </div>}
-      <section className="table-center" aria-label={t('discard')}>
+      <section className="table-center md4-table-center" aria-label={t('discard')}>
         <div className="pile-group"><span className="pile-label">{t('draw')}</span><div className="draw-pile" ref={drawRef}><button type="button" className="draw-pile-action" onClick={onDraw} disabled={!canDraw} aria-label={t('drawCard')}><CardBack label={t('deck')}/></button><span className="pile-count" data-testid="draw-count">{view.drawPileCount}</span></div></div>
-        <div className="table-center-symbol">✦</div>
+        <div className="table-center-symbol" aria-hidden="true">✦</div>
         <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" ref={discardRef} data-testid="top-discard"><img className="pixel-art card-image" style={((cue?.clip==='play_card'&&cue.cardId===view.topDiscard.id&&shownActionFrame!==cue.id&&!reducedMotion)||(humanFlight?.cardId===view.topDiscard.id))?{visibility:'hidden'}:undefined} src={cardImage(view.topDiscard.id, true)} alt={`${view.topDiscard.rank} ${SUIT_SYMBOL[view.topDiscard.suit]}`} />{impact&&<span key={impact} className={view.topDiscard.rank==='8'?`md-card-impact md-wild-impact md-wild-${SUIT_CLASS[view.activeSuit]}`:'md-card-impact'} aria-hidden="true" onAnimationEnd={()=>setImpact(null)}/>}</div></div>
         <div className="active-suit"><span>{t('activeSuit')}</span><strong className={`suit-${SUIT_CLASS[view.activeSuit]}`} data-testid="active-suit" aria-label={t(({ S:'spades', H:'hearts', D:'diamonds', C:'clubs' } as const)[view.activeSuit])}>{SUIT_SYMBOL[view.activeSuit]}</strong></div>
       </section>
       <div className={`turn-banner ${isHumanTurn?'your-turn':'opponent-turn'}`} aria-live="polite" data-testid="turn-status"><span className="md-turn-dot" aria-hidden="true"/><strong>{isHumanTurn?t('yourTurn'):t('mochiTurn')}</strong></div>
-      <section className="player-area" aria-label={t('yourHand')}>
+      <section className="player-area md4-player-area" aria-label={t('yourHand')}>
         <div className="hand-title"><span>{t('yourHand')}</span><span className="hand-count">{view.ownHand.length}</span></div>
         <div className={`player-hand ${handMotion?'md-hand-drawn':''}`} ref={handRef} data-testid="player-hand" onAnimationEnd={()=>setHandMotion(null)}>{view.ownHand.map((card,i)=><PixelCard key={card.id} card={card} t={t} playable={plays.has(card.id)} selected={selected===card.id} disabled={!isHumanTurn||!plays.has(card.id)} onSelect={()=>onSelect(card.id)} onNavigate={(direction)=>navigate(i,direction)}/>)}</div>
         <div className="scroll-hint">{t('zoomHint')}</div>
       </section>
     </div></div>
-    <footer className="action-footer"><div className="action-status" aria-live="polite" role="status">{error?<span className="status-error">{t('invalidAction')}: {error}</span>:gameHint(view,t)}</div>
+    <footer className="action-footer md4-control-rail"><div className="action-status" aria-live="polite" role="status">{error?<span className="status-error">{t('invalidAction')}: {error}</span>:gameHint(view,t)}</div>
       <div className="action-buttons"><button className="pixel-button button-primary" type="button" data-testid="play-selected" onClick={playFromHand} disabled={!isHumanTurn||!canPlay}>{t('playCard')} <span>❯</span></button>
         {canDraw && <button className="pixel-button button-cream" type="button" onClick={onDraw} data-testid="draw-card">{t('drawCard')}</button>}
         {canFinish && <button className="pixel-button button-cream" type="button" onClick={onFinish} data-testid="finish-turn">{t('endTurn')}</button>}
