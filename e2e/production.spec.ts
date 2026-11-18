@@ -104,7 +104,7 @@ test('production visual review captures original sprites on title and table, des
   await page.getByTestId('start-match').click();
   await expect(page.getByTestId('gameplay-screen')).toBeVisible();
 
-  for (const [width, height] of [[1280, 720], [390, 844], [320, 568]] as const) {
+  for (const [width, height] of [[1280, 720], [1920, 1080], [768, 1024], [430, 932], [390, 844], [320, 568]] as const) {
     await page.setViewportSize({ width, height });
     await expect(page.getByTestId('top-discard')).toBeVisible();
     await page.screenshot({
@@ -125,6 +125,15 @@ test('P5 production Blackjack runs without test seed and restores a finished rou
  await page.screenshot({path:'test-results/visual-review/blackjack-mobile-390x844.png',animations:'disabled'});
  await page.setViewportSize({width:1280,height:720});
  await page.screenshot({path:'test-results/visual-review/blackjack-desktop-1280x720.png',animations:'disabled'});
+ // Production Phase 6: both game tables captured using original sprites at compact and wide sizes.
+ for(const [width,height] of [[320,568],[430,932],[768,1024],[1920,1080]] as const){
+   await page.setViewportSize({width,height});
+   await expect(page.getByTestId('blackjack-table')).toBeVisible();
+   const box=await page.getByTestId('blackjack-action-rail').boundingBox();
+   expect((box?.y??Infinity)+(box?.height??0)).toBeLessThanOrEqual(height+1);
+   await page.screenshot({path:`test-results/visual-review/blackjack-${width}x${height}.png`,animations:'disabled'});
+ }
+ await page.setViewportSize({width:1280,height:720});
  // A responsive table is not acceptable if its primary actions are below the fold.
  const action=await page.getByTestId('blackjack-hit').boundingBox();
  expect(action).not.toBeNull();

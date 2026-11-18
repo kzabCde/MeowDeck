@@ -65,3 +65,4 @@ Do not merge or deploy without explicit project-owner authorization.
 - Improved physical-card affordances, mouse/keyboard focus outlines and scroll indicators without altering card assets, AI, play action handlers or animations.
 - Functional tutorial, save warning, error and restart confirmation content is retained; generic decorative feedback is not added.
 - Source view-state, engine, persistence and save schemas are unchanged.
+- Phase 6 screenshot evidence is now generated for Crazy Eights and Blackjack at 320×568, 390×844, 430×932, 768×1024, desktop 1280×720, and 1920×1080. Playwright checks that HUD numbers, round labels, hands and key actions stay visible and that both tables remain separated from the control rails. These behavioral/geometry tests complement, but do not replace, human visual inspection.

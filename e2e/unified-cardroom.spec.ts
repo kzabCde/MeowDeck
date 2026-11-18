@@ -205,3 +205,62 @@ for(const [width,height] of [[320,568],[390,844]] as const){
     expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
   });
 }
+
+// Phase 6: preserve gameplay actions and card-readability at every supported screen size.
+for(const [width,height] of [[320,568],[390,844],[430,932],[768,1024],[1280,720],[1920,1080]] as const){
+  test(`Crazy Eights HUD, felt and controls remain readable at ${width}x${height}`,async({page})=>{
+    await page.setViewportSize({width,height});
+    await page.goto('/?qaSeed=62&fastAI=1');
+    await page.getByTestId('play-now').click();
+    await page.getByTestId('select-crazy-eights').click();
+    await page.getByTestId('start-match').click();
+    await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+    const header=page.locator('.md4-cardroom .game-hud');
+    const round=page.locator('.md4-cardroom .hud-round');
+    const score=page.locator('.md4-cardroom .hud-score');
+    await expect(page.getByTestId('round-number')).toBeVisible();
+    await expect(page.getByTestId('human-score')).toBeVisible();
+    await expect(page.getByTestId('mochi-score')).toBeVisible();
+    const [headBox,roundBox,scoreBox,pauseBox]=await Promise.all([
+      header.boundingBox(),round.boundingBox(),score.boundingBox(),page.getByTestId('pause-button').boundingBox()
+    ]);
+    expect((roundBox?.y??Infinity)).toBeGreaterThanOrEqual((headBox?.y??0)-1);
+    expect((roundBox?.y??Infinity)+(roundBox?.height??0)).toBeLessThanOrEqual((headBox?.y??0)+(headBox?.height??0)+1);
+    expect((scoreBox?.x??0)+(scoreBox?.width??0)).toBeLessThanOrEqual((pauseBox?.x??Infinity)+1);
+    expect(pauseBox?.height).toBeGreaterThanOrEqual(44);
+    await expect(page.getByTestId('top-discard')).toBeVisible();
+    await expect(page.getByTestId('player-hand').locator('button')).toHaveCount(7);
+    const [tableBox,handBox,railBox,primaryBox]=await Promise.all([
+      page.getByTestId('crazy-eights-table').boundingBox(),page.getByTestId('player-hand').boundingBox(),
+      page.getByTestId('crazy-eights-action-rail').boundingBox(),page.getByTestId('play-selected').boundingBox()
+    ]);
+    expect((handBox?.y??0)+(handBox?.height??0)).toBeLessThanOrEqual((railBox?.y??Infinity)+2);
+    expect((tableBox?.y??0)+(tableBox?.height??0)).toBeLessThanOrEqual((railBox?.y??Infinity)+2);
+    expect(primaryBox?.height).toBeGreaterThanOrEqual(44);
+    expect((primaryBox?.y??Infinity)+(primaryBox?.height??0)).toBeLessThanOrEqual(height+1);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
+  });
+
+  test(`Blackjack score, both hands and actions remain readable at ${width}x${height}`,async({page})=>{
+    await page.setViewportSize({width,height});
+    await page.goto('/?qaSeed=62&fastAI=1');
+    await page.getByTestId('play-now').click();
+    await page.getByTestId('select-blackjack').click();
+    await expect(page.getByTestId('blackjack-screen')).toBeVisible();
+    const felt=page.getByTestId('blackjack-table');
+    const [feltBox,dealerBox,playerBox,railBox,hitBox,standBox]=await Promise.all([
+      felt.boundingBox(),page.getByTestId('blackjack-dealer-hand').boundingBox(),
+      page.getByTestId('blackjack-player-hand').boundingBox(),
+      page.getByTestId('blackjack-action-rail').boundingBox(),
+      page.getByTestId('blackjack-hit').boundingBox(),page.getByTestId('blackjack-stand').boundingBox()
+    ]);
+    expect((dealerBox?.y??0)+(dealerBox?.height??0)).toBeLessThanOrEqual(playerBox?.y??Infinity);
+    expect((feltBox?.y??0)+(feltBox?.height??0)).toBeLessThanOrEqual((railBox?.y??Infinity)+2);
+    expect(hitBox?.height).toBeGreaterThanOrEqual(44);
+    expect(standBox?.height).toBeGreaterThanOrEqual(44);
+    expect((hitBox?.y??Infinity)+(hitBox?.height??0)).toBeLessThanOrEqual(height+1);
+    expect((standBox?.y??Infinity)+(standBox?.height??0)).toBeLessThanOrEqual(height+1);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
+    await expect(page.getByTestId('blackjack-player-hand').locator('img')).toHaveCount(2);
+  });
+}
