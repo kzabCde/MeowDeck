@@ -173,7 +173,6 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
    </footer>
    {rulesOpen&&<GameDialog title={t('bjRulesTitle')} t={t} onClose={()=>setRulesOpen(false)}>
      <p>{t('bjRulesText')}</p>
-     <button className="pixel-button button-secondary" onClick={()=>setRulesOpen(false)}>{t('close')}</button>
    </GameDialog>}
    {resetOpen&&<GameDialog title={t('bjNewSeries')} t={t} onClose={()=>setResetOpen(false)}>
      <p>{t('bjNewSeriesConfirm')}</p>
