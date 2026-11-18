@@ -143,7 +143,7 @@ The core rules, original card/Mochi assets, local save schema, and fair AI obser
 - **P4.6:** Main → Difficulty → Match, optional contextual in-table tutorial, selectable cards, Thai/English.
 - **P4.7:** Short pixel VFX tied to committed card events, restrained synthesized audio and reduced-motion handling.
 - **P4.8:** Keyboard/touch accessibility, short-landscape scrolling, mobile errors, cross-browser smoke, PR and main UI CI.
-- **P4.9:** Reproducible paired-seed AI assessment, conservative Hard-policy tuning, current release checklist and beta-playtest plan.
+- **P4.9:** Reproducible paired-seed AI assessment, documented rejection of a regressive Hard-policy experiment, current release checklist and beta-playtest plan.
 
 ```bash
 npm ci
