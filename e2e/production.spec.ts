@@ -66,7 +66,23 @@ test('production visual review captures original sprites on title and table, des
   await page.screenshot({ path: 'test-results/visual-review/title-desktop-1280x720.png', animations: 'disabled' });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: 'test-results/visual-review/title-mobile-390x844.png', animations: 'disabled' });
-
+  // Phase 4 visual evidence: verify the real production scene on compact and wide screens.
+  for (const [width, height, label] of [
+    [320, 568, 'mobile'],
+    [430, 932, 'mobile'],
+    [1920, 1080, 'desktop']
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await expect(page.getByTestId('title-scene')).toBeVisible();
+    const play = await page.getByTestId('play-now').boundingBox();
+    expect(play).not.toBeNull();
+    expect((play?.y ?? Infinity) + (play?.height ?? 0)).toBeLessThanOrEqual(height + 1);
+    await page.screenshot({
+      path: `test-results/visual-review/title-${label}-${width}x${height}.png`,
+      animations: 'disabled'
+    });
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.getByTestId('play-now').click();
   await page.getByTestId('select-crazy-eights').click();
   
