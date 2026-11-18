@@ -126,11 +126,13 @@ export function chooseHard(o:AIObservation,rng:RandomInt,budget:HardBudget=DEFAU
       // Penalize offering opponent an easily playable suit, favor own continuity,
       // retain emergency wilds until pressure rises, shed 50-point cards when urgent.
       const score=normalValue(o,action)
-        + followups*0.5
-        + futureFlex*.25
-        + (suitCounts[activeSuit]??0)*0.6
-        - potential*2*urgency
-        + ((1-potential)*1*urgency);
+        // Stronger follow-up/suit control and probability-aware denial.
+        // These are estimates from public cards, never the actual human hand.
+        + followups*1.35
+        + futureFlex*.4
+        + (suitCounts[activeSuit]??0)*1.3
+        - potential*5.5*urgency
+        + ((1-potential)*2*urgency);
       if(score>bestScore+1e-8){bestScore=score;best=[{action,...(suit?{selectedSuit:suit}:{})}];}
       else if(Math.abs(score-bestScore)<=1e-8)best.push({action,...(suit?{selectedSuit:suit}:{})});
     }

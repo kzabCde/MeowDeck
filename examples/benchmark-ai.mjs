@@ -4,7 +4,7 @@ import { applyAction, assertCardConservation, createAIObservation, createMatch, 
 import { chooseAIMove } from '../dist/games/meowdeck/ai/strategies.js';
 import { seeded } from './legal-driver.mjs';
 
-export function benchmark(level, matches=200, firstSeed=1) {
+export function benchmark(level, matches=200, firstSeed=1, hooks={}) {
   const results={level,matches,wins:0,losses:0,draws:0,decisions:0,totalMs:0,maxMs:0,seeds:`${firstSeed}..${firstSeed+matches-1}`,errors:0};
   for(let seed=firstSeed;seed<firstSeed+matches;seed++){
     const shuffle=seeded(seed*31+7),selection=seeded(seed*31+13);
@@ -21,6 +21,7 @@ export function benchmark(level, matches=200, firstSeed=1) {
         const begin=performance.now();const decision=chooseAIMove(level,createAIObservation(state),selection);
         const millis=performance.now()-begin;
         results.decisions++;results.totalMs+=millis;results.maxMs=Math.max(results.maxMs,millis);
+        hooks.onDecision?.({seed,level,millis});
         chosen=decision.action;selectedSuit=decision.selectedSuit;
       }else{
         // The same simple non-8-first baseline as P1's legal driver.
@@ -38,6 +39,7 @@ export function benchmark(level, matches=200, firstSeed=1) {
     }
     if(state.phase!=='match_end')throw Error(`Benchmark stalled seed ${seed}`);
     if(state.matchWinner==='ai')results.wins++;else if(state.matchWinner==='human')results.losses++;else results.draws++;
+    hooks.onMatch?.({seed,level,winner:state.matchWinner});
   }
   return {...results,winRate:Number((results.wins/results.matches*100).toFixed(1)),meanDecisionsPerMatch:Number((results.decisions/results.matches).toFixed(1)),meanMsPerDecision:Number((results.totalMs/results.decisions).toFixed(3)),maxMsPerDecision:Number(results.maxMs.toFixed(3))};
 }

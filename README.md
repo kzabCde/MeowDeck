@@ -1,6 +1,6 @@
 # MeowDeck — A Little Cat. A Clever Deck.
 
-**MeowDeck P2.5: Next.js App Router + React 19 with the original P1 Crazy Eights game, P2 gameplay UI, three fair P3 AI difficulties, and all ten Mochi animations.** P0 assets and P1 rules remain authoritative and unchanged. P4 persistence/audio/PWA are not implemented.
+**MeowDeck is an offline-first Next.js 16 / React 19 pixel-art Crazy Eights game against Mochi.** P0 production cards and cat sprites, P1 authoritative rules, P2 responsive gameplay, P3 fair AI, and P4 local save/statistics/audio/PWA are implemented. P4.5–P4.9 polish is staged in separate reviewed PRs; verify the current branch and CI before calling any phase released.
 
 ## Prerequisites and commands
 
@@ -68,7 +68,7 @@ The playing deck has 52 cards, while the asset manifest also contains 2 Jokers a
 - [`docs/P1_CORE_ENGINE.md`](docs/P1_CORE_ENGINE.md) — P1 code and integration contract
 - [`docs/P1_REPORT.md`](docs/P1_REPORT.md) — P1 verification and readiness
 
-No gameplay UI, AI behavior tiers, deployment, or online services are provided by P1.
+P1 is deliberately headless; the runtime UI, AI tiers and offline systems are implemented in later layers. No online game service is required.
 
 ## P2 — Interactive Gameplay UI
 
@@ -90,7 +90,7 @@ npm run test:e2e                 # Next development server: deterministic fixtur
 npm run test:e2e:production      # Next production server: hydration/assets smoke test
 ```
 
-P3 adds distinct **Practice / Easy / Normal / Hard** opponents and manifest-driven Mochi sprite animations, without changing Crazy Eights rules. Save/Resume across refresh, statistics and audio remain P4. See `docs/P2_GAMEPLAY_UI.md` and `docs/P2_REPORT.md`.
+P3 adds distinct **Practice / Easy / Normal / Hard** opponents and manifest-driven Mochi sprite animations, without changing Crazy Eights rules. P4 adds Save/Resume across refresh, statistics, audio and offline PWA. See `docs/P2_GAMEPLAY_UI.md` and `docs/P2_REPORT.md`.
 
 ## P3 — Fair Mochi AI and production animation
 
@@ -111,7 +111,7 @@ See [`docs/P3_MOCHI_AI.md`](docs/P3_MOCHI_AI.md) and [`docs/P3_REPORT.md`](docs/
 - UI/engine assets remain at `/assets/meowdeck/*` in the Next `public` directory, and are not processed by image optimizers.
 - No server-side game rules, remote API, database, save backend, audio or PWA changes were introduced.
 
-**Important reproducibility gate:** This migration source was prepared in an environment without access to the npm registry. Before merging, run `npm install` with registry access to generate **and commit** `package-lock.json`, then run `npm ci` and all CI/browser tests. Do not interpret the local headless validation alone as Next.js build verification.
+**Reproducibility gate:** Use the committed `package-lock.json`, run `npm ci`, build the production app, and require the PR's Node/Playwright CI checks. Development-only seeded fixtures are intentionally unavailable in production.
 
 See [migration guide](docs/P2_5_NEXTJS_MIGRATION.md) and [verification report](docs/P2_5_REPORT.md).
 
@@ -120,7 +120,7 @@ See [migration guide](docs/P2_5_NEXTJS_MIGRATION.md) and [verification report](d
 
 P4 source lives in `src/web/storage`, `src/web/statistics`, `src/web/settings`, `src/web/audio`, `src/web/pwa` and the App Router manifest. The project now includes an original synthesized sound engine and a build-aware, custom service worker. The original P0–P3 assets and game rules are unchanged.
 
-**Status:** P4 local implementation with **54/54 Node tests passed**; Next.js production build and browser/offline acceptance are **NOT VERIFIED** until dependencies and a production browser runner are available. Do not deploy as offline-ready solely from this source package. See `docs/P4_REPORT.md`.
+**Status:** P4 was integrated and automated Next.js build/Chromium/production-offline checks passed in the P4 follow-up and V4 PRs. P4.5–P4.9 require their own current CI and manual release gates. The original dated P4 report is a historical implementation snapshot, not a present-day release status. Do not claim physical iOS/Android PWA verification without a real device test. See `docs/P4_8_RELEASE_QA.md` and `docs/P4_9_BETA_READINESS.md`.
 
 ```bash
 npm ci
@@ -133,3 +133,32 @@ npm run test:e2e:production
 ```
 
 The build emits `public/sw.js` and `public/offline-precache.json` from the actual Next.js build ID. For development, PWA registration is disabled; test offline behavior in production mode.
+
+
+## P4.5–P4.9 — Game-first refinement
+
+The core rules, original card/Mochi assets, local save schema, and fair AI observation boundary remain authoritative.
+
+- **P4.5:** Thai-safe display typography, consistent mobile labels and a refined pixel cardroom.
+- **P4.6:** Main → Difficulty → Match, optional contextual in-table tutorial, selectable cards, Thai/English.
+- **P4.7:** Short pixel VFX tied to committed card events, restrained synthesized audio and reduced-motion handling.
+- **P4.8:** Keyboard/touch accessibility, short-landscape scrolling, mobile errors, cross-browser smoke, PR and main UI CI.
+- **P4.9:** Reproducible paired-seed AI assessment, conservative Hard-policy tuning, current release checklist and beta-playtest plan.
+
+```bash
+npm ci
+npm run typecheck
+npm test
+npm run benchmark:ai
+npm run evaluate:ai
+npm run validate:assets
+npm run build
+npx playwright install --with-deps chromium firefox webkit
+npm run test:e2e
+npm run test:e2e:cross-browser
+npm run test:e2e:production
+```
+
+**Release policy:** Automated tests and desktop WebKit/iPhone emulation are not real Safari/Android device acceptance. Until manual device testing and gameplay review are signed off, treat this as a **Public Beta candidate**, not an unrestricted production release. PRs are created separately and not automatically merged/deployed.
+
+See [P4.5 visual audit](docs/P4_5_VISUAL_AUDIT.md), [P4.6 interactions](docs/P4_6_INTERACTION_REPORT.md), [P4.7 game feel](docs/P4_7_GAME_FEEL.md), [P4.8 release QA](docs/P4_8_RELEASE_QA.md), and [P4.9 beta readiness](docs/P4_9_BETA_READINESS.md).
