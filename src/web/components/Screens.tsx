@@ -63,7 +63,7 @@ export function GameSelection({ t, onBack, onNext }: { t:T; onBack:()=>void; onN
           <img className="pixel-art" src={cardImage('8S', true)} alt=""/>
           <img className="pixel-art" src={cardImage('8D', true)} alt=""/>
         </span>
-        <span className="md4-token-info"><strong>{t('crazyEights')}</strong><small>{t('crazyEightsDesc')}</small><em>{t('playNow')}　›</em></span>
+        <span className="md4-token-info"><strong>{t('crazyEights')}</strong><small>{t('crazyEightsDesc')}</small><em>{t('chooseDifficulty')}　›</em></span>
       </button>
       <span className="md4-scene-foot" aria-hidden="true">♠　♥　♦　♣</span>
     </div>
