@@ -294,6 +294,15 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .card-tile,.md4-title-card,.md4-game-token,.md4-mode,.pixel-button{transition:none!important}
 }
 .reduce-motion .md4-cardroom .card-tile,.reduce-motion .md4-game-token,.reduce-motion .pixel-button{transition:none!important}
+/* Portrait cardrooms have room for larger physical art.
+   Short screens retain the existing max-height reductions below. */
+@media (max-width:720px) and (min-height:720px){
+ .md4-cardroom .opponent-avatar,
+ .md4-cardroom .opponent-avatar .mochi-small{width:clamp(98px,15vh,126px);height:clamp(98px,15vh,126px)}
+ .md4-cardroom .draw-pile,.md4-cardroom .discard-pile{width:clamp(80px,12vh,96px)}
+ .md4-cardroom .player-area{align-self:center;padding-bottom:0}
+}
+
 /* Game selection is an illustrated choice, never a boxed product tile. */
 .md4-selection-page .md4-game-token{
  position:relative;flex-direction:column;justify-content:center;align-items:center;

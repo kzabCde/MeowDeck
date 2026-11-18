@@ -16,6 +16,7 @@ Baseline: `main` commit `9b1b9648` (V4 PR #8).
 - Fold the trailing screenshot font fixes into the base and mobile rules. Avoid another postscript override cascade.
 - Keep disabled card faces and draw pile legible.
 - Ensure compact mobile game actions have at least 44px height.
+- Use larger Mochi and draw/discard art on tall portrait screens; vertically center the player hand to balance excessive gaps without changing narrow/short layouts.
 - Preserve short-height Mochi scaling in the existing media query.
 - Add Playwright tests for clear Play action, typography, compact HUD labels and overflow at 320/390/430px.
 
