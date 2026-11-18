@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
 import '../web/styles.css';
+import '../web/art-direction.css';
 
 export const metadata: Metadata = {
   title: 'MeowDeck',
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#101A20'
+  themeColor: '#061C1B'
 };
 
 /** Server Component: stable HTML and metadata, with no browser-only game logic. */
