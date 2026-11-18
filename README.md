@@ -185,3 +185,14 @@ npm run test:e2e:production
 ```
 
 See [Blackjack rules and scope](docs/P5_BLACKJACK.md) and the P5 PR for actual CI results. **Do not assume real-device PWA validation from browser emulation alone.**
+
+
+## Little Cafe — background music (Crazy Eights & Blackjack)
+
+The background soundtrack is the user-supplied 2:36 `little_cafe.wav`, transcoded to a browser-friendly **96 kb/s MP3** (`little_cafe.mp3`, about 1.8 MB). Keep the converted file at:
+
+`public/assets/meowdeck/audio/little_cafe.mp3`
+
+The PWA build includes this `.mp3` in the offline precache manifest. This **binary asset must be added to the repository separately**; the initial music-code PR does not contain its bytes. See `docs/LITTLE_CAFE_MUSIC.md` for exact installation and test instructions. **Do not merge/deploy the music feature without the asset.**
+
+Music plays in one continuous loop across the main menu, Crazy Eights and Blackjack, starting after the player's first click/tap (browser autoplay restrictions). The existing **Settings → Background music** switch and **Music volume** slider turn it on/off and adjust volume immediately; preference is saved locally. Turning the music off or hiding the tab pauses without resetting the song. SFX retain an independent control. There is no separate music player in each game and no ambient tone running in parallel.

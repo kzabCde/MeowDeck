@@ -13,7 +13,7 @@ async function list(folder,base,filter=()=>true,prefix='/'){
   }
 }
 await list(join(root,'.next/static'),join(root,'.next'),p=>!p.endsWith('.map'),'/_next/');
-await list(join(publicRoot,'assets/meowdeck'),publicRoot,p=>/\.(png|json)$/i.test(p));
+await list(join(publicRoot,'assets/meowdeck'),publicRoot,p=>/\.(png|json|mp3)$/i.test(p));
 await list(join(publicRoot,'icons'),publicRoot,p=>/\.png$/i.test(p));
 // App Router manifest is served by Next at /manifest.webmanifest. Icon paths are public immutable assets.
 const dedup=[...new Set(urls)].sort();
