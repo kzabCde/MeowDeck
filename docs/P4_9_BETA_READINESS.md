@@ -11,7 +11,11 @@ This phase is stacked after P4.8 PR #12, P4.7 PR #11 and P4.6 PR #10. Merge/reba
 - These values measure AI versus one mechanical baseline, **not** win probability versus humans. A point estimate ordering is not statistically convincing without intervals and actual playtesting.
 - An experimental Hard-policy weighting change was evaluated on the same 1,000 seeds. It decreased Hard's win rate from the historical 47.2% to 43.6%. **The change has been reverted.** The original legal-information-set Hard policy is retained pending further evidence and player tests. Do not alter deals or leak private data to force a difficulty ordering.
 - The experimental run also measured Easy 42.3% and Normal 44.5%; Hard vs Normal was −0.9 percentage points (approximate paired 95% range −4.18 to +2.38), **inconclusive**. Those experimental results are kept as an audit trail, not as the final policy's current measurement.
-- Re-run `npm run evaluate:ai` on the reverted branch to confirm the final policy's updated result before using the phase as a release candidate.
+- **Final reverted-policy CI evidence (2026-11-18):** [Next.js Gameplay CI run #44259603396](https://github.com/kzabCde/MeowDeck/actions/runs/44259603396) passed TypeScript, unit tests, full-match simulation, original art checks, production build, seeded development E2E, four-browser smoke, production/offline E2E and AI evaluation.
+- **Final paired-seed evaluation, seeds 1–1000:** Easy **42.3%** (Wilson 95% 39.27–45.39), Normal **44.5%** (41.45–47.60), Hard **47.2%** (44.12–50.30). Versus one simple legal baseline, not real players.
+- **Paired differences:** Normal−Easy **+2.2 pp** (approx. 95% −1.72 to +6.12, inconclusive); Hard−Normal **+2.7 pp** (−0.18 to +5.58, inconclusive); Hard−Easy **+4.9 pp** (+1.02 to +8.78, positive evidence under this evaluation method).
+- Hard AI decision duration p95 in the CI evaluation was approximately **0.011 ms** on the GitHub runner; hardware and runtime conditions affect timing.
+- The final strategy matches the historical 47.2% baseline after reverting the unsuccessful weighting experiment. This is *not* proof that Hard is meaningfully harder than Normal to a human player.
 - CI emits the reproducible `meowdeck-ai-evaluation` artifact. Fill actual results from CI logs; do not invent them.
 
 ## Lightweight replayability
