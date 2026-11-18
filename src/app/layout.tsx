@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import './globals.css';
 import '../web/styles.css';
 import '../web/art-direction.css';
+import '../web/blackjack.css';
 
 export const metadata: Metadata = {
   title: 'MeowDeck',

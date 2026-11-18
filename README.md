@@ -162,3 +162,26 @@ npm run test:e2e:production
 **Release policy:** Automated tests and desktop WebKit/iPhone emulation are not real Safari/Android device acceptance. Until manual device testing and gameplay review are signed off, treat this as a **Public Beta candidate**, not an unrestricted production release. PRs are created separately and not automatically merged/deployed.
 
 See [P4.5 visual audit](docs/P4_5_VISUAL_AUDIT.md), [P4.6 interactions](docs/P4_6_INTERACTION_REPORT.md), [P4.7 game feel](docs/P4_7_GAME_FEEL.md), [P4.8 release QA](docs/P4_8_RELEASE_QA.md), and [P4.9 beta readiness](docs/P4_9_BETA_READINESS.md).
+
+
+## P5 — Blackjack versus Mochi (second playable card game)
+
+MeowDeck now offers two original-art tables from the Main Menu: **Crazy Eights** (choose Practice/Easy/Normal/Hard) and **Blackjack** (Mochi acts as a fixed-rule dealer). Neither game modifies the other's rules or save data.
+
+Blackjack MVP rules: one freshly shuffled standard 52-card deck per round, A = 1 or 11, J/Q/K = 10, natural two-card 21, Hit, Stand, dealer hits below 17 and stands on **Soft 17**, player/dealer bust and Push. One hidden dealer card remains face down until settlement. Rounds count as wins/losses/pushes; users can play another round or confirm a new score series. **No wagering, currency, betting, doubling, splitting, insurance or paid gameplay.**
+
+The P5 engine lives at `src/games/meowdeck/games/blackjack/rules.ts`. The table is `src/web/components/BlackjackGame.tsx` using unmodified P0 card images and Mochi sprites. The additional save is schema-validated in `localStorage` under `meowdeck:blackjack:1`; it is **separate** from Crazy Eights' IndexedDB save and matches. A cross-tab change blocks further local moves until the player explicitly reloads the newer saved round. Browser data clearing removes both games' local progress.
+
+```bash
+npm ci
+npm run typecheck:engine
+npm run typecheck
+npm test
+npm run validate:assets
+npm run build
+npm run test:e2e
+npm run test:e2e:cross-browser
+npm run test:e2e:production
+```
+
+See [Blackjack rules and scope](docs/P5_BLACKJACK.md) and the P5 PR for actual CI results. **Do not assume real-device PWA validation from browser emulation alone.**

@@ -3,16 +3,23 @@ import { expect, test } from '@playwright/test';
 async function begin(page:import('@playwright/test').Page){
   await page.goto('/?qaSeed=62&fastAI=1');
   await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
   await expect(page.getByTestId('difficulty-selection')).toBeVisible();
   await expect(page.getByTestId('game-selection')).toHaveCount(0);
   await page.getByTestId('start-match').click();
   await expect(page.getByTestId('gameplay-screen')).toBeVisible();
 }
 
-test('main Play skips the single-game catalog and Back returns to menu',async({page})=>{
+test('two-game catalog routes to Crazy Eights and Back returns through the catalog',async({page})=>{
   await page.goto('/');
   await page.getByTestId('play-now').click();
+  await expect(page.getByTestId('game-selection')).toBeVisible();
+  await expect(page.getByTestId('select-crazy-eights')).toBeVisible();
+  await expect(page.getByTestId('select-blackjack')).toBeVisible();
+  await page.getByTestId('select-crazy-eights').click();
   await expect(page.getByTestId('difficulty-selection')).toBeVisible();
+  await page.getByRole('button',{name:/Back|ย้อนกลับ/i}).click();
+  await expect(page.getByTestId('game-selection')).toBeVisible();
   await page.getByRole('button',{name:/Back|ย้อนกลับ/i}).click();
   await expect(page.getByTestId('main-menu')).toBeVisible();
 });

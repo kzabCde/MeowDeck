@@ -3,6 +3,7 @@ import {expect,test} from '@playwright/test';
 async function enter(page:import('@playwright/test').Page) {
  await page.goto('/?qaSeed=62&fastAI=1');
  await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
  await page.getByTestId('start-match').click();
  await expect(page.getByTestId('gameplay-screen')).toBeVisible();
 }

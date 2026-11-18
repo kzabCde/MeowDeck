@@ -18,6 +18,7 @@ for (const [width, height] of [[320, 568], [390, 844], [430, 932]] as const) {
     await page.setViewportSize({ width, height });
     await page.goto('/?qaSeed=62&fastAI=1');
     await page.getByTestId('play-now').click();
+  await page.getByTestId('select-crazy-eights').click();
     
     await page.getByTestId('start-match').click();
     await expect(page.getByTestId('gameplay-screen')).toBeVisible();
