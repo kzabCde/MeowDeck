@@ -6,6 +6,7 @@ import {cardImage} from '../game/assets.js';
 import {Mochi} from './Mochi.js';
 import {CardBack} from './PixelCard.js';
 import {GameDialog} from './GameDialog.js';
+import {GameButton} from './GameButton.js';
 import type {T} from '../i18n.js';
 import type {SoundName} from '../audio/audio-manager.js';
 import type {Card} from '../../games/meowdeck/core/cards.js';
@@ -104,10 +105,10 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
    :'idle';
  return <main className="md5-blackjack" data-testid="blackjack-screen">
    <header className="md5-bj-header">
-     <button type="button" onClick={onBack} className="md4-text-button" data-testid="blackjack-back">‹ {t('back')}</button>
+     <GameButton variant="text" onClick={onBack} data-testid="blackjack-back">‹ {t('back')}</GameButton>
      <div className="md5-bj-brand"><span>MEOWDECK</span><strong>BLACKJACK</strong></div>
      <div className="md5-bj-tools">
-       <button type="button" onClick={()=>setRulesOpen(true)} className="md4-text-button" data-testid="blackjack-rules">{t('rules')}</button>
+       <GameButton variant="text" onClick={()=>setRulesOpen(true)} data-testid="blackjack-rules">{t('rules')}</GameButton>
      </div>
    </header>
    <div className="md5-bj-scorebar" aria-label={t('bjSeriesScore')}>
@@ -151,7 +152,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
    <footer className="md5-bj-actions">
      {externalChange && <div role="alert" className="md5-bj-warning">
        {t('bjExternalChange')}
-       <button className="pixel-button button-cream" onClick={reload} data-testid="blackjack-reload">{t('bjReload')}</button>
+       <GameButton variant="cream" onClick={reload} data-testid="blackjack-reload">{t('bjReload')}</GameButton>
      </div>}
      {storageError && <p className="md5-bj-storage-warning" role="alert">{t('saveFailed')}</p>}
      {view.phase==='finished'&&outcome&&view.reason
@@ -163,12 +164,12 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
      <div className="md5-bj-action-row">
        {view.phase==='player'
          ?<>
-           <button className="pixel-button button-primary" type="button" disabled={!view.canHit||externalChange} onClick={()=>perform('hit')} data-testid="blackjack-hit">{t('bjHit')}</button>
-           <button className="pixel-button button-cream" type="button" disabled={!view.canStand||externalChange} onClick={()=>perform('stand')} data-testid="blackjack-stand">{t('bjStand')}</button>
+           <GameButton variant="primary" disabled={!view.canHit||externalChange} onClick={()=>perform('hit')} data-testid="blackjack-hit">{t('bjHit')}</GameButton>
+           <GameButton variant="cream" disabled={!view.canStand||externalChange} onClick={()=>perform('stand')} data-testid="blackjack-stand">{t('bjStand')}</GameButton>
          </>
          :<>
-           <button className="pixel-button button-primary" type="button" disabled={externalChange} onClick={()=>perform('next_round')} data-testid="blackjack-next">{t('nextRound')}</button>
-           <button className="pixel-button button-secondary" type="button" onClick={()=>setResetOpen(true)} data-testid="blackjack-new-series">{t('bjNewSeries')}</button>
+           <GameButton variant="primary" disabled={externalChange} onClick={()=>perform('next_round')} data-testid="blackjack-next">{t('nextRound')}</GameButton>
+           <GameButton variant="secondary" onClick={()=>setResetOpen(true)} data-testid="blackjack-new-series">{t('bjNewSeries')}</GameButton>
          </>}
      </div>
    </footer>
@@ -178,8 +179,8 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
    {resetOpen&&<GameDialog title={t('bjNewSeries')} t={t} onClose={()=>setResetOpen(false)}>
      <p>{t('bjNewSeriesConfirm')}</p>
      <div className="modal-inline">
-       <button className="pixel-button button-secondary" onClick={()=>setResetOpen(false)}>{t('cancel')}</button>
-       <button className="pixel-button button-primary" onClick={reset} data-testid="blackjack-confirm-reset">{t('confirm')}</button>
+       <GameButton variant="secondary" onClick={()=>setResetOpen(false)}>{t('cancel')}</GameButton>
+       <GameButton variant="primary" onClick={reset} data-testid="blackjack-confirm-reset">{t('confirm')}</GameButton>
      </div>
    </GameDialog>}
  </main>;

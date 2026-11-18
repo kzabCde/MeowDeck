@@ -4,6 +4,7 @@ import type { Difficulty } from '../../games/meowdeck/ai/strategies.js';
 import type { SavedMatchV1 } from '../storage/save-schema.js';
 import { Mochi } from './Mochi.js';
 import { CardBack } from './PixelCard.js';
+import { GameButton } from './GameButton.js';
 import { cardImage } from '../game/assets.js';
 
 interface MenuProps {
@@ -24,15 +25,13 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
     <header className="md4-menu-header">
       <span className="md4-menu-edition" aria-hidden="true">CARD ROOM</span>
       <nav className="md4-menu-tools" aria-label={t('settings')}>
-        <button type="button" className="md4-text-button" onClick={onRules}>{t('rules')}</button>
-        <button type="button" className="md4-text-button" onClick={onSettings}>{t('settings')}</button>
+        <GameButton variant="text" onClick={onRules}>{t('rules')}</GameButton>
+        <GameButton variant="text" onClick={onSettings}>{t('settings')}</GameButton>
       </nav>
     </header>
     <div className="md4-title-composition">
       <div className="md4-title-mark">
-        
         <h1 className="brand-title"><span>MEOW</span><span>DECK</span></h1>
-        
       </div>
       <div className="md4-title-diorama" aria-label={t('mochiAppearance')}>
         <div className="md4-title-halo" aria-hidden="true"/>
@@ -43,12 +42,11 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
         <div className="md4-title-card md4-card-right" aria-hidden="true"><img className="pixel-art" src={cardImage('AS', true)} alt=""/></div>
       </div>
       <div className="md4-title-choices">
-        <button type="button" className="pixel-button button-primary button-xl md4-start" onClick={onPlay} data-testid="play-now"><span>{t('play')}</span><span aria-hidden="true">›</span></button>
-        {hasMatch && <button type="button" className="md4-resume" onClick={onContinue} data-testid="continue">{t('continue')}{saved && <span> · {t('round')} {saved.gameState.roundNumber}</span>}</button>}
-        <button type="button" className="md4-text-button md4-stats-link" onClick={onStatistics}>{t('statistics')}</button>
+        <GameButton variant="primary" className="button-xl md4-start" onClick={onPlay} data-testid="play-now"><span>{t('play')}</span><span aria-hidden="true">›</span></GameButton>
+        {hasMatch && <GameButton variant="text" className="md4-resume" onClick={onContinue} data-testid="continue">{t('continue')}{saved && <span> · {t('round')} {saved.gameState.roundNumber}</span>}</GameButton>}
+        <GameButton variant="text" className="md4-stats-link" onClick={onStatistics}>{t('statistics')}</GameButton>
       </div>
     </div>
-    
   </main>;
 }
 
@@ -57,7 +55,7 @@ export function GameSelection({ t, onBack, onCrazyEights, onBlackjack }: {
  t:T;onBack:()=>void;onCrazyEights:()=>void;onBlackjack:()=>void;
 }) {
  return <main className="selection-page md4-selection-page md5-game-choice" data-testid="game-selection">
-   <header className="md4-section-header"><button className="md4-text-button" type="button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK</span></header>
+   <header className="md4-section-header"><GameButton variant="text" onClick={onBack}>‹ {t('back')}</GameButton><span>MEOWDECK</span></header>
    <div className="md5-choice-scene">
      <div className="md4-scene-head"><h1>{t('gameSelect')}</h1></div>
      <div className="md5-choice-grid">
@@ -92,7 +90,7 @@ export function DifficultySelection({ t, onBack, onStart, preferredDifficulty='p
     {id:'hard',key:'hard',desc:'hardDesc'}
   ];
   return <main className="selection-page md4-selection-page md4-difficulty-page" data-testid="difficulty-selection">
-    <header className="md4-section-header"><button type="button" className="md4-text-button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK / 01</span></header>
+    <header className="md4-section-header"><GameButton variant="text" onClick={onBack}>‹ {t('back')}</GameButton><span>MEOWDECK / 01</span></header>
     <div className="md4-difficulty-scene">
       <div className="md4-scene-head"><h1>{t('chooseDifficulty')}</h1></div>
       <div className="md4-difficulty-mochi"><Mochi t={t} size="large"/></div>
@@ -102,7 +100,7 @@ export function DifficultySelection({ t, onBack, onStart, preferredDifficulty='p
         </button>)}
       </div>
       <p className="md4-mode-description">{t(modes.find(mode=>mode.id===selected)!.desc)}</p>
-      <button type="button" className="pixel-button button-primary button-xl md4-difficulty-start" onClick={()=>onStart(selected)} data-testid="start-match">{t('start')} <span aria-hidden="true">›</span></button>
+      <GameButton variant="primary" className="button-xl md4-difficulty-start" onClick={()=>onStart(selected)} data-testid="start-match">{t('start')} <span aria-hidden="true">›</span></GameButton>
     </div>
   </main>;
 }

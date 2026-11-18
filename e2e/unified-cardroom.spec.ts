@@ -50,3 +50,27 @@ test('Crazy Eights and Blackjack use matching table material and focus treatment
   expect(crazyEights.background).toBe(blackjack.background);
   expect((await page.getByTestId('play-selected').boundingBox())?.height).toBeGreaterThanOrEqual(44);
 });
+
+
+test('settings use touch-sized game controls and accessible native inputs', async ({page}) => {
+  await page.goto('/');
+  await page.getByRole('button', {name:/Settings|ตั้งค่า/}).click();
+  await expect(page.getByTestId('persistent-settings')).toBeVisible();
+  const inputs = await page.locator('.p4-settings select, .p4-settings input[type=range]').evaluateAll(nodes =>
+    nodes.map(node => ({height:node.getBoundingClientRect().height, font:getComputedStyle(node).fontFamily}))
+  );
+  expect(inputs.length).toBeGreaterThanOrEqual(4);
+  for(const input of inputs) {
+    expect(input.height).toBeGreaterThanOrEqual(44);
+    expect(input.font).toMatch(/Noto Sans Thai|Thonburi|sans-serif/);
+  }
+  const toggle = page.getByTestId('sfx-toggle');
+  await toggle.check();
+  await expect(toggle).toBeChecked();
+  const close = page.getByRole('button', {name:/Close|ปิด/i});
+  const box = await close.boundingBox();
+  expect(box?.height).toBeGreaterThanOrEqual(44);
+  expect(box?.width).toBeGreaterThanOrEqual(44);
+  await close.click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+});

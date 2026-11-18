@@ -10,6 +10,7 @@ import { getMochiClip } from '../animation/mochi-loader.js';
 import type { T } from '../i18n.js';
 import { CardBack, PixelCard } from './PixelCard.js';
 import { Mochi } from './Mochi.js';
+import { GameButton } from './GameButton.js';
 
 type HumanView = PublicGameState & { readonly ownHand: readonly Card[]; readonly legalActions: readonly LegalAction[] };
 
@@ -140,7 +141,7 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
     <header className="game-hud md4-hud"><div className="hud-brand">MEOW<span>DECK</span></div>
       <div className="hud-round">{t('round')} <strong data-testid="round-number">{view.roundNumber}</strong></div>
       <div className="hud-score"><span>{t('you')}</span><strong data-testid="human-score">{view.scores.human}</strong><span className="score-sep">:</span><strong data-testid="mochi-score">{view.scores.ai}</strong><span>{t('mochi')}</span></div>
-      <button className="pixel-button button-secondary pause-btn" type="button" onClick={onPause} aria-label={t('pause')} data-testid="pause-button">Ⅱ</button>
+      <GameButton variant="secondary" className="pause-btn" onClick={onPause} aria-label={t('pause')} data-testid="pause-button">Ⅱ</GameButton>
     </header>
     <div className="table-frame md4-table-frame"><div className="game-table md4-table" ref={tableRef}>
       
@@ -173,10 +174,10 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
     </div></div>
     <footer className={`action-footer md4-control-rail ${tutorialHint?'has-tutorial':''} ${error?'has-error':''}`}><div className="action-status" aria-live="polite" role="status">{error?<span className="status-error">{t('invalidAction')}</span>:
         tutorialHint?<div className="tutorial-guide" data-testid="tutorial-hint"><span>{tutorialHint}</span><button type="button" data-testid="tutorial-skip" onClick={onSkipTutorial}>{t('tutorialSkip')}</button></div>:gameHint(view,t)}</div>
-      <div className="action-buttons"><button className="pixel-button button-primary" type="button" data-testid="play-selected" onClick={playFromHand} disabled={!isHumanTurn||!canPlay}>{selected?t('playCard'):t('selectCard')} <span aria-hidden="true">❯</span></button>
-        {canDraw && <button className="pixel-button button-cream" type="button" onClick={onDraw} data-testid="draw-card">{t('drawCard')}</button>}
-        {canFinish && <button className="pixel-button button-cream" type="button" onClick={onFinish} data-testid="finish-turn">{t('endTurn')}</button>}
-        {canPass && <button className="pixel-button button-cream" type="button" onClick={onPass} data-testid="pass-turn">{t('passTurn')}</button>}
+      <div className="action-buttons"><GameButton variant="primary" data-testid="play-selected" onClick={playFromHand} disabled={!isHumanTurn||!canPlay}>{selected?t('playCard'):t('selectCard')} <span aria-hidden="true">❯</span></GameButton>
+        {canDraw && <GameButton variant="cream" onClick={onDraw} data-testid="draw-card">{t('drawCard')}</GameButton>}
+        {canFinish && <GameButton variant="cream" onClick={onFinish} data-testid="finish-turn">{t('endTurn')}</GameButton>}
+        {canPass && <GameButton variant="cream" onClick={onPass} data-testid="pass-turn">{t('passTurn')}</GameButton>}
       </div></footer>
   </main>;
 }

@@ -195,10 +195,11 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .game-dialog::backdrop{background:#041512d9;backdrop-filter:none}
 .dialog-header{background:var(--md-rail);border-color:var(--md-border);padding:13px 18px}
 .dialog-header h2{font:900 1.12rem/1.3 var(--md-font-display)}
+.dialog-header .icon-button{display:grid;place-items:center;min-width:44px;min-height:44px;
+ padding:0;border:2px solid transparent;border-radius:var(--md-radius);font:900 1.55rem/1 var(--md-font-display)}
 .dialog-content{padding:18px}.dialog-content p{color:#d1dfc7}
 .suit-choice{background:#255344;border:2px solid #6d987f;border-bottom:5px solid #0d2823;border-radius:2px;box-shadow:none}
 .suit-choice:hover{border-color:var(--md4-gold)}
-.p4-settings select,.p4-settings input[type=range]{background:#10362e;border:2px solid #71957d;color:var(--md-cream);border-radius:var(--md-radius);font-family:var(--md-font-ui)}
 .p4-stats-grid>div{background:transparent;border:0;border-bottom:1px solid #6c887577;border-radius:0}
 .p4-stats-grid strong,.result-stats strong{color:var(--md4-gold)}
 .result-stats{background:#173f35;border-color:#6c8875}.p4-status.error{background:#49302d;border-color:var(--md4-coral)}

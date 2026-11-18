@@ -32,3 +32,11 @@ CI should run `npm run typecheck`, `npm test`, `npm run validate:assets`, `npm r
 Manual screenshots are still required at 320×568, 390×844, 430×932, 768×1024, 1280×800 and 1920×1080, with Thai/English content and 200% zoom. Review Menu, Game Selection, Difficulty, both table states, Settings, Dialogs, Statistics and game results.
 
 Do not merge or deploy without explicit project-owner authorization.
+
+## Phase 3: Shared controls and settings polish
+- Added typed `GameButton` component for actions across Menu, Difficulty, Crazy Eights, Blackjack and `GameDialog`. All existing `data-testid` and ARIA semantics are preserved; custom card tiles remain native buttons.
+- Unified the modal close button and ensured a 44×44 touch target.
+- Restyled Settings as concise, full-width native controls: readable Thai labels, 44px selects and sliders, pixel-step switches, consistent separators and restrained accents.
+- Moved Settings styling into one authoritative block in `styles.css` and removed the duplicate `art-direction.css` override.
+- Added Playwright coverage for Settings controls, toggle behavior and dialog close target.
+- The failing CI run on the previous commit was caused by the unintended Settings→Pause return change. Reverted that behavior in `e35b6e8`; all workflow jobs passed before this next-phase work began.
