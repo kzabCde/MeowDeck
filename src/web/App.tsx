@@ -369,7 +369,7 @@ export function App() {
       tutorialHint={tutorialHintKey?t(tutorialHintKey):null} onSkipTutorial={()=>setTutorial(current=>({...current,skipped:true}))} />}
 
 
-    {modal === 'settings' && <GameDialog title={t('settings')} onClose={() => setModal(screen==='game'?'pause':null)} t={t}>
+    {modal === 'settings' && <GameDialog title={t('settings')} onClose={() => setModal(null)} t={t}>
       <div className="p4-settings" data-testid="persistent-settings">
         <label>{t('language')}<select value={settings.language} onChange={(e:ChangeEvent<HTMLSelectElement>)=>updateSettings({language:e.target.value as Language})}><option value="th">ไทย</option><option value="en">English</option></select></label>
         <label>{t('preferredDifficulty')}<select value={settings.preferredDifficulty} onChange={(e:ChangeEvent<HTMLSelectElement>)=>updateSettings({preferredDifficulty:e.target.value as Difficulty})}>{(['practice','easy','normal','hard'] as const).map(d=><option key={d} value={d}>{t(d)}</option>)}</select></label>
