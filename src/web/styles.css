@@ -477,8 +477,8 @@ button:focus-visible,select:focus-visible,input:focus-visible {outline:2px solid
  .hud-round {grid-column:1;grid-row:2;font-size:.6rem}
  .hud-score {grid-column:2;grid-row:1;padding:0 5px;gap:4px}
  .hud-score strong {font-size:1.03rem}
- ..hud-score span {font-size:.55rem}
- ..pause-btn {grid-column:3;grid-row:1;padding:4px 9px;min-height:38px}
+ .hud-score span {font-size:.55rem}
+ .pause-btn {grid-column:3;grid-row:1;padding:4px 9px;min-height:38px}
  .table-frame {padding:2px 5px;min-height:0}
  .game-table {min-height:0;padding:5px 7px;border-radius:12px}
  .game-table:after {inset:6px;border-radius:8px}
@@ -498,12 +498,12 @@ button:focus-visible,select:focus-visible,input:focus-visible {outline:2px solid
  .active-suit {padding-left:10px}
  .active-suit strong {font-size:2rem}
  .turn-banner {min-height:22px;padding:3px 10px;margin:0}
- ..player-area {min-height:0}
+ .player-area {min-height:0}
  .hand-title {margin-bottom:0}
  .player-hand {justify-content:safe center;overflow-x:auto;overflow-y:visible;gap:0;padding:8px 4px 11px}
  .player-hand .card-tile {width:clamp(55px,16vw,73px);margin-left:clamp(-15px,-4vw,-11px)}
  .player-hand .card-tile:first-child {margin-left:0}
- ..card-tile.is-playable:hover,.card-tile.is-playable:focus-visible {transform:translateY(-5px)}
+ .card-tile.is-playable:hover,.card-tile.is-playable:focus-visible {transform:translateY(-5px)}
  .card-tile.is-selected {transform:translateY(-9px) scale(1.04)!important}
  .action-footer {min-height:63px;flex-direction:column;gap:3px;padding:5px 9px max(8px,env(safe-area-inset-bottom))}
  .action-status {max-width:100%;min-height:0;line-height:1.25;font-size:.68rem;text-align:center}
@@ -536,4 +536,4 @@ button:focus-visible,select:focus-visible,input:focus-visible {outline:2px solid
 @media(prefers-reduced-motion:reduce) {
  .md-title-screen .menu-scene,.md-title-screen .hero-card,.md-card-impact {animation:none!important}
 }
-.reduce-motion .md-title-screen .menu-scene,.reduce-motion .md-card-impact {animation:none!important;display:none}
+.reduce-motion .md-title-screen .menu-scene,.reduce-motion .md-card-impact {animation:none!important}
