@@ -37,10 +37,9 @@ export interface GameTableProps {
 
 
 function gameHint(view: HumanView, t: T): string {
-  if (view.phase === 'round_end' || view.phase === 'match_end') return t('roundResult');
+  if (view.phase === 'round_end' || view.phase === 'match_end') return '';
   if (view.currentActor === 'ai') return '';
   if (view.hasPendingDrawDecision) return t('finishHint');
-  if (view.legalActions.some(a=>a.type==='draw_card')) return t('drawHint');
   if (view.legalActions.some(a=>a.type==='pass_turn')) return t('passHint');
   return '';
 }
@@ -137,6 +136,7 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
       if(next&&!next.disabled){next.focus();break;}
     }
   }
+  const contextualHint=gameHint(view,t);
   return <main className="gameplay-page md4-cardroom" data-testid="gameplay-screen">
     <header className="game-hud md4-hud"><div className="hud-brand">MEOW<span>DECK</span></div>
       <div className="hud-round">{t('round')} <strong data-testid="round-number">{view.roundNumber}</strong></div>
@@ -177,8 +177,8 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
         <div className="scroll-hint">{t('zoomHint')}</div>
       </section>
     </div></div>
-    <footer className={`action-footer md4-control-rail ${tutorialHint?'has-tutorial':''} ${error?'has-error':''}`} data-testid="crazy-eights-action-rail"><div className="action-status" aria-live="polite" role="status">{error?<span className="status-error">{t('invalidAction')}</span>:
-        tutorialHint?<div className="tutorial-guide" data-testid="tutorial-hint"><span>{tutorialHint}</span><button type="button" data-testid="tutorial-skip" onClick={onSkipTutorial}>{t('tutorialSkip')}</button></div>:gameHint(view,t)}</div>
+    <footer className={`action-footer md4-control-rail ${tutorialHint?'has-tutorial':''} ${error?'has-error':''}`} data-testid="crazy-eights-action-rail"><div className="action-status" aria-live={error||tutorialHint||contextualHint?'polite':undefined} role={error||tutorialHint||contextualHint?'status':undefined}>{error?<span className="status-error">{t('invalidAction')}</span>:
+        tutorialHint?<div className="tutorial-guide" data-testid="tutorial-hint"><span>{tutorialHint}</span><button type="button" data-testid="tutorial-skip" onClick={onSkipTutorial}>{t('tutorialSkip')}</button></div>:contextualHint}</div>
       <div className="action-buttons"><GameButton variant="primary" data-testid="play-selected" onClick={playFromHand} disabled={!isHumanTurn||!canPlay}>{selected?t('playCard'):t('selectCard')} <span aria-hidden="true">❯</span></GameButton>
         {canDraw && <GameButton variant="cream" onClick={onDraw} data-testid="draw-card">{t('drawCard')}</GameButton>}
         {canFinish && <GameButton variant="cream" onClick={onFinish} data-testid="finish-turn">{t('endTurn')}</GameButton>}

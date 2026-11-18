@@ -50,7 +50,7 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
   </main>;
 }
 
-/** Two tables in one card room: full artwork surfaces remain native, keyboard-accessible buttons. */
+/** Two games, one card room: concise rules beside actual card artwork. */
 export function GameSelection({t,onBack,onCrazyEights,onBlackjack}:{
   t:T;onBack:()=>void;onCrazyEights:()=>void;onBlackjack:()=>void;
 }){

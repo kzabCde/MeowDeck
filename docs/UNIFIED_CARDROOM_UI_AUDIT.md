@@ -78,3 +78,21 @@ Do not merge or deploy without explicit project-owner authorization.
 - Blackjack now supports the same optional pet interaction using the existing `pet_reaction` sprite, without a speech bubble, save mutation or false dealer draw animation. Petting is disabled on finished rounds, active reactions, conflict warnings and dialogs; Hit/Stand and new-round actions always take precedence.
 - Phase 7 adds live Playwright verification of paused pet frames (no replay), game-state-neutral pet interactions in both card modes, reduced-motion behavior, and a virtual-clock idle nap that returns to Idle. Captures two real pet-reaction screenshots without speech bubbles.
 - The same Reduced Motion setting is now passed to Mochi in the Main Menu and Difficulty preview, not only live Crazy Eights/Blackjack: decorative previews no longer animate against the player's preference.
+
+## Phase 8 — Remove Generic AI-Looking UI
+
+### Copy inventory and decisions
+| Category | Keep / change |
+|---|---|
+| 1. Required gameplay | Preserve turn, round, score, dealer total, current suit, deck count, legal actions, actual outcomes and real statistics. |
+| 2. Required action instructions | Preserve pending-draw decision, pass-turn instructions, concise game rules and appropriate confirmations. Ordinary draw text no longer repeats the available Draw button. |
+| 3. Important feedback/errors | Preserve save failures, unavailable storage, PWA cache failure, tab ownership conflict, corrupt-save recovery and Blackjack cross-tab warnings. Distinguish settings/statistics errors from match-save errors. |
+| 4. Optional tutorials | Keep the existing dismissible and replayable tutorial. Do not discard first-time instructions. |
+| 5. Redundant/decorative | Remove duplicate round-complete prose in the action rail, needless ambient status announcements, decorative loading stars, duplicate modal body text, bilingual hardcoded loading error and extra blackjack brand label. |
+
+- Loading and asset-error copy now follows the selected language, including a functional retry button; no mixed English/Thai string.
+- Shortened game descriptions and AI difficulty explanations without inventing character lore or changing gameplay semantics.
+- The leave confirmation now accurately explains that an unfinished match can be reopened from the main menu (rather than claiming it remains in volatile memory only).
+- Routine successful saves and offline readiness remain silent. Error banners are single live alerts, not nested in another live status region; no hidden "Paused" announcement is emitted on every game result dialog.
+- An idle Crazy Eights action-status container has no text or live-region role. Conditional tutorial, warning, pending-draw and no-draw instructions remain available.
+- All visible gameplay terminology remains localized to Thai/English. No fake player count, badge, review, invented lore, or unnecessary decorative metric was introduced.

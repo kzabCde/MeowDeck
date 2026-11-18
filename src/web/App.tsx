@@ -338,19 +338,18 @@ export function App() {
   }):null;
   const isEnded = session?.phase === 'round_end' || session?.phase === 'match_end';
   const isMatchEnd = session?.phase === 'match_end';
-  const modalOpen = Boolean(modal) || (screen === 'game' && isEnded);
 
   if (assetStatus !== 'ready' || !storageReady) {
     return <main className="asset-loading" role="status" aria-live="polite">
-      <div className="brand-mini">✦ MEOWDECK ✦</div>
-      {assetStatus === 'loading' || !storageReady ? <p>{t('saveLoading')}</p>
-        : <><p>Card artwork could not be loaded. / โหลดภาพไพ่ไม่สำเร็จ</p>
-          <button className="pixel-button button-cream" onClick={() => { setAssetStatus('loading'); setAssetAttempt(n => n + 1); }}>Retry / ลองอีกครั้ง</button></>}
+      <div className="brand-mini">MEOWDECK</div>
+      {assetStatus === 'loading' || !storageReady ? <p>{t('loadingGame')}</p>
+        : <><p role="alert">{t('missingArt')}</p>
+          <button className="pixel-button button-cream" onClick={() => { setAssetStatus('loading'); setAssetAttempt(n => n + 1); }}>{t('retry')}</button></>}
     </main>;
   }
   return <div className="meowdeck-app">
-    {(saveWarning || saveStatus==='error' || saveStatus==='unavailable' || pwaStatus==='failed') && <div className="p4-statusbar" role="status" aria-live="polite">
-      {(saveWarning || saveStatus==='error' || saveStatus==='unavailable') && <span className="p4-status error" role="alert" data-testid="save-status">{t(saveWarning==='conflict'?'storageConflict':saveStatus==='unavailable'?'saveUnavailable':'saveFailed')}</span>}
+    {(saveWarning || saveStatus==='error' || saveStatus==='unavailable' || pwaStatus==='failed') && <div className="p4-statusbar">
+      {(saveWarning || saveStatus==='error' || saveStatus==='unavailable') && <span className="p4-status error" role="alert" data-testid="save-status">{t(saveWarning==='conflict'?'storageConflict':saveStatus==='unavailable'?'saveUnavailable':saveWarning==='settings'?'settingsWriteFailed':saveWarning==='statistics'?'statsLoadFailed':saveWarning==='invalid'?'corruptSave':'saveFailed')}</span>}
       {process.env.NODE_ENV==='production' && pwaStatus==='failed' && <span className="p4-status error" role="alert" data-testid="offline-status">{t('offlineFailed')}</span>}
     </div>}
     {screen === 'menu' && <MainMenu t={t} reducedMotion={reducedMotion} hasMatch={!!savedMatch || (!!session && !isEnded)} saved={savedMatch} preferredDifficulty={settings.preferredDifficulty} onPlay={() => {playUi();setScreen('select');}} onContinue={() => {if(sessionRef.current&&sessionRef.current.phase!=='match_end'&&!storageConflictRef.current){setResultReady(sessionRef.current.phase==='round_end');setScreen('game');}else void continueMatch();}}
@@ -410,8 +409,8 @@ export function App() {
     {modal === 'discard' && <GameDialog title={t('discardMatch')} t={t} onClose={()=>setModal('settings')}><p>{t('discardConfirm')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>setModal('settings')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{void discardSaved();}}>{t('confirm')}</button></div></GameDialog>}
     {modal === 'resetStats' && <GameDialog title={t('resetStatistics')} t={t} onClose={()=>setModal('statistics')}><p>{t('resetStatsConfirm')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>setModal('statistics')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{void repositoryRef.current?.resetStatistics().then(()=>{reloadRecords();setModal('statistics');}).catch(()=>setSaveWarning('statistics'));}}>{t('confirm')}</button></div></GameDialog>}
     {modal === 'resetSettings' && <GameDialog title={t('resetSettings')} t={t} onClose={()=>setModal('settings')}><p>{t('resetSettingsConfirm')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>setModal('settings')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{resetSettings();updateSettings(DEFAULT_SETTINGS);setModal('settings');}}>{t('confirm')}</button></div></GameDialog>}
-    {modal === 'storageConflict' && <GameDialog title={t('storageConflict')} t={t} onClose={()=>{setModal(null);setScreen('menu');}}><p>{t('storageConflict')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>{setModal(null);setScreen('menu');}}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{void continueMatch(true);}}>{t('takeOver')}</button></div></GameDialog>}
-    {modal === 'corrupt' && <GameDialog title={t('corruptSave')} t={t} onClose={()=>setModal(null)}><p>{t('corruptSave')}</p><button className="pixel-button button-secondary" onClick={()=>{void discardSaved();}}>{t('recoverSave')}</button></GameDialog>}
+    {modal === 'storageConflict' && <GameDialog title={t('storageConflict')} t={t} onClose={()=>{setModal(null);setScreen('menu');}}><p>{t('storageConflictDetail')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>{setModal(null);setScreen('menu');}}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{void continueMatch(true);}}>{t('takeOver')}</button></div></GameDialog>}
+    {modal === 'corrupt' && <GameDialog title={t('corruptSave')} t={t} onClose={()=>setModal(null)}><p>{t('corruptSaveHelp')}</p><button className="pixel-button button-secondary" onClick={()=>{void discardSaved();}}>{t('recoverSave')}</button></GameDialog>}
     {modal === 'suit' && <GameDialog title={t('chooseSuit')} onClose={() => setModal(null)} t={t} initialFocusSelector='[data-testid="suit-S"]'>
       <div className="suit-picker">{fourSuits.map(suit=><button key={suit} type="button" data-testid={`suit-${suit}`} className={`suit-choice suit-${SUIT_CLASS[suit]}`} onClick={() => selectSuit(suit)}><span>{SUIT_SYMBOL[suit]}</span>{t(({ S:'spades', H:'hearts', D:'diamonds', C:'clubs' } as const)[suit])}</button>)}</div>
       <button className="pixel-button button-secondary dialog-bottom" onClick={() => setModal(null)}>{t('cancel')}</button>
@@ -428,6 +427,5 @@ export function App() {
         <button className="pixel-button button-secondary" data-testid="result-menu" onClick={goMenu}>{t('mainMenu')}</button>
       </div>
     </GameDialog>}
-    {modalOpen && <span className="sr-only" aria-live="polite">{t('pause')}</span>}
   </div>;
 }

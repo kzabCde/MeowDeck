@@ -120,7 +120,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
  return <main className="md5-blackjack" data-testid="blackjack-screen">
    <header className="md5-bj-header">
      <GameButton variant="text" onClick={onBack} data-testid="blackjack-back">‹ {t('back')}</GameButton>
-     <div className="md5-bj-brand"><span>MEOWDECK</span><strong>BLACKJACK</strong></div>
+     <div className="md5-bj-brand"><strong>BLACKJACK</strong></div>
      <div className="md5-bj-tools">
        <GameButton variant="text" onClick={()=>setRulesOpen(true)} data-testid="blackjack-rules">{t('rules')}</GameButton>
      </div>
