@@ -48,26 +48,39 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
         <button type="button" className="md4-text-button md4-stats-link" onClick={onStatistics}>{t('statistics')}</button>
       </div>
     </div>
-    <footer className="md4-menu-footer"><span>MEOWDECK</span><span>01 / CRAZY EIGHTS</span></footer>
+    <footer className="md4-menu-footer"><span>MEOWDECK</span><span>01 / CRAZY EIGHTS　·　02 / BLACKJACK</span></footer>
   </main>;
 }
 
-export function GameSelection({ t, onBack, onNext }: { t:T; onBack:()=>void; onNext:()=>void }) {
-  return <main className="selection-page md4-selection-page" data-testid="game-selection">
-    <header className="md4-section-header"><button className="md4-text-button" type="button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK / 01</span></header>
-    <div className="md4-selection-scene">
-      <div className="md4-scene-head"><span aria-hidden="true">♣　01　♣</span><h1>{t('gameSelect')}</h1></div>
-      <button className="md4-game-token" type="button" onClick={onNext} data-testid="select-crazy-eights">
-        <span className="md4-token-art" aria-hidden="true">
-          <img className="pixel-art" src={cardImage('8H', true)} alt=""/>
-          <img className="pixel-art" src={cardImage('8S', true)} alt=""/>
-          <img className="pixel-art" src={cardImage('8D', true)} alt=""/>
-        </span>
-        <span className="md4-token-info"><strong>{t('crazyEights')}</strong><small>{t('crazyEightsDesc')}</small><em>{t('chooseDifficulty')}　›</em></span>
-      </button>
-      <span className="md4-scene-foot" aria-hidden="true">♠　♥　♦　♣</span>
-    </div>
-  </main>;
+/** Two genuinely playable games; Crazy Eights retains its own difficulty step. */
+export function GameSelection({ t, onBack, onCrazyEights, onBlackjack }: {
+ t:T;onBack:()=>void;onCrazyEights:()=>void;onBlackjack:()=>void;
+}) {
+ return <main className="selection-page md4-selection-page md5-game-choice" data-testid="game-selection">
+   <header className="md4-section-header"><button className="md4-text-button" type="button" onClick={onBack}>‹ {t('back')}</button><span>MEOWDECK / CARD ROOM</span></header>
+   <div className="md5-choice-scene">
+     <div className="md4-scene-head"><span aria-hidden="true">♣　01 / 02　♣</span><h1>{t('gameSelect')}</h1></div>
+     <div className="md5-choice-grid">
+       <button type="button" className="md5-choice-tile" data-testid="select-crazy-eights" onClick={onCrazyEights}>
+         <span className="md5-choice-art" aria-hidden="true">
+           <img className="pixel-art" src={cardImage('8H',true)} alt=""/>
+           <img className="pixel-art" src={cardImage('8S',true)} alt=""/>
+           <img className="pixel-art" src={cardImage('8D',true)} alt=""/>
+         </span>
+         <span className="md5-choice-copy"><small>01 / MOCHI</small><strong>{t('crazyEights')}</strong><span>{t('crazyEightsDesc')}</span><em>{t('chooseDifficulty')}　›</em></span>
+       </button>
+       <button type="button" className="md5-choice-tile" data-testid="select-blackjack" onClick={onBlackjack}>
+         <span className="md5-choice-art" aria-hidden="true">
+           <img className="pixel-art" src={cardImage('AS',true)} alt=""/>
+           <img className="pixel-art" src={cardImage('KH',true)} alt=""/>
+           <img className="pixel-art" src={cardImage('card_back',true)} alt=""/>
+         </span>
+         <span className="md5-choice-copy"><small>02 / MOCHI</small><strong>{t('blackjack')}</strong><span>{t('blackjackDesc')}</span><em>{t('bjHit')} / {t('bjStand')}　›</em></span>
+       </button>
+     </div>
+     <span className="md4-scene-foot" aria-hidden="true">♠　♥　♦　♣</span>
+   </div>
+ </main>;
 }
 
 export function DifficultySelection({ t, onBack, onStart, preferredDifficulty='practice' }: { t:T; onBack:()=>void; onStart:(difficulty:Difficulty)=>void;preferredDifficulty?:Difficulty }) {
