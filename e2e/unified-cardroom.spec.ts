@@ -181,3 +181,27 @@ test('keyboard choice routes Blackjack directly and Crazy Eights through opponen
   await page.keyboard.press('Space');
   await expect(page.getByTestId('difficulty-hard')).toHaveAttribute('aria-pressed','true');
 });
+
+// Phase 5 i18n check: long English labels and explanation must remain playable on narrow screens.
+for(const [width,height] of [[320,568],[390,844]] as const){
+  test(`English selection copy stays within playable UI at ${width}x${height}`,async({page})=>{
+    await page.setViewportSize({width,height});
+    await page.goto('/?qaSeed=62&fastAI=1');
+    await page.getByRole('button',{name:/Settings|ตั้งค่า/i}).click();
+    await page.getByRole('combobox',{name:/Language|ภาษา/i}).selectOption('en');
+    await page.keyboard.press('Escape');
+    await page.getByTestId('play-now').click();
+    await expect(page.getByRole('heading',{name:'Choose a game'})).toBeVisible();
+    const option=page.getByTestId('select-crazy-eights');
+    const title=option.locator('.md5-choice-copy strong');
+    const parent=await option.boundingBox(), child=await title.boundingBox();
+    expect((child?.x??0)+(child?.width??0)).toBeLessThanOrEqual((parent?.x??0)+(parent?.width??0)+1);
+    await option.click();
+    await expect(page.getByRole('heading',{name:'Choose your opponent'})).toBeVisible();
+    await page.getByTestId('difficulty-hard').click();
+    await expect(page.getByTestId('difficulty-hard')).toHaveAttribute('aria-pressed','true');
+    const button=await page.getByTestId('start-match').boundingBox();
+    expect((button?.y??Infinity)+(button?.height??0)).toBeLessThanOrEqual(height+1);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
+  });
+}
