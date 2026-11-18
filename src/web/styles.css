@@ -243,7 +243,7 @@ button.game-option:not(:disabled):hover {border-color:#edc180;background:#2b4838
  color:var(--md-cream);border:2px solid var(--md-border);border-radius:var(--md-radius);
  font:700 .86rem var(--md-font-ui);cursor:pointer}
 .p4-settings input[type=range]{appearance:none;width:100%;height:44px;min-height:44px;
- padding:0;margin:0;border:0;background:transparent;cursor:pointer}
+ padding:0;margin:0;border:0;background:transparent;cursor:pointer;font-family:var(--md-font-ui)}
 .p4-settings input[type=range]::-webkit-slider-runnable-track{height:9px;border:2px solid var(--md-border);background:var(--md-table)}
 .p4-settings input[type=range]::-moz-range-track{height:5px;border:2px solid var(--md-border);background:var(--md-table)}
 .p4-settings input[type=range]::-webkit-slider-thumb{appearance:none;width:19px;height:23px;margin-top:-9px;
