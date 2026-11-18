@@ -150,3 +150,39 @@ test('P5 production Blackjack runs without test seed and restores a finished rou
  await page.getByTestId('select-blackjack').click();
  await expect(page.getByTestId('blackjack-result')).toBeVisible();
 });
+
+
+test('Phase 7 production captures genuine Mochi pet frames in both games without game-state mutation',async({page})=>{
+ await mkdir('test-results/visual-review',{recursive:true});
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/');
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-crazy-eights').click();
+ await page.getByTestId('start-match').click();
+ const crazyMochi=page.getByTestId('mochi');
+ const crazySprite=crazyMochi.locator('.mochi-frame');
+ await expect(crazySprite).toHaveAttribute('data-clip','idle');
+ const cardsBefore=await page.getByTestId('player-hand').locator('button').count();
+ await crazyMochi.click();
+ await expect(crazySprite).toHaveAttribute('data-clip','pet_reaction');
+ await expect.poll(async()=>Number(await crazySprite.getAttribute('data-frame'))).toBeGreaterThanOrEqual(1);
+ await page.screenshot({path:'test-results/visual-review/mochi-pet-crazy-eights-production-390x844.png',animations:'disabled'});
+ await expect(page.getByTestId('player-hand').locator('button')).toHaveCount(cardsBefore);
+ // Fresh mount keeps Blackjack's separate save/engine; no test seed in production.
+ await page.goto('/');
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-blackjack').click();
+ for(let tries=0;tries<6&&await page.getByTestId('blackjack-next').count();tries++){
+   await page.getByTestId('blackjack-next').click();
+ }
+ await expect(page.getByTestId('blackjack-hit')).toBeVisible();
+ const blackjackMochi=page.getByTestId('mochi');
+ const blackjackSprite=blackjackMochi.locator('.mochi-frame');
+ await expect(blackjackSprite).toHaveAttribute('data-clip','idle');
+ const before=await page.evaluate(()=>localStorage.getItem('meowdeck:blackjack:1'));
+ await blackjackMochi.click();
+ await expect(blackjackSprite).toHaveAttribute('data-clip','pet_reaction');
+ await expect.poll(async()=>Number(await blackjackSprite.getAttribute('data-frame'))).toBeGreaterThanOrEqual(1);
+ await page.screenshot({path:'test-results/visual-review/mochi-pet-blackjack-production-390x844.png',animations:'disabled'});
+ expect(await page.evaluate(()=>localStorage.getItem('meowdeck:blackjack:1'))).toBe(before);
+});
