@@ -94,6 +94,10 @@ test('P5 production Blackjack runs without test seed and restores a finished rou
  await page.screenshot({path:'test-results/visual-review/blackjack-mobile-390x844.png',animations:'disabled'});
  await page.setViewportSize({width:1280,height:720});
  await page.screenshot({path:'test-results/visual-review/blackjack-desktop-1280x720.png',animations:'disabled'});
+ // A responsive table is not acceptable if its primary actions are below the fold.
+ const action=await page.getByTestId('blackjack-hit').boundingBox();
+ expect(action).not.toBeNull();
+ expect((action?.y??0)+(action?.height??0)).toBeLessThanOrEqual(720);
  const cards=page.getByTestId('blackjack-player-hand').locator('img');
  await expect(cards).toHaveCount(2);
  if(await page.getByTestId('blackjack-stand').isVisible().catch(()=>false))
