@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 /** Persistence acceptance reads the source of truth, never a decorative "Saved" toast. */
 async function readActiveSave(page:import('@playwright/test').Page) {
   return page.evaluate(async()=>{
-    const db:IDBDatabase=await new Promise((resolve,reject)=>{
+    const db:IDBDatabase=await new Promise<IDBDatabase>((resolve,reject)=>{
       const request=indexedDB.open('meowdeck-local-v1');
       request.onsuccess=()=>resolve(request.result);
       request.onerror=()=>reject(request.error);
