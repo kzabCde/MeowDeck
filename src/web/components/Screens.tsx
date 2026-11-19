@@ -51,8 +51,8 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
 }
 
 /** Two games, one card room: concise rules beside actual card artwork. */
-export function GameSelection({t,onBack,onCrazyEights,onBlackjack}:{
-  t:T;onBack:()=>void;onCrazyEights:()=>void;onBlackjack:()=>void;
+export function GameSelection({t,onBack,onCrazyEights,onBlackjack,onGinRummy}:{
+  t:T;onBack:()=>void;onCrazyEights:()=>void;onBlackjack:()=>void;onGinRummy:()=>void;
 }){
   return <main className="selection-page selection-screen game-choices md4-selection-page md5-game-choice" data-testid="game-selection">
     <header className="md4-section-header">
@@ -77,6 +77,14 @@ export function GameSelection({t,onBack,onCrazyEights,onBlackjack}:{
             <img className="pixel-art" src={cardImage('card_back',true)} alt=""/>
           </span>
           <span className="md5-choice-copy"><strong>{t('blackjack')}</strong><span>{t('blackjackDesc')}</span></span>
+        </button>
+        <button type="button" className="md5-choice-tile" data-testid="select-gin-rummy" onClick={onGinRummy}>
+          <span className="md5-choice-art" aria-hidden="true">
+            <img className="pixel-art" src={cardImage('7H',true)} alt=""/>
+            <img className="pixel-art" src={cardImage('8H',true)} alt=""/>
+            <img className="pixel-art" src={cardImage('9H',true)} alt=""/>
+          </span>
+          <span className="md5-choice-copy"><strong>{t('ginRummy')}</strong><span>{t('ginRummyDesc')}</span></span>
         </button>
       </div>
     </section>
