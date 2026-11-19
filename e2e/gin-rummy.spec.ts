@@ -1,0 +1,54 @@
+import {expect,test} from '@playwright/test';
+async function openGin(page:import('@playwright/test').Page){
+ await page.goto('/?qaSeed=4');
+ await expect(page.getByTestId('main-menu')).toBeVisible();
+ await page.getByTestId('play-now').click();
+ await expect(page.getByTestId('select-gin-rummy')).toBeVisible();
+ await page.getByTestId('select-gin-rummy').click();
+ await expect(page.getByTestId('gin-difficulty-screen')).toBeVisible();
+ await page.getByTestId('gin-start').click();
+ await expect(page.getByTestId('gin-screen')).toBeVisible();
+}
+test('Gin Rummy enters through the shared MeowDeck game selector',async({page})=>{
+ await openGin(page);
+ await expect(page.getByTestId('gin-player-hand').locator('[data-testid^="gin-card-"]')).toHaveCount(10);
+ await expect(page.getByTestId('gin-opponent-hand').locator('.card-back')).toHaveCount(10);
+ await expect(page.getByTestId('gin-stock')).toContainText(/30|31/);
+ await expect(page.getByTestId('gin-discard')).toBeVisible();
+});
+test('Gin Rummy human can pass opening, draw stock and discard one card',async({page})=>{
+ await openGin(page);
+ await expect(page.getByTestId('gin-pass')).toBeEnabled();
+ await page.getByTestId('gin-pass').click();
+ await expect(page.getByTestId('gin-stock')).toBeEnabled({timeout:20000});
+ await page.getByTestId('gin-stock').click();
+ await expect(page.getByTestId('gin-player-hand').locator('[data-testid^="gin-card-"]')).toHaveCount(11);
+ await page.getByTestId('gin-player-hand').locator('[data-testid^="gin-card-"]').first().click();
+ await expect(page.getByTestId('gin-throw')).toBeEnabled();
+ await page.getByTestId('gin-throw').click();
+ await expect(page.getByTestId('gin-player-hand').locator('[data-testid^="gin-card-"]')).toHaveCount(10);
+});
+test('Gin Rummy restores a complete hand on refresh without affecting Blackjack',async({page})=>{
+ await openGin(page);
+ const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('meowdeck:gin-rummy:1')??'null'));
+ expect(before?.game).toBe('gin-rummy');
+ await page.reload();
+ await expect(page.getByTestId('main-menu')).toBeVisible();
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-gin-rummy').click();
+ await expect(page.getByTestId('gin-screen')).toBeVisible();
+ const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('meowdeck:gin-rummy:1')??'null'));
+ expect(after?.game).toBe('gin-rummy');
+ expect(after?.handNumber).toBe(before.handNumber);
+ expect(after?.scores).toEqual(before.scores);
+ await page.getByTestId('gin-back').click();
+ await page.getByTestId('select-blackjack').click();
+ await expect(page.getByTestId('blackjack-screen')).toBeVisible();
+});
+for(const [width,height] of [[320,568],[390,844],[768,1024],[1280,720]] as const){
+ test('Gin Rummy cardroom remains within viewport '+width+'x'+height,async({page})=>{
+  await page.setViewportSize({width,height});await openGin(page);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(2);
+  await expect(page.getByTestId('gin-player-hand')).toBeVisible();
+ });
+}

@@ -7,6 +7,7 @@ import '../web/design-system/controls.css';
 import '../web/scenes/title.css';
 import '../web/scenes/crazy-eights.css';
 import '../web/scenes/blackjack.css';
+import '../web/scenes/gin-rummy.css';
 import '../web/scenes/selection.css';
 import '../web/responsive.css';
 
