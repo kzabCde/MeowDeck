@@ -22,7 +22,7 @@ interface MenuProps {
 
 /** Play-first title screen: one room, real card sprites and Mochi, no passive status copy. */
 export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatistics, onRules, saved, reducedMotion=false }: MenuProps) {
-  return <main className="menu-page md4-title-screen" data-testid="main-menu">
+  return <main className="menu-page title-screen md4-title-screen" data-testid="main-menu">
     <header className="md4-menu-header">
       <nav className="md4-menu-tools" aria-label={t('mainMenu')}>
         <GameButton variant="text" onClick={onRules}>{t('rules')}</GameButton>
@@ -54,7 +54,7 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
 export function GameSelection({t,onBack,onCrazyEights,onBlackjack}:{
   t:T;onBack:()=>void;onCrazyEights:()=>void;onBlackjack:()=>void;
 }){
-  return <main className="selection-page md4-selection-page md5-game-choice" data-testid="game-selection">
+  return <main className="selection-page selection-screen game-choices md4-selection-page md5-game-choice" data-testid="game-selection">
     <header className="md4-section-header">
       <GameButton variant="text" onClick={onBack}>‹ {t('back')}</GameButton>
       <span>MEOWDECK</span>
@@ -95,7 +95,7 @@ export function DifficultySelection({t,onBack,onStart,preferredDifficulty='pract
     {id:'hard',key:'hard',desc:'hardDesc'}
   ];
   const description=modes.find(mode=>mode.id===selected)!.desc;
-  return <main className="selection-page md4-selection-page md4-difficulty-page" data-testid="difficulty-selection">
+  return <main className="selection-page selection-screen difficulty-screen md4-selection-page md4-difficulty-page" data-testid="difficulty-selection">
     <header className="md4-section-header">
       <GameButton variant="text" onClick={onBack}>‹ {t('back')}</GameButton>
       <span>MEOWDECK</span>

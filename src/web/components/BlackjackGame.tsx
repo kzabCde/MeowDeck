@@ -111,13 +111,13 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
      clip:'pet_reaction',sessionId:'blackjack',round:current.round,turn:current.revision});
    onSound('pet');
  };
- if(!hydrated||!state)return <main className="md5-blackjack" role="status">{t('saveLoading')}</main>;
+ if(!hydrated||!state)return <main className="blackjack-room md5-blackjack" role="status">{t('saveLoading')}</main>;
  const view=getBlackjackView(state);
  const outcome:BlackjackOutcome|null=view.outcome;
  const mochiPose=view.phase==='finished'
    ?outcome==='dealer'?'victory':outcome==='human'?'defeat':'idle'
    :'idle';
- return <main className="md5-blackjack" data-testid="blackjack-screen">
+ return <main className="blackjack-room md5-blackjack" data-testid="blackjack-screen">
    <header className="md5-bj-header">
      <GameButton variant="text" onClick={onBack} data-testid="blackjack-back">‹ {t('back')}</GameButton>
      <div className="md5-bj-brand"><strong>BLACKJACK</strong></div>

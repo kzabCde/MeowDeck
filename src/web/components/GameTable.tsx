@@ -153,7 +153,7 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
     }
   }
   const contextualHint=gameHint(view,t);
-  return <main className="gameplay-page md4-cardroom" data-testid="gameplay-screen">
+  return <main className="gameplay-page crazy-eights-room md4-cardroom" data-testid="gameplay-screen">
     <header className="game-hud md4-hud"><div className="hud-brand">MEOW<span>DECK</span></div>
       <div className="hud-round">{t('round')} <strong data-testid="round-number">{view.roundNumber}</strong></div>
       <div className="hud-score" aria-label={`${t('you')} ${view.scores.human}, ${t('mochi')} ${view.scores.ai}`}>

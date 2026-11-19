@@ -1,16 +1,16 @@
 /* MeowDeck selection scenes: one compact, accessible visual system.
    The playing-card sprites and Mochi are original assets; no remote graphics. */
-.md4-selection-page{
+.selection-screen{
  position:relative;isolation:isolate;display:flex;flex-direction:column;
  min-height:100dvh;width:100%;max-width:100%;margin:0;padding:0;
  color:var(--md-cream);
  background:linear-gradient(180deg,#0b2d27 0%,#0b2824 55%,var(--md-bg) 100%);
 }
-.md4-selection-page::before{
+.selection-screen::before{
  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
  background:repeating-linear-gradient(90deg,transparent 0 75px,#8baf8610 75px 78px);
 }
-.md4-selection-page::after{
+.selection-screen::after{
  content:"";position:absolute;left:0;right:0;bottom:0;z-index:-1;
  height:clamp(26px,7dvh,65px);border-top:4px solid var(--md-wood);
  background:repeating-linear-gradient(90deg,#30251d 0 56px,#382a20 56px 112px);
@@ -32,17 +32,17 @@
 }
 
 /* Two actual game choices, styled as physical felt tables and fully tappable. */
-.md5-game-choice .md5-choice-scene{
+.game-choices .md5-choice-scene{
  flex:1 0 auto;min-height:0;width:100%;display:flex;flex-direction:column;
  align-items:center;justify-content:center;gap:clamp(17px,3vh,28px);
  padding:22px 18px max(40px,env(safe-area-inset-bottom));
  animation:md-scene-enter var(--md-motion-scene) steps(3,end) both;
 }
-.md5-game-choice .md5-choice-grid{
+.game-choices .md5-choice-grid{
  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
  width:min(940px,100%);gap:clamp(14px,2.5vw,28px);
 }
-.md5-game-choice .md5-choice-tile{
+.game-choices .md5-choice-tile{
  appearance:none;position:relative;isolation:isolate;overflow:hidden;
  cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;
  gap:clamp(10px,2vh,18px);min-width:0;min-height:315px;padding:22px 18px 20px;
@@ -52,44 +52,44 @@
  color:var(--md-cream);text-align:center;
  transition:transform var(--md-motion-card) steps(3,end),border-color var(--md-motion-card) steps(3,end);
 }
-.md5-game-choice .md5-choice-tile::before{
+.game-choices .md5-choice-tile::before{
  content:"";position:absolute;inset:10px;z-index:-1;pointer-events:none;
  border:1px solid #83a88b66;
 }
 @media(hover:hover) and (pointer:fine){
- .md5-game-choice .md5-choice-tile:not(:disabled):hover{
+ .game-choices .md5-choice-tile:not(:disabled):hover{
   transform:translateY(-3px);border-color:var(--md-gold);
   background:linear-gradient(180deg,#2a6754 0%,#205547 90%);
  }
 }
-.md5-game-choice .md5-choice-tile:not(:disabled):active{transform:translateY(2px);box-shadow:inset 0 0 0 4px #143c32,0 3px 0 #061d19}
-.md5-game-choice .md5-choice-tile:focus-visible{
+.game-choices .md5-choice-tile:not(:disabled):active{transform:translateY(2px);box-shadow:inset 0 0 0 4px #143c32,0 3px 0 #061d19}
+.game-choices .md5-choice-tile:focus-visible{
  outline:3px solid var(--md-focus);outline-offset:5px;border-color:var(--md-gold);
 }
-.md5-game-choice .md5-choice-art{
+.game-choices .md5-choice-art{
  position:relative;isolation:isolate;display:flex;justify-content:center;align-items:center;
  flex:0 0 auto;width:100%;height:clamp(138px,22vh,190px);
 }
-.md5-game-choice .md5-choice-art::before{
+.game-choices .md5-choice-art::before{
  content:"";position:absolute;z-index:-1;left:13%;right:13%;bottom:5%;
  height:3px;background:var(--md-wood);box-shadow:0 4px 0 #08241d;
 }
-.md5-game-choice .md5-choice-art img{
+.game-choices .md5-choice-art img{
  position:relative;width:clamp(75px,10vw,103px);max-height:95%;height:auto;
  object-fit:contain;image-rendering:pixelated;filter:drop-shadow(4px 5px 0 #09251d);
 }
-.md5-game-choice .md5-choice-art img:nth-child(1){z-index:1;transform:translateX(17px) rotate(-12deg)}
-.md5-game-choice .md5-choice-art img:nth-child(2){z-index:3;transform:translateY(-9px)}
-.md5-game-choice .md5-choice-art img:nth-child(3){z-index:2;transform:translateX(-17px) rotate(12deg)}
-.md5-game-choice .md5-choice-copy{
+.game-choices .md5-choice-art img:nth-child(1){z-index:1;transform:translateX(17px) rotate(-12deg)}
+.game-choices .md5-choice-art img:nth-child(2){z-index:3;transform:translateY(-9px)}
+.game-choices .md5-choice-art img:nth-child(3){z-index:2;transform:translateX(-17px) rotate(12deg)}
+.game-choices .md5-choice-copy{
  display:flex;flex-direction:column;align-items:center;justify-content:center;
  gap:8px;max-width:32ch;min-width:0;line-height:1.45;
 }
-.md5-game-choice .md5-choice-copy strong{
+.game-choices .md5-choice-copy strong{
  font:900 clamp(1.3rem,2.5vw,1.85rem)/1.25 var(--md-font-display);
  letter-spacing:-.035em;color:var(--md-gold);
 }
-.md5-game-choice .md5-choice-copy>span{
+.game-choices .md5-choice-copy>span{
  font:600 .88rem/1.55 var(--md-font-ui);color:var(--md-cream);
  overflow-wrap:break-word;
 }
@@ -154,19 +154,19 @@
 /* Screens under 720px prioritize tap targets, Thai labels and natural height. */
 @media(max-width:720px){
  .md4-section-header{min-height:54px;padding:5px 14px}
- .md5-game-choice .md5-choice-scene{gap:clamp(12px,2dvh,20px);padding:14px 12px max(20px,env(safe-area-inset-bottom))}
- .md5-game-choice .md5-choice-grid{grid-template-columns:1fr;gap:clamp(10px,1.8dvh,16px);width:min(470px,100%)}
- .md5-game-choice .md5-choice-tile{
+ .game-choices .md5-choice-scene{gap:clamp(12px,2dvh,20px);padding:14px 12px max(20px,env(safe-area-inset-bottom))}
+ .game-choices .md5-choice-grid{grid-template-columns:1fr;gap:clamp(10px,1.8dvh,16px);width:min(470px,100%)}
+ .game-choices .md5-choice-tile{
   flex-direction:row;justify-content:flex-start;min-height:clamp(160px,24dvh,202px);
   gap:clamp(10px,3vw,18px);padding:12px 16px 12px 9px;
   border-bottom-width:6px;text-align:left;
   box-shadow:inset 0 0 0 3px #143c32,0 6px 0 #061d19;
  }
- .md5-game-choice .md5-choice-art{width:42%;flex:0 0 42%;height:clamp(114px,18dvh,153px)}
- .md5-game-choice .md5-choice-art img{width:clamp(53px,15vw,77px);max-height:98%}
- .md5-game-choice .md5-choice-copy{flex:1;align-items:flex-start;gap:6px}
- .md5-game-choice .md5-choice-copy strong{font-size:clamp(1.08rem,4.8vw,1.42rem)}
- .md5-game-choice .md5-choice-copy>span{font-size:clamp(.75rem,2.7vw,.85rem);line-height:1.48}
+ .game-choices .md5-choice-art{width:42%;flex:0 0 42%;height:clamp(114px,18dvh,153px)}
+ .game-choices .md5-choice-art img{width:clamp(53px,15vw,77px);max-height:98%}
+ .game-choices .md5-choice-copy{flex:1;align-items:flex-start;gap:6px}
+ .game-choices .md5-choice-copy strong{font-size:clamp(1.08rem,4.8vw,1.42rem)}
+ .game-choices .md5-choice-copy>span{font-size:clamp(.75rem,2.7vw,.85rem);line-height:1.48}
  .md4-difficulty-scene{gap:12px;padding:12px 13px max(22px,env(safe-area-inset-bottom))}
  .md4-difficulty-stage{grid-template-columns:minmax(0,1fr);gap:clamp(10px,2vh,19px);max-width:440px}
  .md4-difficulty-mochi{width:clamp(150px,25dvh,205px);height:clamp(150px,25dvh,205px)}
@@ -177,19 +177,19 @@
  .md4-difficulty-start{align-self:center;min-width:min(260px,92%);min-height:53px}
 }
 @media(max-width:370px){
- .md5-game-choice .md5-choice-tile{gap:7px;padding:8px 10px 8px 6px}
- .md5-game-choice .md5-choice-art{width:40%;flex-basis:40%;height:112px}
- .md5-game-choice .md5-choice-art img{width:clamp(47px,15vw,61px)}
- .md5-game-choice .md5-choice-copy>span{font-size:.74rem}
+ .game-choices .md5-choice-tile{gap:7px;padding:8px 10px 8px 6px}
+ .game-choices .md5-choice-art{width:40%;flex-basis:40%;height:112px}
+ .game-choices .md5-choice-art img{width:clamp(47px,15vw,61px)}
+ .game-choices .md5-choice-copy>span{font-size:.74rem}
  .md4-mode{min-height:52px;padding:7px 10px;font-size:.87rem}
  .md4-difficulty-mochi{width:clamp(138px,24dvh,165px);height:clamp(138px,24dvh,165px)}
  .md4-difficulty-controls{gap:8px}
  .md4-mode-description{font-size:.8rem;min-height:2.8em}
 }
 @media(max-height:650px){
- .md5-game-choice .md5-choice-scene{gap:11px;padding-block:10px 15px}
- .md5-game-choice .md5-choice-tile{min-height:135px}
- .md5-game-choice .md5-choice-art{height:105px}
+ .game-choices .md5-choice-scene{gap:11px;padding-block:10px 15px}
+ .game-choices .md5-choice-tile{min-height:135px}
+ .game-choices .md5-choice-art{height:105px}
  .md4-difficulty-scene{gap:8px;padding-block:8px 12px}
  .md4-difficulty-mochi{width:clamp(130px,24dvh,176px);height:clamp(130px,24dvh,176px)}
  .md4-difficulty-stage{gap:9px}
@@ -198,13 +198,13 @@
  .md4-difficulty-controls{gap:8px}
  .md4-difficulty-start{min-height:49px}
 }
-@media(max-height:480px) and (min-width:721px){.md4-selection-page{min-height:480px}}
+@media(max-height:480px) and (min-width:721px){.selection-screen{min-height:480px}}
 @media(prefers-reduced-motion:reduce){
- .md5-game-choice .md5-choice-tile,.md4-mode{transition:none;transform:none}
- .md5-game-choice .md5-choice-scene,.md4-difficulty-controls{animation:none!important}
+ .game-choices .md5-choice-tile,.md4-mode{transition:none;transform:none}
+ .game-choices .md5-choice-scene,.md4-difficulty-controls{animation:none!important}
 }
-.reduce-motion .md5-game-choice .md5-choice-tile,.reduce-motion .md4-mode{transition:none;transform:none}
-.reduce-motion .md5-game-choice .md5-choice-scene,.reduce-motion .md4-difficulty-controls{animation:none!important}
+.reduce-motion .game-choices .md5-choice-tile,.reduce-motion .md4-mode{transition:none;transform:none}
+.reduce-motion .game-choices .md5-choice-scene,.reduce-motion .md4-difficulty-controls{animation:none!important}
 
 /* Phase 9: short landscape layouts are functional scenes, not portrait cards
    shrunk until the Thai labels disappear. Allow natural vertical scrolling. */
@@ -212,7 +212,7 @@
  padding-left:max(clamp(16px,3.2vw,42px),env(safe-area-inset-left,0px));
  padding-right:max(clamp(16px,3.2vw,42px),env(safe-area-inset-right,0px));
 }
-.md5-game-choice .md5-choice-scene,.md4-difficulty-scene{
+.game-choices .md5-choice-scene,.md4-difficulty-scene{
  padding-left:max(13px,env(safe-area-inset-left,0px));
  padding-right:max(13px,env(safe-area-inset-right,0px));
 }
@@ -223,12 +223,12 @@
  }
 }
 @media(max-width:720px) and (min-width:560px) and (max-height:480px){
- .md5-game-choice .md5-choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
- .md5-game-choice .md5-choice-tile{min-height:166px;padding:10px 8px;gap:6px}
- .md5-game-choice .md5-choice-art{width:40%;flex-basis:40%;height:100px}
- .md5-game-choice .md5-choice-art img{width:clamp(42px,7vw,58px)}
- .md5-game-choice .md5-choice-copy strong{font-size:1rem}
- .md5-game-choice .md5-choice-copy>span{font-size:.74rem}
+ .game-choices .md5-choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .game-choices .md5-choice-tile{min-height:166px;padding:10px 8px;gap:6px}
+ .game-choices .md5-choice-art{width:40%;flex-basis:40%;height:100px}
+ .game-choices .md5-choice-art img{width:clamp(42px,7vw,58px)}
+ .game-choices .md5-choice-copy strong{font-size:1rem}
+ .game-choices .md5-choice-copy>span{font-size:.74rem}
  .md4-difficulty-stage{
   grid-template-columns:minmax(130px,.65fr) minmax(0,1.35fr);
   max-width:660px;gap:12px

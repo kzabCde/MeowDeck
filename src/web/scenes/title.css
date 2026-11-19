@@ -1,0 +1,69 @@
+/* Phase 4 — a physical title-scene, not a dashboard or stacked promo landing. */
+.title-screen{position:relative;isolation:isolate;display:flex;flex-direction:column;min-height:100dvh;overflow:hidden;background:#081e1c}
+.title-screen:before{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 75px,#54766511 75px 78px),linear-gradient(180deg,#0b3028 0 65%,#071b19 65% 100%)}
+.title-screen:after{content:"";position:absolute;z-index:-1;left:0;right:0;bottom:0;height:clamp(42px,13dvh,100px);border-top:5px solid var(--md-wood);background:repeating-linear-gradient(90deg,#30251d 0 56px,#382a20 56px 112px);box-shadow:inset 0 7px 0 #1a1715;pointer-events:none}
+.md4-menu-header{z-index:5;flex:0 0 auto;display:flex;align-items:center;justify-content:flex-end;width:100%;max-width:1240px;margin:0 auto;padding:12px clamp(16px,3.2vw,42px)}
+.md4-menu-tools{display:flex;align-items:center;gap:clamp(12px,2.3vw,26px)}
+.md4-text-button{border:0;background:transparent;color:var(--md-cream);cursor:pointer;font:750 .88rem/1.35 var(--md-font-ui);padding:9px 8px;letter-spacing:0;text-decoration:none}
+@media(hover:hover) and (pointer:fine){.md4-text-button:hover{color:var(--md-gold)}}
+.md4-text-button:active:not(:disabled){color:var(--md-gold);transform:translateY(1px)}
+.md4-title-composition{position:relative;z-index:1;flex:1 1 auto;min-height:0;width:min(1100px,100%);margin:0 auto;padding:12px clamp(18px,4vw,55px) max(22px,env(safe-area-inset-bottom));display:grid;grid-template-columns:minmax(0,.84fr) minmax(0,1.16fr);grid-template-rows:auto auto;grid-template-areas:"brand scene" "actions scene";align-content:center;align-items:center;column-gap:clamp(8px,3vw,44px);row-gap:clamp(16px,2.4vh,28px)}
+.md4-title-mark{grid-area:brand;position:relative;z-index:3;justify-self:start;align-self:end;min-width:0}
+.md4-title-mark .brand-title{display:flex;flex-direction:column;align-items:flex-start;margin:0;letter-spacing:-.065em;font:900 clamp(3.1rem,6.2vw,6.2rem)/.92 var(--md-font-display);color:var(--md-cream);text-shadow:4px 4px 0 #386456,8px 8px 0 #041815}
+.md4-title-mark .brand-title span{color:inherit}
+.md4-title-mark .brand-title span:last-child{color:var(--md-gold)}
+.md4-title-diorama{grid-area:scene;position:relative;isolation:isolate;align-self:center;width:100%;height:clamp(270px,53dvh,475px);min-width:0;overflow:visible}
+.md4-title-room{position:absolute;z-index:0;left:11%;right:11%;top:5%;bottom:18%;background:repeating-linear-gradient(90deg,#173f35 0 64px,#164037 64px 68px);border:5px solid #715438;border-bottom:0;clip-path:polygon(0 23%,5% 23%,5% 10%,12% 10%,12% 4%,24% 4%,24% 0,76% 0,76% 4%,88% 4%,88% 10%,95% 10%,95% 23%,100% 23%,100% 100%,0 100%);box-shadow:inset 0 0 0 7px #0b2b25}
+.md4-title-room:before{content:"";position:absolute;left:9%;right:9%;top:12%;bottom:0;border-left:3px solid #366354;border-right:3px solid #366354;pointer-events:none}
+.md4-title-mochi{position:absolute;z-index:3;left:50%;bottom:17%;transform:translateX(-50%);filter:drop-shadow(5px 7px 0 #09241e)}
+.md4-title-mochi .mochi-large{width:clamp(200px,32dvh,310px);height:clamp(200px,32dvh,310px)}
+.md4-title-table{position:absolute;z-index:2;left:2%;right:2%;bottom:3%;height:24%;border:5px solid var(--md-border);border-bottom:15px solid var(--md-wood-dark);background:var(--md-table);box-shadow:0 10px 0 #031715;clip-path:polygon(5% 0,95% 0,100% 24%,98% 82%,94% 100%,6% 100%,2% 82%,0 24%)}
+.md4-title-table:after{content:"";position:absolute;inset:10px 9% 24%;border:2px solid #7ca48a66;pointer-events:none}
+.md4-title-card{position:absolute;z-index:4;bottom:13%;width:clamp(66px,9vw,104px);aspect-ratio:2/3;filter:drop-shadow(4px 5px 0 #08231c)}
+.md4-title-card img,.md4-title-card .card-back{width:100%;height:100%}
+.md4-card-left{left:8%;transform:rotate(-16deg)}
+.md4-card-back{left:26%;transform:rotate(8deg)}
+.md4-card-right{right:9%;transform:rotate(14deg)}
+.md4-title-choices{grid-area:actions;position:relative;z-index:5;align-self:start;display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+ animation:md-scene-enter var(--md-motion-scene) steps(3,end) both}
+.md4-title-choices .md4-start{display:flex;align-items:center;justify-content:space-between;width:clamp(215px,27vw,310px);min-height:62px;padding:12px 20px;font:900 1.12rem/1.2 var(--md-font-ui);letter-spacing:0;text-transform:none}
+.md4-title-choices .md4-start span:last-child{font-size:1.7rem;line-height:1}
+.md4-title-choices .md4-resume{display:flex;align-items:center;justify-content:flex-start;gap:4px;min-height:44px;padding:8px 6px;color:var(--md-cream);font-size:.92rem}
+.md4-title-choices .md4-resume span{font:700 .78rem var(--md-font-ui);color:var(--md-muted)}
+.md4-title-choices .md4-stats-link{font-size:.85rem;color:#bad1be}
+@media(max-width:720px){
+ .md4-menu-header{padding:8px 15px}
+ .md4-title-composition{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto;grid-template-areas:"brand" "scene" "actions";align-content:center;justify-items:center;row-gap:0;padding:3px 10px max(10px,env(safe-area-inset-bottom))}
+ .md4-title-mark{justify-self:center;align-self:center;z-index:4}
+ .md4-title-mark .brand-title{align-items:center;text-align:center;font-size:clamp(2.9rem,11vw,4.35rem);text-shadow:3px 3px 0 #386456,6px 6px 0 #041815}
+ .md4-title-diorama{height:clamp(178px,34dvh,275px);width:min(440px,100%)}
+ .md4-title-room{top:5%;bottom:20%;left:10%;right:10%;border-width:4px}
+ .md4-title-mochi{bottom:17%}
+ .md4-title-mochi .mochi-large{width:clamp(154px,27dvh,229px);height:clamp(154px,27dvh,229px)}
+ .md4-title-card{width:clamp(52px,13vw,80px);bottom:13%}
+ .md4-card-left{left:6%}.md4-card-back{left:25%}.md4-card-right{right:7%}
+ .md4-title-table{bottom:2%;height:25%;border-width:4px;border-bottom-width:11px}
+ .md4-title-choices{align-self:center;align-items:center;gap:1px;padding-top:7px}
+ .md4-title-choices .md4-start{width:clamp(220px,68vw,300px);min-height:54px}
+ .md4-title-choices .md4-resume{justify-content:center}
+}
+@media(max-width:370px){
+ .md4-title-mark .brand-title{font-size:clamp(2.7rem,11vw,3.2rem)}
+ .md4-title-card{width:clamp(47px,13vw,62px)}
+ .md4-menu-tools{gap:10px}
+}
+@media(max-height:650px){
+ .md4-menu-header{padding-block:4px}
+ .md4-title-composition{padding-block:0 12px}
+ .md4-title-diorama{height:clamp(163px,30dvh,260px)}
+ .md4-title-mochi .mochi-large{width:clamp(148px,25dvh,220px);height:clamp(148px,25dvh,220px)}
+ .md4-title-choices .md4-start{min-height:50px}
+ .md4-title-choices .md4-resume,.md4-title-choices .md4-stats-link{min-height:44px}
+}
+@media(max-height:479px){
+ .title-screen{min-height:480px;overflow-y:auto}
+ .md4-title-composition{min-height:440px}
+}
+@media(prefers-reduced-motion:reduce){.md4-title-choices .md4-start{transition:none}}
+.reduce-motion .md4-title-choices .md4-start{transition:none}
+
