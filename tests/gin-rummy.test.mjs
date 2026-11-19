@@ -104,6 +104,8 @@ test('Gin AI completes a full seeded 100-point match with only legal actions',()
  }
  assert.equal(state.phase,'match_result','AI match did not finish');
  assert.ok(Math.max(state.scores.human,state.scores.ai)>=100);
+ assert.equal(state.stats.matches,1);
+ assert.equal(state.stats.humanWins+state.stats.aiWins,1);
  assert.ok(validateGinSave(state));
 });
 test('opening upcard can be saved and restored while discard pile is empty',()=>{
