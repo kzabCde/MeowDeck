@@ -62,3 +62,6 @@
 }
 @media(prefers-reduced-motion:reduce){.md-gin-card{transition:none}}
 .reduce-motion .md-gin-card{transition:none}
+
+.md-gin-tools{display:flex;gap:5px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+@media(max-width:420px){.md-gin-tools .md4-text-button{padding:5px;font-size:.68rem}}
