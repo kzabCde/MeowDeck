@@ -37,6 +37,12 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .dialog-content{padding:18px}.dialog-content p{color:#d1dfc7}
 .suit-choice{background:#255344;border:2px solid #6d987f;border-bottom:5px solid #0d2823;border-radius:2px;box-shadow:none}
 .suit-choice:hover{border-color:var(--md4-gold)}
+/* Accessible suit contrast on dark felt: labels and symbols remain legible in both locales. */
+.game-dialog .suit-choice,
+.game-dialog .suit-choice.suit-spades,
+.game-dialog .suit-choice.suit-clubs{color:var(--md-cream)!important}
+.game-dialog .suit-choice.suit-hearts,
+.game-dialog .suit-choice.suit-diamonds{color:#ffd5ce!important}
 .p4-stats-grid>div{background:transparent;border:0;border-bottom:1px solid #6c887577;border-radius:0}
 .p4-stats-grid strong,.result-stats strong{color:var(--md4-gold)}
 .result-stats{background:#173f35;border-color:#6c8875}.p4-status.error{background:#49302d;border-color:var(--md4-coral)}

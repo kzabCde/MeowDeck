@@ -8,7 +8,7 @@ import type { MochiClipName, PresentationCue } from '../../games/meowdeck/presen
 import type { Difficulty } from '../../games/meowdeck/ai/strategies.js';
 import { getMochiClip } from '../animation/mochi-loader.js';
 import type { T } from '../i18n.js';
-import { CardBack, PixelCard } from './PixelCard.js';
+import { CardBack, PixelCard, cardLabel } from './PixelCard.js';
 import { Mochi } from './Mochi.js';
 import { GameButton } from './GameButton.js';
 
@@ -154,6 +154,7 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
   }
   const contextualHint=gameHint(view,t);
   return <main className="gameplay-page crazy-eights-room md4-cardroom" data-testid="gameplay-screen">
+    <h1 className="sr-only" tabIndex={-1} data-screen-heading>{t('crazyEights')}</h1>
     <header className="game-hud md4-hud"><div className="hud-brand">MEOW<span>DECK</span></div>
       <div className="hud-round">{t('round')} <strong data-testid="round-number">{view.roundNumber}</strong></div>
       <div className="hud-score" aria-label={`${t('you')} ${view.scores.human}, ${t('mochi')} ${view.scores.ai}`}>
@@ -183,22 +184,33 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
       <section className="table-center md4-table-center" aria-label={t('discard')}>
         <div className="pile-group"><span className="pile-label">{t('draw')}</span><div className="draw-pile" ref={drawRef}><button type="button" className="draw-pile-action" onClick={onDraw} disabled={!canDraw} aria-label={t('drawCard')}><CardBack label={t('deck')}/></button><span className="pile-count" data-testid="draw-count">{view.drawPileCount}</span></div></div>
         
-        <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" ref={discardRef} data-testid="top-discard"><img className="pixel-art card-image" style={((cue?.clip==='play_card'&&cue.cardId===view.topDiscard.id&&shownActionFrame!==cue.id&&!reducedMotion)||(humanFlight?.cardId===view.topDiscard.id))?{visibility:'hidden'}:undefined} src={cardImage(view.topDiscard.id, true)} alt={`${view.topDiscard.rank} ${SUIT_SYMBOL[view.topDiscard.suit]}`} />{impact&&<span key={impact} className={view.topDiscard.rank==='8'?`md-card-impact md-wild-impact md-wild-${SUIT_CLASS[view.activeSuit]}`:'md-card-impact'} aria-hidden="true" onAnimationEnd={()=>setImpact(null)}/>}</div></div>
+        <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" ref={discardRef} data-testid="top-discard"><img className="pixel-art card-image" style={((cue?.clip==='play_card'&&cue.cardId===view.topDiscard.id&&shownActionFrame!==cue.id&&!reducedMotion)||(humanFlight?.cardId===view.topDiscard.id))?{visibility:'hidden'}:undefined} src={cardImage(view.topDiscard.id, true)} alt={cardLabel(view.topDiscard,t)} />{impact&&<span key={impact} className={view.topDiscard.rank==='8'?`md-card-impact md-wild-impact md-wild-${SUIT_CLASS[view.activeSuit]}`:'md-card-impact'} aria-hidden="true" onAnimationEnd={()=>setImpact(null)}/>}</div></div>
         <div className="active-suit"><span>{t('activeSuit')}</span><strong role="img" className={`suit-${SUIT_CLASS[view.activeSuit]}`} data-testid="active-suit" aria-label={t(({ S:'spades', H:'hearts', D:'diamonds', C:'clubs' } as const)[view.activeSuit])}>{SUIT_SYMBOL[view.activeSuit]}</strong></div>
       </section>
       <div className={`turn-banner ${isHumanTurn?'your-turn':'opponent-turn'}`} aria-live="polite" data-testid="turn-status"><span className="md-turn-dot" aria-hidden="true"/><strong>{isHumanTurn?t('yourTurn'):t('mochiTurn')}</strong></div>
       <section className="player-area md4-player-area" aria-label={t('yourHand')}>
         <div className="hand-title"><span>{t('yourHand')}</span>
           <span className="hand-title-tail">
-            {handHasOverflow&&<span className="hand-scroll-cue" data-testid="hand-scroll-cue">{t('zoomHint')}</span>}
+            {handHasOverflow&&<span className="hand-scroll-cue" id="hand-scroll-hint" data-testid="hand-scroll-cue">{t('zoomHint')}</span>}
             <span className="hand-count">{view.ownHand.length}</span>
           </span>
         </div>
-        <div className={`player-hand ${handMotion?'md-hand-drawn':''}`} ref={handRef} data-testid="player-hand" data-overflow={handHasOverflow?'true':'false'} onAnimationEnd={()=>setHandMotion(null)}>{view.ownHand.map((card,i)=><PixelCard key={card.id} card={card} t={t} playable={plays.has(card.id)} selected={selected===card.id} disabled={!isHumanTurn||!plays.has(card.id)} onSelect={()=>onSelect(card.id)} onNavigate={(direction)=>navigate(i,direction)}/>)}</div>
+        <div className={`player-hand ${handMotion?'md-hand-drawn':''}`} ref={handRef} data-testid="player-hand"
+          data-overflow={handHasOverflow?'true':'false'}
+          role={handHasOverflow?'region':undefined}
+          aria-label={handHasOverflow?t('yourHand'):undefined}
+          aria-describedby={handHasOverflow?'hand-scroll-instructions':undefined}
+          tabIndex={handHasOverflow?0:undefined}
+          onAnimationEnd={()=>setHandMotion(null)}>{view.ownHand.map((card,i)=><PixelCard key={card.id} card={card} t={t} playable={plays.has(card.id)} selected={selected===card.id} disabled={!isHumanTurn||!plays.has(card.id)} onSelect={()=>onSelect(card.id)} onNavigate={(direction)=>navigate(i,direction)}/>)}</div>
+        <ul className="sr-only" aria-label={t('handContents')} data-testid="accessible-hand-list">
+          {view.ownHand.map(card=><li key={card.id}>{cardLabel(card,t)} — {plays.has(card.id)?t('cardPlayable'):t('cardUnavailable')}</li>)}
+        </ul>
+        <span className="sr-only" id="hand-scroll-instructions">{t('handScrollHelp')}</span>
         <div className="scroll-hint">{t('zoomHint')}</div>
       </section>
     </div></div>
-    <footer className={`action-footer md4-control-rail ${tutorialHint?'has-tutorial':''} ${error?'has-error':''}`} data-testid="crazy-eights-action-rail"><div className="action-status" aria-live={error||tutorialHint||contextualHint?'polite':undefined} role={error||tutorialHint||contextualHint?'status':undefined}>{error?<span className="status-error">{t('invalidAction')}</span>:
+    <footer className={`action-footer md4-control-rail ${tutorialHint?'has-tutorial':''} ${error?'has-error':''}`} data-testid="crazy-eights-action-rail"><div className="action-status" aria-live={error?undefined:tutorialHint||contextualHint?'polite':undefined}
+        role={error?'alert':tutorialHint||contextualHint?'status':undefined}>{error?<span className="status-error">{t('invalidAction')}</span>:
         tutorialHint?<div className="tutorial-guide" data-testid="tutorial-hint"><span>{tutorialHint}</span><button type="button" data-testid="tutorial-skip" onClick={onSkipTutorial}>{t('tutorialSkip')}</button></div>:contextualHint}</div>
       <div className="action-buttons"><GameButton variant="primary" data-testid="play-selected" onClick={playFromHand} disabled={!isHumanTurn||!canPlay}>{selected?t('playCard'):t('selectCard')} <span aria-hidden="true">❯</span></GameButton>
         {canDraw && <GameButton variant="cream" onClick={onDraw} data-testid="draw-card">{t('drawCard')}</GameButton>}

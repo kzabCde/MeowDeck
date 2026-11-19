@@ -123,3 +123,13 @@ Do not merge or deploy without explicit project-owner authorization.
 - Canonical main-screen selectors now use `.title-screen`, `.selection-screen`, `.game-choices`, `.difficulty-screen`, `.crazy-eights-room`, and `.blackjack-room`. JSX retains old phase-prefixed classes as backward-compatibility aliases, not stylesheet dependencies.
 - Preserved phase-9 320–1920px and landscape Safe Area behavior, focus/touch target and reduced motion; no source art, game-state, PWA, or save schema changes.
 - See `src/web/design-system/ARCHITECTURE.md` for import order and migration contract. Tests now assert module boundaries plus actual rendered styles and screen flows in Playwright.
+
+## Phase 12 — Accessibility and Localization
+
+- **Real keyboard/screen transitions:** Each screen now exposes one focusable heading, and navigation to a new screen moves focus to that heading after render rather than leaving focus on a removed button. This does not run for cosmetic state changes or initial hydration.
+- **Accessible native dialogs:** Visible `h2` provides `aria-labelledby` through React `useId`. Opening focuses the first actionable control inside the dialog rather than the decorative close icon; explicit suit-dialog focus remains authoritative, and the native `<dialog>` retains Escape/focus trapping/return behavior.
+- **Bilingual card semantics:** All face-card names are spoken fully in Thai and English (Ace, Jack, Queen, King; เอซ แจ็ก ควีน คิง); Blackjack faces and Crazy Eights discard share the same labels. An offscreen static hand list exposes all cards—including illegal/disabled cards—to screen-reader users, without enabling illegal gameplay or adding a live region on every draw.
+- **Keyboard-scrollable hand:** Only genuinely overflowing hands become named focusable regions with an offscreen horizontal-scroll instruction. Empty status banners stay silent. Actual gameplay-action errors are now `role=alert` rather than a generic polite status.
+- **Contrast:** Suit choices on the dark-green dialog now use high-contrast cream/coral text instead of inherited dark text. Suit names remain visible, so color is never the only indicator; reduced-motion/focus rings preserved.
+- **Zoom/reflow:** Continue to validate the real CSS-viewport sizes at 320px and short landscape, plus 200% equivalent reflow; important Thai/English controls and warnings must stay usable.
+- No raw error codes in UI, extra narration, asset mutations, new game mechanics, alternate save schema, or external fonts.

@@ -254,3 +254,6 @@
  .crazy-eights-room .action-footer{flex:none;position:sticky;bottom:0;z-index:8}
 }
 
+
+/* Horizontal hand is independently keyboard-scrollable only when it truly overflows. */
+.crazy-eights-room .player-hand:focus-visible{outline:3px solid var(--md-focus);outline-offset:-3px}

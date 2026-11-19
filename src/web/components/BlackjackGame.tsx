@@ -4,7 +4,7 @@ import {applyBlackjackAction,getBlackjackView,startBlackjack,validateBlackjackSa
 import {secureRandomInt,type RandomInt} from '../../games/meowdeck/core/random.js';
 import {cardImage} from '../game/assets.js';
 import {Mochi} from './Mochi.js';
-import {CardBack} from './PixelCard.js';
+import {CardBack,cardLabel} from './PixelCard.js';
 import {GameDialog} from './GameDialog.js';
 import {GameButton} from './GameButton.js';
 import type {T} from '../i18n.js';
@@ -29,9 +29,8 @@ function qaRandom():RandomInt{
    return (value>>>0)%max;
  };
 }
-const suitLabels={S:'spades',H:'hearts',D:'diamonds',C:'clubs'} as const;
 function Face({card,t}:{card:Card;t:T}){
- return <img className="pixel-art md5-bj-card-face" draggable={false} alt={`${card.rank} ${t(suitLabels[card.suit])}`} src={cardImage(card.id,true)}/>;
+ return <img className="pixel-art md5-bj-card-face" draggable={false} alt={cardLabel(card,t)} src={cardImage(card.id,true)}/>;
 }
 function Score({label,count,testId}:{label:string;count:number;testId:string}){
  return <span className="md5-bj-score"><span>{label}</span><strong data-testid={testId}>{count}</strong></span>;
@@ -118,6 +117,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
    ?outcome==='dealer'?'victory':outcome==='human'?'defeat':'idle'
    :'idle';
  return <main className="blackjack-room md5-blackjack" data-testid="blackjack-screen">
+   <h1 className="sr-only" tabIndex={-1} data-screen-heading>{t('blackjack')}</h1>
    <header className="md5-bj-header">
      <GameButton variant="text" onClick={onBack} data-testid="blackjack-back">‹ {t('back')}</GameButton>
      <div className="md5-bj-brand"><strong>BLACKJACK</strong></div>

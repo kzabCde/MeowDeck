@@ -58,6 +58,7 @@ export function App() {
   const replaceIntent=useRef<Difficulty>('practice');
   const storageConflictRef=useRef(false);
   const [screen, setScreen] = useState<Screen>('menu');
+  const previousScreenRef=useRef<Screen|null>(null);
   const [modal, setModal] = useState<Modal>(null);
   const [selected, setSelected] = useState<CardId | null>(null);
   const [difficulty,setDifficulty]=useState<Difficulty>('practice');
@@ -299,6 +300,15 @@ export function App() {
     return () => { active = false; };
   }, [assetAttempt]);
   useEffect(() => { document.documentElement.lang = language; }, [language]);
+  useEffect(()=>{
+    // Screen changes replace the old focused button. Focus the newly mounted
+    // heading once, without interrupting initial hydration or routine turns.
+    if(!storageReady||assetStatus!=='ready')return;
+    const previous=previousScreenRef.current;
+    previousScreenRef.current=screen;
+    if(previous===null||previous===screen)return;
+    document.querySelector<HTMLElement>('main[data-testid] [data-screen-heading]')?.focus({preventScroll:true});
+  },[screen,storageReady,assetStatus]);
   useEffect(() => { document.documentElement.classList.toggle('reduce-motion', reducedMotion); }, [reducedMotion]);
   useEffect(() => { setSelected(null); }, [session?.turnId, session?.roundNumber]);
 

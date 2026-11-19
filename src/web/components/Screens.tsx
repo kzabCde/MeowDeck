@@ -31,7 +31,7 @@ export function MainMenu({ t, hasMatch, onPlay, onContinue, onSettings, onStatis
     </header>
     <div className="md4-title-composition">
       <div className="md4-title-mark">
-        <h1 className="brand-title"><span>MEOW</span><span>DECK</span></h1>
+        <h1 className="brand-title" tabIndex={-1} data-screen-heading><span>MEOW</span><span>DECK</span></h1>
       </div>
       <div className="md4-title-diorama" data-testid="title-scene">
         <div className="md4-title-room" aria-hidden="true"/>
@@ -60,7 +60,7 @@ export function GameSelection({t,onBack,onCrazyEights,onBlackjack}:{
       <span>MEOWDECK</span>
     </header>
     <section className="md5-choice-scene" aria-labelledby="game-select-title">
-      <div className="md4-scene-head"><h1 id="game-select-title">{t('gameSelect')}</h1></div>
+      <div className="md4-scene-head"><h1 id="game-select-title" tabIndex={-1} data-screen-heading>{t('gameSelect')}</h1></div>
       <div className="md5-choice-grid" data-testid="game-choice-list">
         <button type="button" className="md5-choice-tile" data-testid="select-crazy-eights" onClick={onCrazyEights}>
           <span className="md5-choice-art" aria-hidden="true">
@@ -101,7 +101,7 @@ export function DifficultySelection({t,onBack,onStart,preferredDifficulty='pract
       <span>MEOWDECK</span>
     </header>
     <section className="md4-difficulty-scene" aria-labelledby="opponent-select-title">
-      <div className="md4-scene-head"><h1 id="opponent-select-title">{t('chooseDifficulty')}</h1></div>
+      <div className="md4-scene-head"><h1 id="opponent-select-title" tabIndex={-1} data-screen-heading>{t('chooseDifficulty')}</h1></div>
       <div className="md4-difficulty-stage">
         <div className="md4-difficulty-mochi"><Mochi t={t} size="large" reducedMotion={reducedMotion}/></div>
         <div className="md4-difficulty-controls">
