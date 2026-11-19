@@ -49,7 +49,8 @@
 .md5-bj-instruction{font-weight:800;font-size:.82rem;color:#d6e0c7}
 .md5-bj-action-row{display:flex;justify-content:center;align-items:center;gap:12px;width:100%;max-width:450px}
 .md5-bj-action-row>.pixel-button{flex:1;min-height:48px;font-size:1rem;font-family:var(--md-font-ui)}
-.md5-bj-result{display:flex;flex-direction:column;gap:3px}
+.md5-bj-result{display:flex;flex-direction:column;gap:3px;
+ animation:md-result-enter var(--md-motion-scene) steps(3,end) both}
 .md5-bj-result strong{color:#fff1bf;font:900 1.2rem var(--md-font-display)}
 .md5-bj-result span{color:#b9d0bd;font-size:.83rem}
 .md5-bj-warning{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;color:#ffd0c0}
@@ -73,6 +74,7 @@
  .md5-bj-actions{min-height:104px}
 }
 @media(prefers-reduced-motion:reduce){.md5-blackjack *{transition:none!important;animation:none!important}}
+.reduce-motion .md5-blackjack .md5-bj-result{animation:none!important}
 
 /* P5 screenshot QA: fit the complete action rail inside a 720px desktop viewport.
    Avoid a beautiful table whose primary Hit/Stand buttons fall below the fold. */
