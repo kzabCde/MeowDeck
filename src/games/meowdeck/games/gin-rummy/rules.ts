@@ -15,7 +15,7 @@ export interface GinResult {
  readonly laidOff:readonly CardId[];readonly melds:readonly GinMeld[];
 }
 export type GinHistory= {readonly actor:Actor;readonly type:'take_open'|'pass_open'|'draw_stock'|'draw_discard'|'discard';readonly cardId?:CardId};
-export interface GinStats {readonly hands:number;readonly humanGin:number;readonly aiGin:number;readonly humanKnock:number;readonly aiKnock:number;readonly undercuts:number}
+export interface GinStats {readonly hands:number;readonly humanGin:number;readonly aiGin:number;readonly humanKnock:number;readonly aiKnock:number;readonly undercuts:number;readonly matches:number;readonly humanWins:number;readonly aiWins:number}
 export interface GinState {
  readonly game:'gin-rummy';readonly schemaVersion:1;readonly revision:number;readonly handNumber:number;
  readonly dealer:Actor;readonly actor:Actor;readonly phase:GinPhase;readonly stock:readonly Card[];
@@ -31,7 +31,7 @@ export interface GinAction {
 export type GinApplyResult={readonly ok:true;readonly state:GinState}|
  {readonly ok:false;readonly state:GinState;readonly error:'STALE'|'ILLEGAL'};
 export const GIN_CONFIG={targetScore:100,knockLimit:10,ginBonus:20,undercutBonus:10} as const;
-const EMPTY_STATS:GinStats={hands:0,humanGin:0,aiGin:0,humanKnock:0,aiKnock:0,undercuts:0};
+const EMPTY_STATS:GinStats={hands:0,humanGin:0,aiGin:0,humanKnock:0,aiKnock:0,undercuts:0,matches:0,humanWins:0,aiWins:0};
 const RANK_VALUE:Readonly<Record<Rank,number>>={A:1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,J:11,Q:12,K:13};
 export function ginCardValue(card:Card):number{return Math.min(10,RANK_VALUE[card.rank]);}
 function sum(cards:readonly Card[]):number{return cards.reduce((n,c)=>n+ginCardValue(c),0);}
@@ -136,8 +136,8 @@ function initial(handNumber:number,dealer:Actor,scores:Readonly<Record<Actor,num
  stock:starter.rest,discard:[starter.card],human,ai,drawnFromDiscard:null,scores,
  history:[],processedActionIds:[],result:null,stats};
 }
-export function startGinRummy(rng:RandomInt=secureRandomInt,dealer:Actor='ai'):GinState{
- return initial(1,dealer,{human:0,ai:0},EMPTY_STATS,rng);
+export function startGinRummy(rng:RandomInt=secureRandomInt,dealer:Actor='ai',stats:GinStats=EMPTY_STATS):GinState{
+ return initial(1,dealer,{human:0,ai:0},stats,rng);
 }
 function scoring(state:GinState,actor:Actor,kind:'knock'|'gin'):GinState{
  const own=hand(state,actor),other=hand(state,otherActor(actor)),mine=partitions(own),theirBase=evaluateGinHand(other).value;
@@ -167,7 +167,9 @@ function scoring(state:GinState,actor:Actor,kind:'knock'|'gin'):GinState{
   humanKnock:state.stats.humanKnock+(kind==='knock'&&actor==='human'?1:0),
   aiKnock:state.stats.aiKnock+(kind==='knock'&&actor==='ai'?1:0),
   undercuts:state.stats.undercuts+(undercut?1:0)};
- return {...state,scores,result,stats,phase:scores[winner]>=GIN_CONFIG.targetScore?'match_result':'hand_result'};
+ const ended=scores[winner]>=GIN_CONFIG.targetScore;
+ const lifetime={...stats,matches:stats.matches+(ended?1:0),humanWins:stats.humanWins+(ended&&winner==='human'?1:0),aiWins:stats.aiWins+(ended&&winner==='ai'?1:0)};
+ return {...state,scores,result,stats:lifetime,phase:ended?'match_result':'hand_result'};
 }
 function blocked(state:GinState):GinState{
  return {...state,result:{kind:'stock',winner:null,points:0,knocker:null,knockerDeadwood:0,
@@ -185,7 +187,7 @@ export function applyGinAction(state:GinState,action:GinAction,rng:RandomInt=sec
   next=initial(state.handNumber+1,otherActor(state.dealer),state.scores,state.stats,rng);
  }else if(action.type==='new_match'){
   if(state.phase!=='match_result')return illegal();
-  next=initial(1,otherActor(state.dealer),{human:0,ai:0},EMPTY_STATS,rng);
+  next=initial(1,otherActor(state.dealer),{human:0,ai:0},state.stats,rng);
  }else{
   if(action.actor!==state.actor||state.phase==='hand_result'||state.phase==='match_result')return illegal();
   const actor=state.actor;
@@ -251,7 +253,7 @@ export function validateGinSave(value:unknown):GinState|null{
   v.processedActionIds.some((id:unknown)=>typeof id!=='string'||!id||id.length>128)||
   new Set(v.processedActionIds).size!==v.processedActionIds.length)return null;
  if(v.drawnFromDiscard!==null&&(typeof v.drawnFromDiscard!=='string'||!isCardId(v.drawnFromDiscard)))return null;
- if(!v.stats||typeof v.stats!=='object'||!['hands','humanGin','aiGin','humanKnock','aiKnock','undercuts'].every(k=>{
+ if(!v.stats||typeof v.stats!=='object'||!['hands','humanGin','aiGin','humanKnock','aiKnock','undercuts','matches','humanWins','aiWins'].every(k=>{
   const n=(v.stats as Record<string,unknown>)[k];return Number.isSafeInteger(n)&&Number(n)>=0;
  }))return null;
  return value as GinState;
