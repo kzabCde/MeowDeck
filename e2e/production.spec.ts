@@ -212,3 +212,39 @@ test('Phase 8 production keeps successful saves silent and action prompts contex
  await mkdir('test-results/visual-review',{recursive:true});
  await page.screenshot({path:'test-results/visual-review/p8-clean-game-390x844.png',animations:'disabled'});
 });
+
+
+// Phase 9: real production renders, portrait + short landscape + compact reflow.
+test('Phase 9 captures notch-aware mobile and landscape game scenes',async({page})=>{
+ await mkdir('test-results/visual-review',{recursive:true});
+ await page.setViewportSize({width:375,height:667});
+ await page.goto('/');
+ await expect(page.getByTestId('main-menu')).toBeVisible();
+ await page.screenshot({path:'test-results/visual-review/p9-menu-375x667.png',animations:'disabled'});
+ await page.getByTestId('play-now').click();
+ await page.screenshot({path:'test-results/visual-review/p9-game-select-375x667.png',animations:'disabled'});
+ await page.getByTestId('select-crazy-eights').click();
+ await page.getByTestId('start-match').click();
+ await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+ if(await page.getByTestId('tutorial-skip').isVisible().catch(()=>false))
+   await page.getByTestId('tutorial-skip').click();
+ for(const [width,height] of [[320,568],[375,667],[390,844],[430,932],[768,1024],[1280,800],[1920,1080],[667,375],[844,390],[640,360]] as const){
+   await page.setViewportSize({width,height});
+   const hand=page.getByTestId('player-hand');
+   await expect(hand).toBeVisible();
+   await page.screenshot({path:`test-results/visual-review/p9-crazy-${width}x${height}.png`,animations:'disabled'});
+ }
+ await page.goto('/');
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-blackjack').click();
+ await expect(page.getByTestId('blackjack-screen')).toBeVisible();
+ for(const [width,height] of [[320,568],[375,667],[390,844],[430,932],[667,375],[844,390],[1280,800]] as const){
+   await page.setViewportSize({width,height});
+   await expect(page.getByTestId('blackjack-table')).toBeVisible();
+   await page.screenshot({path:`test-results/visual-review/p9-blackjack-${width}x${height}.png`,animations:'disabled'});
+ }
+ await page.setViewportSize({width:667,height:375});
+ await page.getByTestId('blackjack-rules').click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await page.screenshot({path:'test-results/visual-review/p9-dialog-landscape-667x375.png',animations:'disabled'});
+});
