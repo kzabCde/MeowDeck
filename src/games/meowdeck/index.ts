@@ -8,3 +8,6 @@ export * from './games/crazy-eights/scoring.js';
 export * from './games/crazy-eights/selectors.js';
 export * from './games/crazy-eights/ai-observation.js';
 export * from './games/blackjack/rules.js';
+
+export * from './games/gin-rummy/rules.js';
+export * from './games/gin-rummy/ai.js';
