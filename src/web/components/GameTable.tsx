@@ -46,6 +46,18 @@ function gameHint(view: HumanView, t: T): string {
 
 export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinish, onPass, onPause, error, difficulty, cue, reducedMotion, paused, onCueDone, onPet, tutorialHint, onSkipTutorial }: GameTableProps) {
   const handRef = useRef<HTMLDivElement | null>(null);
+  const [handHasOverflow,setHandHasOverflow]=useState(false);
+  // Real card hit areas must never overlap: on narrow viewports, let the hand scroll.
+  useEffect(()=>{
+    const hand=handRef.current;
+    if(!hand)return;
+    const measure=()=>setHandHasOverflow(hand.scrollWidth>hand.clientWidth+2);
+    const frame=requestAnimationFrame(measure);
+    const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(measure):null;
+    observer?.observe(hand);
+    window.addEventListener('resize',measure);
+    return()=>{cancelAnimationFrame(frame);observer?.disconnect();window.removeEventListener('resize',measure);};
+  },[view.ownHand.length]);
   const tableRef = useRef<HTMLDivElement|null>(null);
   const drawRef = useRef<HTMLDivElement|null>(null);
   const discardRef = useRef<HTMLDivElement|null>(null);
@@ -133,7 +145,11 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
     // Skip disabled cards: focusing a disabled button is a no-op and traps arrow navigation.
     for(let step=1;step<=length;step++){
       const next=buttons[(current + offset*step + length*step) % length];
-      if(next&&!next.disabled){next.focus();break;}
+      if(next&&!next.disabled){
+        next.focus({preventScroll:true});
+        next.scrollIntoView({block:'nearest',inline:'nearest',behavior:'auto'});
+        break;
+      }
     }
   }
   const contextualHint=gameHint(view,t);
@@ -172,8 +188,13 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
       </section>
       <div className={`turn-banner ${isHumanTurn?'your-turn':'opponent-turn'}`} aria-live="polite" data-testid="turn-status"><span className="md-turn-dot" aria-hidden="true"/><strong>{isHumanTurn?t('yourTurn'):t('mochiTurn')}</strong></div>
       <section className="player-area md4-player-area" aria-label={t('yourHand')}>
-        <div className="hand-title"><span>{t('yourHand')}</span><span className="hand-count">{view.ownHand.length}</span></div>
-        <div className={`player-hand ${handMotion?'md-hand-drawn':''}`} ref={handRef} data-testid="player-hand" onAnimationEnd={()=>setHandMotion(null)}>{view.ownHand.map((card,i)=><PixelCard key={card.id} card={card} t={t} playable={plays.has(card.id)} selected={selected===card.id} disabled={!isHumanTurn||!plays.has(card.id)} onSelect={()=>onSelect(card.id)} onNavigate={(direction)=>navigate(i,direction)}/>)}</div>
+        <div className="hand-title"><span>{t('yourHand')}</span>
+          <span className="hand-title-tail">
+            {handHasOverflow&&<span className="hand-scroll-cue" data-testid="hand-scroll-cue">{t('zoomHint')}</span>}
+            <span className="hand-count">{view.ownHand.length}</span>
+          </span>
+        </div>
+        <div className={`player-hand ${handMotion?'md-hand-drawn':''}`} ref={handRef} data-testid="player-hand" data-overflow={handHasOverflow?'true':'false'} onAnimationEnd={()=>setHandMotion(null)}>{view.ownHand.map((card,i)=><PixelCard key={card.id} card={card} t={t} playable={plays.has(card.id)} selected={selected===card.id} disabled={!isHumanTurn||!plays.has(card.id)} onSelect={()=>onSelect(card.id)} onNavigate={(direction)=>navigate(i,direction)}/>)}</div>
         <div className="scroll-hint">{t('zoomHint')}</div>
       </section>
     </div></div>

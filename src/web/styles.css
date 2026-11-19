@@ -143,7 +143,7 @@ button.game-option:not(:disabled):hover {border-color:#edc180;background:#2b4838
 .action-buttons {display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap}
 .action-buttons .pixel-button {min-width:120px}
 /* Dialog */
-.game-dialog {width:min(450px,calc(100vw - 28px));max-height:min(88svh,750px);overflow-y:auto;margin:auto;border:5px solid #9f7951;outline:4px solid #2b1c16;background:#273d30;color:#f4e8ce;padding:0;border-radius:4px;box-shadow:12px 14px #121914}
+ .game-dialog {width:min(450px,calc(100vw - 28px));max-height:min(88dvh,750px);overflow-y:auto;margin:auto;border:5px solid #9f7951;outline:4px solid #2b1c16;background:#273d30;color:#f4e8ce;padding:0;border-radius:4px;box-shadow:12px 14px #121914}
 .game-dialog::backdrop {background:rgba(8,15,11,.78);backdrop-filter:blur(2px)}
 .dialog-header {padding:17px 18px;background:#1b2c21;border-bottom:3px solid #74583d;display:flex;align-items:center;gap:12px;justify-content:space-between}
 .dialog-header h2 {font:800 1.23rem ui-monospace,monospace;letter-spacing:.045em;margin:0}
@@ -269,3 +269,18 @@ button.game-option:not(:disabled):hover {border-color:#edc180;background:#2b4838
 .p4-install{max-width:430px;display:flex;flex-wrap:wrap;gap:8px}
 .p4-warning{border:1px solid #aa7466;padding:11px;color:#ffd9c6;background:#492e27;line-height:1.5}
 @media(max-width:480px){.p4-statusbar{bottom:calc(84px + env(safe-area-inset-bottom));font-size:.63rem}.p4-status{padding:4px 7px}}
+
+/* Phase 9: the dialog scrolls internally while every action remains reachable
+   on notched/short screens; no modal grows outside the CSS viewport. */
+.game-dialog{
+ max-width:calc(100vw - 16px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px));
+ max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+ overscroll-behavior-y:contain
+}
+.game-dialog .dialog-content{padding-bottom:max(18px,env(safe-area-inset-bottom,0px))}
+@media(max-width:370px){
+ .game-dialog .dialog-content{padding:12px 12px max(16px,env(safe-area-inset-bottom,0px))}
+ .game-dialog .dialog-header{padding:10px 12px}
+ .suit-picker{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .suit-choice{min-height:64px}
+}

@@ -160,6 +160,9 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .md4-cardroom .hand-title{display:flex;justify-content:space-between;align-items:center;max-width:800px;width:100%;
  margin:0 auto;padding:0 7px;color:#c5d8c0;font:800 12px var(--md4-font-ui);letter-spacing:.16em}
 .md4-cardroom .hand-title .hand-count{color:var(--md4-gold)}
+.md4-cardroom .hand-title-tail{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}
+.md4-cardroom .hand-scroll-cue{color:var(--md-muted);font:700 11px/1.3 var(--md-font-ui);
+ letter-spacing:0;white-space:nowrap;flex:0 1 auto}
 .md4-cardroom .player-hand{width:100%;min-height:0;display:flex;align-items:flex-end;justify-content:safe center;
  gap:clamp(3px,.7vw,9px);padding:14px 7px 8px;overflow-x:auto;overflow-y:hidden;
  scrollbar-width:thin;scrollbar-color:#bda06f transparent;scroll-snap-type:x proximity}
@@ -238,10 +241,12 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .active-suit span{font-size:11px;max-width:51px;text-align:center;white-space:normal}
  .md4-cardroom .active-suit strong{font-size:35px}
  .md4-cardroom .player-area{padding-bottom:11px}
- .md4-cardroom .hand-title{padding-inline:9px;font-size:11px}
- .md4-cardroom .player-hand{justify-content:safe center;overflow-x:auto;gap:0;padding:10px 8px 4px}
- .md4-cardroom .card-tile{width:clamp(50px,17vw,69px);margin-left:calc(-1 * clamp(15px,5.5vw,23px))}
- .md4-cardroom .card-tile:first-child{margin-left:0}
+ .md4-cardroom .hand-title{padding-inline:9px;font-size:11px;letter-spacing:0;gap:6px}
+ .md4-cardroom .hand-scroll-cue{font-size:10px}
+ .md4-cardroom .player-hand{justify-content:safe center;overflow-x:auto;gap:clamp(5px,1.4vw,9px);
+  padding:10px 8px 6px;touch-action:pan-x;overscroll-behavior-inline:contain;
+  -webkit-overflow-scrolling:touch}
+ .md4-cardroom .card-tile{width:clamp(50px,17vw,69px);margin-left:0;touch-action:pan-x}
  .md4-cardroom .card-tile.is-selected{transform:translateY(-8px) scale(1.02)!important}
  .md4-cardroom .action-footer{flex-basis:63px;gap:5px;padding:5px 9px max(6px,env(safe-area-inset-bottom))}
  .md4-cardroom .action-status{display:none}
@@ -252,7 +257,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
  .md4-cardroom .hud-score{gap:3px}
  .md4-cardroom .table-center{gap:6px}
  .md4-cardroom .active-suit span{font-size:10px}
- .md4-cardroom .card-tile{margin-left:calc(-1 * clamp(15px,5.5vw,23px))}
+ .md4-cardroom .card-tile{margin-left:0}
 }
 @media(max-height:650px){
  .md4-cardroom .game-hud{flex-basis:64px;min-height:64px}
@@ -344,9 +349,63 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 /* A compact landscape/zoomed CSS viewport may scroll vertically, never hide game actions.
    Portrait layout and original P0 card dimensions remain unchanged. */
 @media(max-height:479px){
- .md4-selection-page{height:auto;min-height:480px}
+ .md4-selection-page{height:auto;min-height:100dvh}
  .gameplay-page.md4-cardroom{height:auto;min-height:100dvh;overflow:visible}
  .md4-cardroom .table-frame{flex:none;height:415px;min-height:415px}
  .md4-cardroom .game-table{height:100%;min-height:0}
- .md4-cardroom .action-footer{flex:none;position:relative;bottom:auto}
+ .md4-cardroom .action-footer{flex:none;position:sticky;bottom:0;z-index:8}
+}
+
+/* Phase 9: support device notches in standalone PWA and landscape browsers.
+   Padding expands only where the OS reports an inset, no fake viewport metrics. */
+.md4-menu-header{
+ padding-left:max(clamp(16px,3.2vw,42px),env(safe-area-inset-left,0px));
+ padding-right:max(clamp(16px,3.2vw,42px),env(safe-area-inset-right,0px));
+}
+.md4-title-composition{
+ padding-left:max(clamp(18px,4vw,55px),env(safe-area-inset-left,0px));
+ padding-right:max(clamp(18px,4vw,55px),env(safe-area-inset-right,0px));
+}
+.md4-cardroom .game-hud{
+ padding-left:max(clamp(13px,2.7vw,44px),env(safe-area-inset-left,0px));
+ padding-right:max(clamp(13px,2.7vw,44px),env(safe-area-inset-right,0px));
+}
+.md4-cardroom .action-footer{
+ padding-left:max(clamp(14px,3.5vw,55px),env(safe-area-inset-left,0px));
+ padding-right:max(clamp(14px,3.5vw,55px),env(safe-area-inset-right,0px));
+ padding-bottom:max(9px,env(safe-area-inset-bottom,0px));
+}
+@media(max-width:720px){
+ .md4-menu-header{padding-inline:max(12px,env(safe-area-inset-left,0px)) max(12px,env(safe-area-inset-right,0px))}
+ .md4-title-composition{
+  padding-inline:max(10px,env(safe-area-inset-left,0px)) max(10px,env(safe-area-inset-right,0px));
+  padding-bottom:max(10px,env(safe-area-inset-bottom,0px))
+ }
+ .md4-cardroom .game-hud{
+  padding-left:max(9px,env(safe-area-inset-left,0px));
+  padding-right:max(9px,env(safe-area-inset-right,0px))
+ }
+ .md4-cardroom .action-footer{
+  padding-left:max(9px,env(safe-area-inset-left,0px));
+  padding-right:max(9px,env(safe-area-inset-right,0px));
+  padding-bottom:max(6px,env(safe-area-inset-bottom,0px))
+ }
+ .md4-cardroom .action-footer:not(.has-error):not(.has-tutorial){
+  flex-basis:calc(63px + env(safe-area-inset-bottom,0px))
+ }
+}
+@media(max-width:720px) and (max-height:650px){
+ .md4-cardroom .action-footer:not(.has-error):not(.has-tutorial){
+  flex-basis:calc(53px + env(safe-area-inset-bottom,0px))
+ }
+}
+/* Landscape phones and zoom-equivalent compact CSS viewports:
+   scroll the scene, but pin only actionable controls within reach. */
+@media(max-height:479px){
+ .md4-cardroom .action-footer{
+  position:sticky;bottom:0;z-index:8;min-height:55px;
+  padding-bottom:max(7px,env(safe-area-inset-bottom,0px))
+ }
+ .md4-cardroom .hand-title{max-width:100%}
+ .game-dialog{max-height:calc(100dvh - 12px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
 }

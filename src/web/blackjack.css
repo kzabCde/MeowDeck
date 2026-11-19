@@ -99,3 +99,44 @@
  .md5-bj-actions{min-height:96px;padding:7px 10px calc(7px + env(safe-area-inset-bottom))}
  .md5-bj-action-row>.pixel-button{min-height:48px}
 }
+
+/* Phase 9: blackjack does not require the visible action bar to leave the viewport.
+   Standalone safe insets affect actual controls, not an ornamental spacer. */
+.md5-bj-header,.md5-bj-scorebar{
+ padding-left:max(clamp(13px,3vw,45px),env(safe-area-inset-left,0px));
+ padding-right:max(clamp(13px,3vw,45px),env(safe-area-inset-right,0px));
+}
+.md5-bj-actions{
+ padding-left:max(14px,env(safe-area-inset-left,0px));
+ padding-right:max(14px,env(safe-area-inset-right,0px));
+ padding-bottom:max(13px,env(safe-area-inset-bottom,0px));
+}
+@media(max-width:600px){
+ .md5-bj-header,.md5-bj-scorebar{
+  padding-left:max(11px,env(safe-area-inset-left,0px));
+  padding-right:max(11px,env(safe-area-inset-right,0px))
+ }
+ .md5-bj-actions{
+  padding-left:max(10px,env(safe-area-inset-left,0px));
+  padding-right:max(10px,env(safe-area-inset-right,0px));
+  padding-bottom:max(9px,env(safe-area-inset-bottom,0px))
+ }
+ .md5-bj-scorebar{gap:7px}
+ .md5-bj-score-pips{min-width:0;gap:7px}
+ .md5-bj-score{min-width:0}
+ .md5-bj-hand{justify-content:safe center;overscroll-behavior-inline:contain;
+  -webkit-overflow-scrolling:touch;touch-action:pan-x}
+}
+@media(max-width:370px){
+ .md5-bj-scorebar{gap:5px}
+ .md5-bj-score-pips{gap:4px}
+ .md5-bj-score{gap:2px;font-size:.68rem}
+ .md5-bj-round{font-size:.7rem}
+}
+@media(max-height:479px){
+ .md5-blackjack{height:auto;min-height:100dvh;overflow:visible}
+ .md5-bj-frame{flex:0 0 auto;min-height:315px;overflow:visible}
+ .md5-bj-felt{min-height:310px}
+ .md5-bj-actions{position:sticky;bottom:0;z-index:8;min-height:76px}
+ .md5-bj-action-row>.pixel-button{min-height:44px}
+}
