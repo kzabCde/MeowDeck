@@ -278,6 +278,16 @@ test('Phase 10 production captures selection, pause and result feedback with ori
  await expect(page.getByTestId('blackjack-stand')).toBeVisible();
  await page.getByTestId('blackjack-stand').click();
  await expect(page.getByTestId('blackjack-result')).toBeVisible();
+ // A state change can introduce more dealer cards and a new Mochi pose.
+ // Await genuine sprite/card image network completion before visual review,
+ // instead of capturing a misleading half-painted outcome.
+ await page.waitForLoadState('networkidle');
+ await expect.poll(()=>page.evaluate(()=>{
+   const images=Array.from(document.querySelectorAll<HTMLImageElement>('.md5-bj-hand img'));
+   const mochi=document.querySelector<HTMLElement>('.md5-bj-dealer-head .mochi-frame');
+   return images.length>=4&&images.every(img=>img.complete&&img.naturalWidth>0)
+     &&Boolean(mochi?.dataset.clip)&&mochi?.dataset.clip!=='fallback';
+ })).toBe(true);
  await page.screenshot({path:'test-results/visual-review/p10-blackjack-result-390x844.png',animations:'disabled'});
  await page.setViewportSize({width:1280,height:800});
  await page.screenshot({path:'test-results/visual-review/p10-blackjack-result-1280x800.png',animations:'disabled'});
