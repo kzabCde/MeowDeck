@@ -88,15 +88,21 @@ for (const [width, height] of [[320,568],[390,844],[430,932],[768,1024],[1280,72
     const actionRect = await page.getByTestId('play-selected').boundingBox();
     expect(actionRect?.width).toBeGreaterThanOrEqual(40);
     expect(actionRect?.height).toBeGreaterThanOrEqual(40);
-    // A seven-card opening hand must be fully visible on a phone. Testing
-    // document overflow alone misses clipped cards inside an overflow container.
+    // Phase 9: all seven cards must be reachable with their own ≥44px hit area.
+    // Fitting them into the phone at once required overlapping taps; native
+    // horizontal scrolling is safer than hiding or compressing individual cards.
     if (width <= 430) {
-      const hand = page.getByTestId('player-hand').locator('button');
+      const strip=page.getByTestId('player-hand');
+      const hand=strip.locator('button');
       await expect(hand).toHaveCount(7);
-      const left = await hand.first().boundingBox();
-      const right = await hand.last().boundingBox();
-      expect(left?.x).toBeGreaterThanOrEqual(3);
-      expect((right?.x ?? 0) + (right?.width ?? 0)).toBeLessThanOrEqual(width - 3);
+      const first=await hand.first().boundingBox(),second=await hand.nth(1).boundingBox();
+      expect(first?.width).toBeGreaterThanOrEqual(44);
+      expect(second?.x??0).toBeGreaterThanOrEqual((first?.x??0)+(first?.width??0)-1);
+      await expect(strip).toHaveAttribute('data-overflow','true');
+      await strip.evaluate(el=>{el.scrollLeft=el.scrollWidth;});
+      await expect.poll(()=>strip.evaluate(el=>el.scrollLeft)).toBeGreaterThan(0);
+      const end=await strip.boundingBox(),last=await hand.last().boundingBox();
+      expect((last?.x??Infinity)+(last?.width??0)).toBeLessThanOrEqual((end?.x??0)+(end?.width??0)+3);
     }
   });
 }
