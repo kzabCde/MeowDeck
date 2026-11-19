@@ -1,9 +1,14 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
-import '../web/styles.css';
-import '../web/art-direction.css';
-import '../web/blackjack.css';
+import '../web/design-system/tokens.css';
+import '../web/design-system/base.css';
+import '../web/design-system/controls.css';
+import '../web/scenes/title.css';
+import '../web/scenes/crazy-eights.css';
+import '../web/scenes/blackjack.css';
+import '../web/scenes/selection.css';
+import '../web/responsive.css';
 
 export const metadata: Metadata = {
   title: 'MeowDeck',
@@ -18,6 +23,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  viewportFit: 'cover',
   themeColor: '#061C1B'
 };
 

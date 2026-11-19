@@ -1,0 +1,49 @@
+/* MeowDeck V4 — single-source art direction.
+   The table is a game scene, not a product dashboard. Real card/Mochi sprites remain untouched. */
+:root{font-family:var(--md-font-ui);color:var(--md-cream);background:var(--md-bg)}
+html,body{min-width:320px}
+.meowdeck-app{background:#091f1e;color:var(--md4-cream)}
+.pixel-art,.card-image,.mochi-frame{image-rendering:pixelated}
+/* Shared buttons: one readable pixel-step control system for every game mode. */
+.pixel-button{appearance:none;min-height:44px;padding:9px 18px;border:2px solid var(--md-border);
+ border-radius:var(--md-radius);background:var(--md-surface);color:var(--md-cream);
+ box-shadow:var(--md-step-shadow);font:800 .9rem/1.25 var(--md-font-ui);letter-spacing:0;
+ text-shadow:none;white-space:nowrap;cursor:pointer;
+ transition:transform var(--md-motion-press) steps(2,end),box-shadow var(--md-motion-press) steps(2,end),background-color var(--md-motion-press) steps(2,end)}
+@media(hover:hover) and (pointer:fine){
+ .pixel-button:not(:disabled):hover{background:#28594b;transform:translateY(-2px);box-shadow:0 6px 0 #041815}
+}
+.pixel-button:not(:disabled):active{transform:translateY(2px);box-shadow:0 2px 0 #041815}
+.pixel-button:disabled{cursor:not-allowed;opacity:.64}
+.button-primary{background:var(--md-gold);border-color:#ffecb8;color:#2e271e;box-shadow:0 4px 0 #805735}
+@media(hover:hover) and (pointer:fine){
+ .button-primary:not(:disabled):hover{background:#f5d596;box-shadow:0 6px 0 #805735}
+}
+.button-primary:not(:disabled):active{box-shadow:0 2px 0 #805735}
+.button-cream,.button-secondary{background:#23483c;border-color:#799b84;color:var(--md-cream);box-shadow:var(--md-step-shadow)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--md-focus);outline-offset:3px}
+.suit-hearts,.suit-diamonds{color:var(--md4-coral)!important}
+.suit-spades,.suit-clubs{color:var(--md4-cream)!important}
+
+
+.game-dialog{border:3px solid var(--md-border);outline:3px solid #091d1b;border-radius:var(--md-radius);background:var(--md-surface);
+ color:var(--md4-cream);box-shadow:0 10px 0 #071715;width:min(440px,calc(100vw - 25px))}
+.game-dialog::backdrop{background:#041512d9;backdrop-filter:none}
+.game-dialog[open]{animation:md-result-enter var(--md-motion-scene) steps(3,end) both}
+.dialog-header{background:var(--md-rail);border-color:var(--md-border);padding:13px 18px}
+.dialog-header h2{font:900 1.12rem/1.3 var(--md-font-display)}
+.dialog-header .icon-button{display:grid;place-items:center;min-width:44px;min-height:44px;
+ padding:0;border:2px solid transparent;border-radius:var(--md-radius);font:900 1.55rem/1 var(--md-font-display)}
+.dialog-content{padding:18px}.dialog-content p{color:#d1dfc7}
+.suit-choice{background:#255344;border:2px solid #6d987f;border-bottom:5px solid #0d2823;border-radius:2px;box-shadow:none}
+.suit-choice:hover{border-color:var(--md4-gold)}
+/* Accessible suit contrast on dark felt: labels and symbols remain legible in both locales. */
+.game-dialog .suit-choice,
+.game-dialog .suit-choice.suit-spades,
+.game-dialog .suit-choice.suit-clubs{color:var(--md-cream)!important}
+.game-dialog .suit-choice.suit-hearts,
+.game-dialog .suit-choice.suit-diamonds{color:#ffd5ce!important}
+.p4-stats-grid>div{background:transparent;border:0;border-bottom:1px solid #6c887577;border-radius:0}
+.p4-stats-grid strong,.result-stats strong{color:var(--md4-gold)}
+.result-stats{background:#173f35;border-color:#6c8875}.p4-status.error{background:#49302d;border-color:var(--md4-coral)}
+

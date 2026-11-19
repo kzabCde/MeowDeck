@@ -51,3 +51,20 @@ test('only confirmed public domain events create card cues without private draw 
   assert.deepEqual(play.map(c=>c.clip),['play_card','victory']);
   assert.equal(play[0].cardId,'8H');
 });
+
+// Pauses are clock gates: advancing by zero must never re-fire a committed cue.
+test('action frame stays singular across paused clock samples',()=>{
+  const clip=manifest.get('play_card');
+  const clock=new ClipClock(clip);
+  assert.equal(clock.advance(200).frame,2);
+  for(let i=0;i<30;i++){
+    const sample=clock.advance(0);
+    assert.equal(sample.frame,2);
+    assert.equal(sample.hitActionFrame,false);
+  }
+  const committed=clock.advance(100);
+  assert.equal(committed.frame,3);
+  assert.equal(committed.hitActionFrame,true);
+  assert.equal(clock.advance(0).hitActionFrame,false);
+  assert.equal(clock.advance(300).completed,true);
+});

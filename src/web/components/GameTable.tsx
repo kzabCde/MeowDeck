@@ -8,8 +8,9 @@ import type { MochiClipName, PresentationCue } from '../../games/meowdeck/presen
 import type { Difficulty } from '../../games/meowdeck/ai/strategies.js';
 import { getMochiClip } from '../animation/mochi-loader.js';
 import type { T } from '../i18n.js';
-import { CardBack, PixelCard } from './PixelCard.js';
+import { CardBack, PixelCard, cardLabel } from './PixelCard.js';
 import { Mochi } from './Mochi.js';
+import { GameButton } from './GameButton.js';
 
 type HumanView = PublicGameState & { readonly ownHand: readonly Card[]; readonly legalActions: readonly LegalAction[] };
 
@@ -36,16 +37,27 @@ export interface GameTableProps {
 
 
 function gameHint(view: HumanView, t: T): string {
-  if (view.phase === 'round_end' || view.phase === 'match_end') return t('roundResult');
+  if (view.phase === 'round_end' || view.phase === 'match_end') return '';
   if (view.currentActor === 'ai') return '';
   if (view.hasPendingDrawDecision) return t('finishHint');
-  if (view.legalActions.some(a=>a.type==='draw_card')) return t('drawHint');
   if (view.legalActions.some(a=>a.type==='pass_turn')) return t('passHint');
   return '';
 }
 
 export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinish, onPass, onPause, error, difficulty, cue, reducedMotion, paused, onCueDone, onPet, tutorialHint, onSkipTutorial }: GameTableProps) {
   const handRef = useRef<HTMLDivElement | null>(null);
+  const [handHasOverflow,setHandHasOverflow]=useState(false);
+  // Real card hit areas must never overlap: on narrow viewports, let the hand scroll.
+  useEffect(()=>{
+    const hand=handRef.current;
+    if(!hand)return;
+    const measure=()=>setHandHasOverflow(hand.scrollWidth>hand.clientWidth+2);
+    const frame=requestAnimationFrame(measure);
+    const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(measure):null;
+    observer?.observe(hand);
+    window.addEventListener('resize',measure);
+    return()=>{cancelAnimationFrame(frame);observer?.disconnect();window.removeEventListener('resize',measure);};
+  },[view.ownHand.length]);
   const tableRef = useRef<HTMLDivElement|null>(null);
   const drawRef = useRef<HTMLDivElement|null>(null);
   const discardRef = useRef<HTMLDivElement|null>(null);
@@ -133,19 +145,30 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
     // Skip disabled cards: focusing a disabled button is a no-op and traps arrow navigation.
     for(let step=1;step<=length;step++){
       const next=buttons[(current + offset*step + length*step) % length];
-      if(next&&!next.disabled){next.focus();break;}
+      if(next&&!next.disabled){
+        next.focus({preventScroll:true});
+        next.scrollIntoView({block:'nearest',inline:'nearest',behavior:'auto'});
+        break;
+      }
     }
   }
-  return <main className="gameplay-page md4-cardroom" data-testid="gameplay-screen">
+  const contextualHint=gameHint(view,t);
+  return <main className="gameplay-page crazy-eights-room md4-cardroom" data-testid="gameplay-screen">
+    <h1 className="sr-only" tabIndex={-1} data-screen-heading>{t('crazyEights')}</h1>
     <header className="game-hud md4-hud"><div className="hud-brand">MEOW<span>DECK</span></div>
       <div className="hud-round">{t('round')} <strong data-testid="round-number">{view.roundNumber}</strong></div>
-      <div className="hud-score"><span>{t('you')}</span><strong data-testid="human-score">{view.scores.human}</strong><span className="score-sep">:</span><strong data-testid="mochi-score">{view.scores.ai}</strong><span>{t('mochi')}</span></div>
-      <button className="pixel-button button-secondary pause-btn" type="button" onClick={onPause} aria-label={t('pause')} data-testid="pause-button">Ⅱ</button>
+      <div className="hud-score" role="group" aria-label={`${t('you')} ${view.scores.human}, ${t('mochi')} ${view.scores.ai}`}>
+        <span className="hud-score-pair"><span className="hud-score-label">{t('you')}</span><strong data-testid="human-score">{view.scores.human}</strong></span>
+        <span className="hud-score-divider" aria-hidden="true"/>
+        <span className="hud-score-pair"><span className="hud-score-label">{t('mochi')}</span><strong data-testid="mochi-score">{view.scores.ai}</strong></span>
+      </div>
+      <GameButton variant="secondary" className="pause-btn" onClick={onPause} aria-label={t('pause')} data-testid="pause-button">Ⅱ</GameButton>
     </header>
-    <div className="table-frame md4-table-frame"><div className="game-table md4-table" ref={tableRef}>
+    <div className="table-frame md4-table-frame"><div className="game-table md4-table" ref={tableRef} data-testid="crazy-eights-table">
       
       <section className="opponent-area md4-opponent" aria-label={t('mochiHand')}>
-        <div className="opponent-persona"><div className="opponent-avatar"><Mochi pose={currentPose} cue={cue} size="small" t={t} reducedMotion={reducedMotion} paused={paused} onCueDone={onCueDone} onCueActionFrame={onActionFrame} onPet={onPet}/></div><div className="opponent-title"><h2>MOCHI</h2><div className="difficulty-name">{t(difficulty)}</div></div></div>
+        <div className="opponent-persona"><div className="opponent-avatar"><Mochi pose={currentPose} cue={cue} size="small" t={t} reducedMotion={reducedMotion} paused={paused} onCueDone={onCueDone} onCueActionFrame={onActionFrame} onPet={onPet}
+          petDisabled={!isHumanTurn||paused||Boolean(cue)}/></div><div className="opponent-title"><h2>MOCHI</h2><div className="difficulty-name">{t(difficulty)}</div></div></div>
         <div className="opponent-cards" data-testid="ai-hand"><div className="opponent-card-fan" ref={enemyRef} aria-hidden="true">{Array.from({length:Math.min(view.handCounts.ai,7)},(_,i)=><CardBack key={i} small label={t('mochiHand')} />)}</div>
           <div className="hand-count"><b data-testid="ai-card-count">{view.handCounts.ai}</b> {t('cards')}</div></div>
       </section>
@@ -160,23 +183,39 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
       </div>}
       <section className="table-center md4-table-center" aria-label={t('discard')}>
         <div className="pile-group"><span className="pile-label">{t('draw')}</span><div className="draw-pile" ref={drawRef}><button type="button" className="draw-pile-action" onClick={onDraw} disabled={!canDraw} aria-label={t('drawCard')}><CardBack label={t('deck')}/></button><span className="pile-count" data-testid="draw-count">{view.drawPileCount}</span></div></div>
-        <div className="table-center-symbol" aria-hidden="true">✦</div>
-        <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" ref={discardRef} data-testid="top-discard"><img className="pixel-art card-image" style={((cue?.clip==='play_card'&&cue.cardId===view.topDiscard.id&&shownActionFrame!==cue.id&&!reducedMotion)||(humanFlight?.cardId===view.topDiscard.id))?{visibility:'hidden'}:undefined} src={cardImage(view.topDiscard.id, true)} alt={`${view.topDiscard.rank} ${SUIT_SYMBOL[view.topDiscard.suit]}`} />{impact&&<span key={impact} className={view.topDiscard.rank==='8'?`md-card-impact md-wild-impact md-wild-${SUIT_CLASS[view.activeSuit]}`:'md-card-impact'} aria-hidden="true" onAnimationEnd={()=>setImpact(null)}/>}</div></div>
+        
+        <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" ref={discardRef} data-testid="top-discard"><img className="pixel-art card-image" style={((cue?.clip==='play_card'&&cue.cardId===view.topDiscard.id&&shownActionFrame!==cue.id&&!reducedMotion)||(humanFlight?.cardId===view.topDiscard.id))?{visibility:'hidden'}:undefined} src={cardImage(view.topDiscard.id, true)} alt={cardLabel(view.topDiscard,t)} />{impact&&<span key={impact} className={view.topDiscard.rank==='8'?`md-card-impact md-wild-impact md-wild-${SUIT_CLASS[view.activeSuit]}`:'md-card-impact'} aria-hidden="true" onAnimationEnd={()=>setImpact(null)}/>}</div></div>
         <div className="active-suit"><span>{t('activeSuit')}</span><strong role="img" className={`suit-${SUIT_CLASS[view.activeSuit]}`} data-testid="active-suit" aria-label={t(({ S:'spades', H:'hearts', D:'diamonds', C:'clubs' } as const)[view.activeSuit])}>{SUIT_SYMBOL[view.activeSuit]}</strong></div>
       </section>
-      <div className={`turn-banner ${isHumanTurn?'your-turn':'opponent-turn'}`} aria-live="polite" data-testid="turn-status"><span className="md-turn-dot" aria-hidden="true"/><strong>{isHumanTurn?t('yourTurn'):t('mochiTurn')}</strong></div>
+      <div className={`turn-banner ${isHumanTurn?'your-turn':'opponent-turn'}`} role="status" aria-live="polite" aria-atomic="true" data-testid="turn-status"><span className="md-turn-dot" aria-hidden="true"/><strong>{isHumanTurn?t('yourTurn'):t('mochiTurn')}</strong></div>
       <section className="player-area md4-player-area" aria-label={t('yourHand')}>
-        <div className="hand-title"><span>{t('yourHand')}</span><span className="hand-count">{view.ownHand.length}</span></div>
-        <div className={`player-hand ${handMotion?'md-hand-drawn':''}`} ref={handRef} data-testid="player-hand" onAnimationEnd={()=>setHandMotion(null)}>{view.ownHand.map((card,i)=><PixelCard key={card.id} card={card} t={t} playable={plays.has(card.id)} selected={selected===card.id} disabled={!isHumanTurn||!plays.has(card.id)} onSelect={()=>onSelect(card.id)} onNavigate={(direction)=>navigate(i,direction)}/>)}</div>
+        <div className="hand-title"><span>{t('yourHand')}</span>
+          <span className="hand-title-tail">
+            {handHasOverflow&&<span className="hand-scroll-cue" id="hand-scroll-hint" data-testid="hand-scroll-cue">{t('zoomHint')}</span>}
+            <span className="hand-count">{view.ownHand.length}</span>
+          </span>
+        </div>
+        <div className={`player-hand ${handMotion?'md-hand-drawn':''}`} ref={handRef} data-testid="player-hand"
+          data-overflow={handHasOverflow?'true':'false'}
+          role={handHasOverflow?'region':undefined}
+          aria-label={handHasOverflow?t('yourHand'):undefined}
+          aria-describedby={handHasOverflow?'hand-scroll-instructions':undefined}
+          tabIndex={handHasOverflow?0:undefined}
+          onAnimationEnd={()=>setHandMotion(null)}>{view.ownHand.map((card,i)=><PixelCard key={card.id} card={card} t={t} playable={plays.has(card.id)} selected={selected===card.id} disabled={!isHumanTurn||!plays.has(card.id)} onSelect={()=>onSelect(card.id)} onNavigate={(direction)=>navigate(i,direction)}/>)}</div>
+        <ul className="sr-only" aria-label={t('handContents')} data-testid="accessible-hand-list">
+          {view.ownHand.map(card=><li key={card.id}>{cardLabel(card,t)} — {plays.has(card.id)?t('cardPlayable'):t('cardUnavailable')}</li>)}
+        </ul>
+        <span className="sr-only" id="hand-scroll-instructions">{t('handScrollHelp')}</span>
         <div className="scroll-hint">{t('zoomHint')}</div>
       </section>
     </div></div>
-    <footer className={`action-footer md4-control-rail ${tutorialHint?'has-tutorial':''} ${error?'has-error':''}`}><div className="action-status" aria-live="polite" role="status">{error?<span className="status-error">{t('invalidAction')}: {error}</span>:
-        tutorialHint?<div className="tutorial-guide" data-testid="tutorial-hint"><span>{tutorialHint}</span><button type="button" data-testid="tutorial-skip" onClick={onSkipTutorial}>{t('tutorialSkip')}</button></div>:gameHint(view,t)}</div>
-      <div className="action-buttons"><button className="pixel-button button-primary" type="button" data-testid="play-selected" onClick={playFromHand} disabled={!isHumanTurn||!canPlay}>{selected?t('playCard'):t('selectCard')} <span aria-hidden="true">❯</span></button>
-        {canDraw && <button className="pixel-button button-cream" type="button" onClick={onDraw} data-testid="draw-card">{t('drawCard')}</button>}
-        {canFinish && <button className="pixel-button button-cream" type="button" onClick={onFinish} data-testid="finish-turn">{t('endTurn')}</button>}
-        {canPass && <button className="pixel-button button-cream" type="button" onClick={onPass} data-testid="pass-turn">{t('passTurn')}</button>}
+    <footer className={`action-footer md4-control-rail ${tutorialHint?'has-tutorial':''} ${error?'has-error':''}`} data-testid="crazy-eights-action-rail"><div className="action-status" aria-live={error?undefined:tutorialHint||contextualHint?'polite':undefined}
+        role={error?'alert':tutorialHint||contextualHint?'status':undefined}>{error?<span className="status-error">{t('invalidAction')}</span>:
+        tutorialHint?<div className="tutorial-guide" data-testid="tutorial-hint"><span>{tutorialHint}</span><button type="button" data-testid="tutorial-skip" onClick={onSkipTutorial}>{t('tutorialSkip')}</button></div>:contextualHint}</div>
+      <div className="action-buttons"><GameButton variant="primary" data-testid="play-selected" onClick={playFromHand} disabled={!isHumanTurn||!canPlay}>{selected?t('playCard'):t('selectCard')} <span aria-hidden="true">❯</span></GameButton>
+        {canDraw && <GameButton variant="cream" onClick={onDraw} data-testid="draw-card">{t('drawCard')}</GameButton>}
+        {canFinish && <GameButton variant="cream" onClick={onFinish} data-testid="finish-turn">{t('endTurn')}</GameButton>}
+        {canPass && <GameButton variant="cream" onClick={onPass} data-testid="pass-turn">{t('passTurn')}</GameButton>}
       </div></footer>
   </main>;
 }

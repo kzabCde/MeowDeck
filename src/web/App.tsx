@@ -58,6 +58,7 @@ export function App() {
   const replaceIntent=useRef<Difficulty>('practice');
   const storageConflictRef=useRef(false);
   const [screen, setScreen] = useState<Screen>('menu');
+  const previousScreenRef=useRef<Screen|null>(null);
   const [modal, setModal] = useState<Modal>(null);
   const [selected, setSelected] = useState<CardId | null>(null);
   const [difficulty,setDifficulty]=useState<Difficulty>('practice');
@@ -162,15 +163,16 @@ export function App() {
     setPresentationCue(next);
     if(!next && ['round_end','match_end'].includes(sessionRef.current?.phase??''))setResultReady(true);
   },[]);
-  const petMochi=useCallback(()=>{
-    const now=performance.now();
-    if(now-petCooldown.current<1400||presentationQueue.current.count>0)return;
+  const petMochi=useCallback(():boolean=>{
+    const state=sessionRef.current,now=performance.now();
+    // Only the player's turn accepts a pet. A rejected tap must not play SFX.
+    if(!state||state.phase!=='human_turn'||presentationQueue.current.count>0||
+       now-petCooldown.current<1400)return false;
     petCooldown.current=now;
-    const state=sessionRef.current;
-    if(!state||state.phase==='ai_thinking')return;
     const id=`${state.sessionId}:pet:${Math.round(now)}`;
     presentationQueue.current.enqueue({id,clip:'pet_reaction',sessionId:state.sessionId,round:state.roundNumber,turn:state.turnId});
     setPresentationCue(presentationQueue.current.current);
+    return true;
   },[]);
   // Atomic controller. This is the only place that submits gameplay changes to P1.
   const dispatch = useCallback((action: GameAction): boolean => {
@@ -298,6 +300,15 @@ export function App() {
     return () => { active = false; };
   }, [assetAttempt]);
   useEffect(() => { document.documentElement.lang = language; }, [language]);
+  useEffect(()=>{
+    // Screen changes replace the old focused button. Focus the newly mounted
+    // heading once, without interrupting initial hydration or routine turns.
+    if(!storageReady||assetStatus!=='ready')return;
+    const previous=previousScreenRef.current;
+    previousScreenRef.current=screen;
+    if(previous===null||previous===screen)return;
+    document.querySelector<HTMLElement>('main[data-testid] [data-screen-heading]')?.focus({preventScroll:true});
+  },[screen,storageReady,assetStatus]);
   useEffect(() => { document.documentElement.classList.toggle('reduce-motion', reducedMotion); }, [reducedMotion]);
   useEffect(() => { setSelected(null); }, [session?.turnId, session?.roundNumber]);
 
@@ -337,35 +348,36 @@ export function App() {
   }):null;
   const isEnded = session?.phase === 'round_end' || session?.phase === 'match_end';
   const isMatchEnd = session?.phase === 'match_end';
-  const modalOpen = Boolean(modal) || (screen === 'game' && isEnded);
 
   if (assetStatus !== 'ready' || !storageReady) {
-    return <main className="asset-loading" role="status" aria-live="polite">
-      <div className="brand-mini">✦ MEOWDECK ✦</div>
-      {assetStatus === 'loading' || !storageReady ? <p>{t('saveLoading')}</p>
-        : <><p>Card artwork could not be loaded. / โหลดภาพไพ่ไม่สำเร็จ</p>
-          <button className="pixel-button button-cream" onClick={() => { setAssetStatus('loading'); setAssetAttempt(n => n + 1); }}>Retry / ลองอีกครั้ง</button></>}
+    return <main className="asset-loading"
+      role={assetStatus==='loading'||!storageReady?'status':undefined}
+      aria-live={assetStatus==='loading'||!storageReady?'polite':undefined}>
+      <div className="brand-mini">MEOWDECK</div>
+      {assetStatus === 'loading' || !storageReady ? <p>{t('loadingGame')}</p>
+        : <><p role="alert">{t('missingArt')}</p>
+          <button className="pixel-button button-cream" onClick={() => { setAssetStatus('loading'); setAssetAttempt(n => n + 1); }}>{t('retry')}</button></>}
     </main>;
   }
   return <div className="meowdeck-app">
-    {(saveWarning || saveStatus==='error' || saveStatus==='unavailable' || pwaStatus==='failed') && <div className="p4-statusbar" role="status" aria-live="polite">
-      {(saveWarning || saveStatus==='error' || saveStatus==='unavailable') && <span className="p4-status error" role="alert" data-testid="save-status">{t(saveWarning==='conflict'?'storageConflict':saveStatus==='unavailable'?'saveUnavailable':'saveFailed')}</span>}
+    {(saveWarning || saveStatus==='error' || saveStatus==='unavailable' || pwaStatus==='failed') && <div className="p4-statusbar">
+      {(saveWarning || saveStatus==='error' || saveStatus==='unavailable') && <span className="p4-status error" role="alert" data-testid="save-status">{t(saveWarning==='conflict'?'storageConflict':saveStatus==='unavailable'?'saveUnavailable':saveWarning==='settings'?'settingsWriteFailed':saveWarning==='statistics'?'statsLoadFailed':saveWarning==='invalid'?'corruptSave':'saveFailed')}</span>}
       {process.env.NODE_ENV==='production' && pwaStatus==='failed' && <span className="p4-status error" role="alert" data-testid="offline-status">{t('offlineFailed')}</span>}
     </div>}
-    {screen === 'menu' && <MainMenu t={t} hasMatch={!!savedMatch || (!!session && !isEnded)} saved={savedMatch} preferredDifficulty={settings.preferredDifficulty} onPlay={() => {playUi();setScreen('select');}} onContinue={() => {if(sessionRef.current&&sessionRef.current.phase!=='match_end'&&!storageConflictRef.current){setResultReady(sessionRef.current.phase==='round_end');setScreen('game');}else void continueMatch();}}
+    {screen === 'menu' && <MainMenu t={t} reducedMotion={reducedMotion} hasMatch={!!savedMatch || (!!session && !isEnded)} saved={savedMatch} preferredDifficulty={settings.preferredDifficulty} onPlay={() => {playUi();setScreen('select');}} onContinue={() => {if(sessionRef.current&&sessionRef.current.phase!=='match_end'&&!storageConflictRef.current){setResultReady(sessionRef.current.phase==='round_end');setScreen('game');}else void continueMatch();}}
       onSettings={() => setModal('settings')} onStatistics={() => setModal('statistics')} onRules={() => setModal('rules')} />}
     {screen==='menu' && process.env.NODE_ENV==='production' && <div className="p4-install" style={{padding:'8px 24px 16px',margin:'0 auto'}}>
       {pwaInstallable&&<button className="pixel-button button-secondary" onClick={()=>{void pwaRef.current?.install();}}>{t('installApp')}</button>}
       {pwaUpdate&&<button className="pixel-button button-cream" onClick={()=>{void pwaRef.current?.update();}}>{t('updateApp')}</button>}
     </div>}
     {screen === 'select' && <GameSelection t={t} onBack={() => setScreen('menu')} onCrazyEights={() => {playUi();setScreen('difficulty');}} onBlackjack={() => {playUi();setScreen('blackjack');}} />}
-    {screen === 'difficulty' && <DifficultySelection t={t} preferredDifficulty={settings.preferredDifficulty} onBack={() => setScreen('select')} onStart={startMatch} />}
+    {screen === 'difficulty' && <DifficultySelection t={t} reducedMotion={reducedMotion} preferredDifficulty={settings.preferredDifficulty} onBack={() => setScreen('select')} onStart={startMatch} />}
     {screen === 'blackjack' && <BlackjackGame t={t} reducedMotion={reducedMotion} onBack={() => {playUi();setScreen('select');}}
       onSound={(sound) => {void audioRef.current?.unlock().then(()=>audioRef.current?.play(sound));}} />}
     {screen === 'game' && view && <GameTable view={view} t={t} selected={selected} onSelect={id=>{playUi('select');setSelected(current=>current===id?null:id);}} onPlay={playSelected}
       onDraw={() => {playUi('select');submit('draw_card','human');}} onFinish={() => {playUi('click');submit('finish_turn','human');}}
       onPass={() => {playUi();submit('pass_turn','human');}} onPause={() => {playUi();setModal('pause');}} error={lastError}
-      difficulty={difficulty} cue={presentationCue} reducedMotion={reducedMotion} paused={Boolean(modal)} onCueDone={cueComplete} onPet={()=>{playUi('pet');petMochi();}}
+      difficulty={difficulty} cue={presentationCue} reducedMotion={reducedMotion} paused={Boolean(modal)} onCueDone={cueComplete} onPet={()=>{if(petMochi())playUi('pet');}}
       tutorialHint={tutorialHintKey?t(tutorialHintKey):null} onSkipTutorial={()=>setTutorial(current=>({...current,skipped:true}))} />}
 
 
@@ -409,14 +421,14 @@ export function App() {
     {modal === 'discard' && <GameDialog title={t('discardMatch')} t={t} onClose={()=>setModal('settings')}><p>{t('discardConfirm')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>setModal('settings')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{void discardSaved();}}>{t('confirm')}</button></div></GameDialog>}
     {modal === 'resetStats' && <GameDialog title={t('resetStatistics')} t={t} onClose={()=>setModal('statistics')}><p>{t('resetStatsConfirm')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>setModal('statistics')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{void repositoryRef.current?.resetStatistics().then(()=>{reloadRecords();setModal('statistics');}).catch(()=>setSaveWarning('statistics'));}}>{t('confirm')}</button></div></GameDialog>}
     {modal === 'resetSettings' && <GameDialog title={t('resetSettings')} t={t} onClose={()=>setModal('settings')}><p>{t('resetSettingsConfirm')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>setModal('settings')}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{resetSettings();updateSettings(DEFAULT_SETTINGS);setModal('settings');}}>{t('confirm')}</button></div></GameDialog>}
-    {modal === 'storageConflict' && <GameDialog title={t('storageConflict')} t={t} onClose={()=>{setModal(null);setScreen('menu');}}><p>{t('storageConflict')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>{setModal(null);setScreen('menu');}}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{void continueMatch(true);}}>{t('takeOver')}</button></div></GameDialog>}
-    {modal === 'corrupt' && <GameDialog title={t('corruptSave')} t={t} onClose={()=>setModal(null)}><p>{t('corruptSave')}</p><button className="pixel-button button-secondary" onClick={()=>{void discardSaved();}}>{t('recoverSave')}</button></GameDialog>}
+    {modal === 'storageConflict' && <GameDialog title={t('storageConflict')} t={t} onClose={()=>{setModal(null);setScreen('menu');}}><p>{t('storageConflictDetail')}</p><div className="modal-inline"><button className="pixel-button button-secondary" onClick={()=>{setModal(null);setScreen('menu');}}>{t('cancel')}</button><button className="pixel-button button-primary" onClick={()=>{void continueMatch(true);}}>{t('takeOver')}</button></div></GameDialog>}
+    {modal === 'corrupt' && <GameDialog title={t('corruptSave')} t={t} onClose={()=>setModal(null)}><p>{t('corruptSaveHelp')}</p><button className="pixel-button button-secondary" onClick={()=>{void discardSaved();}}>{t('recoverSave')}</button></GameDialog>}
     {modal === 'suit' && <GameDialog title={t('chooseSuit')} onClose={() => setModal(null)} t={t} initialFocusSelector='[data-testid="suit-S"]'>
       <div className="suit-picker">{fourSuits.map(suit=><button key={suit} type="button" data-testid={`suit-${suit}`} className={`suit-choice suit-${SUIT_CLASS[suit]}`} onClick={() => selectSuit(suit)}><span>{SUIT_SYMBOL[suit]}</span>{t(({ S:'spades', H:'hearts', D:'diamonds', C:'clubs' } as const)[suit])}</button>)}</div>
       <button className="pixel-button button-secondary dialog-bottom" onClick={() => setModal(null)}>{t('cancel')}</button>
     </GameDialog>}
     {screen === 'game' && isEnded && resultReady && session?.roundResult && !modal && <GameDialog title={isMatchEnd ? t('matchResult') : t('roundResult')} onClose={goMenu} t={t}>
-      <div className="p3-result-mochi"><Mochi pose={session.roundResult.winner==='ai'?'victory':session.roundResult.winner==='human'?'defeat':'idle'} reducedMotion={reducedMotion} t={t} size="small" /></div><div className="result-crest">{session.roundResult.winner === 'human' ? '✦ ♛ ✦' : session.roundResult.winner === 'ai' ? '♣ ✦ ♣' : '♢ ♢ ♢'}</div>
+      <div className="p3-result-mochi"><Mochi pose={session.roundResult.winner==='ai'?'victory':session.roundResult.winner==='human'?'defeat':'idle'} reducedMotion={reducedMotion} t={t} size="small" /></div>
       <h3 className="result-winner" data-testid="result-winner">{session.roundResult.winner === 'human' ? t('win') : session.roundResult.winner === 'ai' ? t('lose') : t('drawResult')}</h3>
       <div className="result-stats"><div><span>{t('matchScore')}</span><strong>{session.scores.human} — {session.scores.ai}</strong></div>
         <div><span>{t('penalties')}</span><strong>{session.roundResult.penalties.human} — {session.roundResult.penalties.ai}</strong></div>
@@ -427,6 +439,5 @@ export function App() {
         <button className="pixel-button button-secondary" data-testid="result-menu" onClick={goMenu}>{t('mainMenu')}</button>
       </div>
     </GameDialog>}
-    {modalOpen && <span className="sr-only" aria-live="polite">{t('pause')}</span>}
   </div>;
 }

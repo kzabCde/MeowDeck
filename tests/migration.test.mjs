@@ -49,7 +49,8 @@ test('Next App Router preserves original P0 public asset URLs',()=>{
   assert.match(source('src/web/animation/mochi-loader.ts'),/\/assets\/meowdeck\/mochi\//);
   assert.ok(existsSync(resolve(ROOT,'public/assets/meowdeck/cards/manifest.json')));
   assert.ok(existsSync(resolve(ROOT,'public/assets/meowdeck/mochi/animations.json')));
-  assert.match(source('src/web/styles.css'),/image-rendering:pixelated/);
+  assert.match(source('src/web/design-system/base.css'),/image-rendering:pixelated/);
+  assert.match(source('src/web/design-system/controls.css'),/image-rendering:pixelated/);
 });
 
 test('all 122 immutable P0 production image bytes match their SHA-256 digests',()=>{

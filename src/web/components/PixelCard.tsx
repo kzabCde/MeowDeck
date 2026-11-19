@@ -14,7 +14,13 @@ export interface PixelCardProps {
 }
 
 const suitKey = { S: 'spades', H: 'hearts', D: 'diamonds', C: 'clubs' } as const;
-export function cardLabel(card: Card, t: T): string { return `${card.rank} ${t(suitKey[card.suit])}`; }
+const rankKeys:Partial<Record<Card['rank'],'cardAce'|'cardJack'|'cardQueen'|'cardKing'>> = {
+  A:'cardAce', J:'cardJack', Q:'cardQueen', K:'cardKing'
+};
+export function cardLabel(card: Card, t: T): string {
+  const key=rankKeys[card.rank];
+  return [key?t(key):card.rank,t('cardOf'),t(suitKey[card.suit])].filter(Boolean).join(' ');
+}
 
 export function PixelCard({ card, t, playable = false, selected = false, disabled = false, onSelect, onNavigate }: PixelCardProps) {
   const [failed, setFailed] = useState(false);

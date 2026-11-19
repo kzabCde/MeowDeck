@@ -45,11 +45,26 @@ test('Next.js production mobile mount has no horizontal overflow', async ({ page
   await page.getByTestId('play-now').click();
   await expect(page.getByTestId('game-selection')).toBeVisible();
   await page.screenshot({ path: 'test-results/visual-review/game-select-mobile-390x844.png', animations: 'disabled' });
+  for(const [width,height] of [[320,568],[430,932],[1280,800]] as const){
+    await page.setViewportSize({width,height});
+    await expect(page.getByTestId('select-crazy-eights')).toBeVisible();
+    await page.screenshot({
+      path: `test-results/visual-review/game-select-${width}x${height}.png`,animations:'disabled'
+    });
+  }
+  await page.setViewportSize({width:390,height:844});
   await page.getByTestId('select-crazy-eights').click();
   await expect(page.getByTestId('difficulty-selection')).toBeVisible();
   
   await expect(page.getByTestId('difficulty-selection')).toBeVisible();
   await page.screenshot({ path: 'test-results/visual-review/difficulty-mobile-390x844.png', animations: 'disabled' });
+  for(const [width,height] of [[320,568],[430,932]] as const){
+    await page.setViewportSize({width,height});
+    await expect(page.getByTestId('start-match')).toBeVisible();
+    await page.screenshot({
+      path: `test-results/visual-review/difficulty-${width}x${height}.png`,animations:'disabled'
+    });
+  }
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.screenshot({ path: 'test-results/visual-review/difficulty-desktop-1280x720.png', animations: 'disabled' });
   await page.getByTestId('start-match').click();
@@ -66,14 +81,30 @@ test('production visual review captures original sprites on title and table, des
   await page.screenshot({ path: 'test-results/visual-review/title-desktop-1280x720.png', animations: 'disabled' });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({ path: 'test-results/visual-review/title-mobile-390x844.png', animations: 'disabled' });
-
+  // Phase 4 visual evidence: verify the real production scene on compact and wide screens.
+  for (const [width, height, label] of [
+    [320, 568, 'mobile'],
+    [430, 932, 'mobile'],
+    [1920, 1080, 'desktop']
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await expect(page.getByTestId('title-scene')).toBeVisible();
+    const play = await page.getByTestId('play-now').boundingBox();
+    expect(play).not.toBeNull();
+    expect((play?.y ?? Infinity) + (play?.height ?? 0)).toBeLessThanOrEqual(height + 1);
+    await page.screenshot({
+      path: `test-results/visual-review/title-${label}-${width}x${height}.png`,
+      animations: 'disabled'
+    });
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.getByTestId('play-now').click();
   await page.getByTestId('select-crazy-eights').click();
   
   await page.getByTestId('start-match').click();
   await expect(page.getByTestId('gameplay-screen')).toBeVisible();
 
-  for (const [width, height] of [[1280, 720], [390, 844], [320, 568]] as const) {
+  for (const [width, height] of [[1280, 720], [1920, 1080], [768, 1024], [430, 932], [390, 844], [320, 568]] as const) {
     await page.setViewportSize({ width, height });
     await expect(page.getByTestId('top-discard')).toBeVisible();
     await page.screenshot({
@@ -94,6 +125,15 @@ test('P5 production Blackjack runs without test seed and restores a finished rou
  await page.screenshot({path:'test-results/visual-review/blackjack-mobile-390x844.png',animations:'disabled'});
  await page.setViewportSize({width:1280,height:720});
  await page.screenshot({path:'test-results/visual-review/blackjack-desktop-1280x720.png',animations:'disabled'});
+ // Production Phase 6: both game tables captured using original sprites at compact and wide sizes.
+ for(const [width,height] of [[320,568],[430,932],[768,1024],[1920,1080]] as const){
+   await page.setViewportSize({width,height});
+   await expect(page.getByTestId('blackjack-table')).toBeVisible();
+   const box=await page.getByTestId('blackjack-action-rail').boundingBox();
+   expect((box?.y??Infinity)+(box?.height??0)).toBeLessThanOrEqual(height+1);
+   await page.screenshot({path:`test-results/visual-review/blackjack-${width}x${height}.png`,animations:'disabled'});
+ }
+ await page.setViewportSize({width:1280,height:720});
  // A responsive table is not acceptable if its primary actions are below the fold.
  const action=await page.getByTestId('blackjack-hit').boundingBox();
  expect(action).not.toBeNull();
@@ -109,4 +149,176 @@ test('P5 production Blackjack runs without test seed and restores a finished rou
  await page.getByTestId('play-now').click();
  await page.getByTestId('select-blackjack').click();
  await expect(page.getByTestId('blackjack-result')).toBeVisible();
+});
+
+
+test('Phase 7 production captures genuine Mochi pet frames in both games without game-state mutation',async({page})=>{
+ await mkdir('test-results/visual-review',{recursive:true});
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/');
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-crazy-eights').click();
+ await page.getByTestId('start-match').click();
+ const crazyMochi=page.getByTestId('mochi');
+ const crazySprite=crazyMochi.locator('.mochi-frame');
+ await expect(crazySprite).toHaveAttribute('data-clip','idle');
+ const cardsBefore=await page.getByTestId('player-hand').locator('button').count();
+ await crazyMochi.click();
+ await expect(crazySprite).toHaveAttribute('data-clip','pet_reaction');
+ await expect.poll(async()=>Number(await crazySprite.getAttribute('data-frame'))).toBeGreaterThanOrEqual(1);
+ await page.screenshot({path:'test-results/visual-review/mochi-pet-crazy-eights-production-390x844.png',animations:'disabled'});
+ await expect(page.getByTestId('player-hand').locator('button')).toHaveCount(cardsBefore);
+ // Fresh mount keeps Blackjack's separate save/engine; no test seed in production.
+ await page.goto('/');
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-blackjack').click();
+ // Wait for the saved-hand hydration before inspecting any action buttons.
+ // A natural Blackjack is a valid initial deal; advance only that finished round.
+ await expect(page.getByTestId('blackjack-screen')).toBeVisible();
+ for(let tries=0;tries<6;tries++){
+   if(await page.getByTestId('blackjack-hit').isVisible().catch(()=>false))break;
+   await page.getByTestId('blackjack-next').click();
+ }
+ await expect(page.getByTestId('blackjack-hit')).toBeVisible();
+ const blackjackMochi=page.getByTestId('mochi');
+ const blackjackSprite=blackjackMochi.locator('.mochi-frame');
+ await expect(blackjackSprite).toHaveAttribute('data-clip','idle');
+ const before=await page.evaluate(()=>localStorage.getItem('meowdeck:blackjack:1'));
+ await blackjackMochi.click();
+ await expect(blackjackSprite).toHaveAttribute('data-clip','pet_reaction');
+ await expect.poll(async()=>Number(await blackjackSprite.getAttribute('data-frame'))).toBeGreaterThanOrEqual(1);
+ await page.screenshot({path:'test-results/visual-review/mochi-pet-blackjack-production-390x844.png',animations:'disabled'});
+ expect(await page.evaluate(()=>localStorage.getItem('meowdeck:blackjack:1'))).toBe(before);
+});
+
+
+// Phase 8: verify production UI omits success narration while keeping tutorials.
+test('Phase 8 production keeps successful saves silent and action prompts contextual',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/');
+ await expect(page.getByTestId('main-menu')).toBeVisible();
+ await expect(page.getByTestId('save-status')).toHaveCount(0);
+ await expect(page.getByText(/บันทึกแล้ว|พร้อมเล่นแบบออฟไลน์|Saved successfully|Ready for offline play/i)).toHaveCount(0);
+ await page.getByTestId('play-now').click();
+ await expect(page.getByTestId('select-blackjack')).toContainText('ทำแต้มใกล้ 21 แต่ห้ามเกิน');
+ await page.getByTestId('select-crazy-eights').click();
+ await page.getByTestId('start-match').click();
+ await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+ await expect(page.getByTestId('tutorial-hint')).toBeVisible();
+ await page.getByTestId('tutorial-skip').click();
+ await expect(page.locator('.action-status')).toHaveText('');
+ await expect(page.locator('.action-status')).not.toHaveAttribute('role','status');
+ await expect(page.getByTestId('save-status')).toHaveCount(0);
+ await mkdir('test-results/visual-review',{recursive:true});
+ await page.screenshot({path:'test-results/visual-review/p8-clean-game-390x844.png',animations:'disabled'});
+});
+
+
+// Phase 9: real production renders, portrait + short landscape + compact reflow.
+test('Phase 9 captures notch-aware mobile and landscape game scenes',async({page})=>{
+ await mkdir('test-results/visual-review',{recursive:true});
+ await page.setViewportSize({width:375,height:667});
+ await page.goto('/');
+ await expect(page.getByTestId('main-menu')).toBeVisible();
+ await page.screenshot({path:'test-results/visual-review/p9-menu-375x667.png',animations:'disabled'});
+ await page.getByTestId('play-now').click();
+ await page.screenshot({path:'test-results/visual-review/p9-game-select-375x667.png',animations:'disabled'});
+ await page.getByTestId('select-crazy-eights').click();
+ await page.getByTestId('start-match').click();
+ await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+ if(await page.getByTestId('tutorial-skip').isVisible().catch(()=>false))
+   await page.getByTestId('tutorial-skip').click();
+ for(const [width,height] of [[320,568],[375,667],[390,844],[430,932],[768,1024],[1280,800],[1920,1080],[667,375],[844,390],[640,360]] as const){
+   await page.setViewportSize({width,height});
+   const hand=page.getByTestId('player-hand');
+   await expect(hand).toBeVisible();
+   await page.screenshot({path:`test-results/visual-review/p9-crazy-${width}x${height}.png`,animations:'disabled'});
+ }
+ await page.goto('/');
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-blackjack').click();
+ await expect(page.getByTestId('blackjack-screen')).toBeVisible();
+ for(const [width,height] of [[320,568],[375,667],[390,844],[430,932],[667,375],[844,390],[1280,800]] as const){
+   await page.setViewportSize({width,height});
+   await expect(page.getByTestId('blackjack-table')).toBeVisible();
+   await page.screenshot({path:`test-results/visual-review/p9-blackjack-${width}x${height}.png`,animations:'disabled'});
+ }
+ await page.setViewportSize({width:667,height:375});
+ await page.getByTestId('blackjack-rules').click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await page.screenshot({path:'test-results/visual-review/p9-dialog-landscape-667x375.png',animations:'disabled'});
+});
+
+
+test('Phase 10 production captures selection, pause and result feedback with original card art',async({page})=>{
+ await mkdir('test-results/visual-review',{recursive:true});
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/');
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-crazy-eights').click();
+ await page.getByTestId('start-match').click();
+ await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+ if(await page.getByTestId('tutorial-skip').isVisible().catch(()=>false))
+  await page.getByTestId('tutorial-skip').click();
+ const playable=page.getByTestId('player-hand').locator('.card-tile.is-playable:not(:disabled)').first();
+ await playable.click();
+ await expect(playable).toHaveAttribute('aria-pressed','true');
+ await page.screenshot({path:'test-results/visual-review/p10-card-selected-390x844.png',animations:'disabled'});
+ await page.getByTestId('pause-button').click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await page.screenshot({path:'test-results/visual-review/p10-pause-dialog-390x844.png',animations:'disabled'});
+ await page.goto('/');
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-blackjack').click();
+ await expect(page.getByTestId('blackjack-screen')).toBeVisible();
+ for(let i=0;i<6;i++){
+   if(await page.getByTestId('blackjack-stand').isVisible().catch(()=>false))break;
+   await page.getByTestId('blackjack-next').click();
+ }
+ await expect(page.getByTestId('blackjack-stand')).toBeVisible();
+ await page.getByTestId('blackjack-stand').click();
+ await expect(page.getByTestId('blackjack-result')).toBeVisible();
+ // A state change can introduce more dealer cards and a new Mochi pose.
+ // Await genuine sprite/card image network completion before visual review,
+ // instead of capturing a misleading half-painted outcome.
+ await page.waitForLoadState('networkidle');
+ await expect.poll(()=>page.evaluate(()=>{
+   const images=Array.from(document.querySelectorAll<HTMLImageElement>('.md5-bj-hand img'));
+   const mochi=document.querySelector<HTMLElement>('.md5-bj-dealer-head .mochi-frame');
+   return images.length>=4&&images.every(img=>img.complete&&img.naturalWidth>0)
+     &&Boolean(mochi?.dataset.clip)&&mochi?.dataset.clip!=='fallback';
+ })).toBe(true);
+ await page.screenshot({path:'test-results/visual-review/p10-blackjack-result-390x844.png',animations:'disabled'});
+ await page.setViewportSize({width:1280,height:800});
+ await page.screenshot({path:'test-results/visual-review/p10-blackjack-result-1280x800.png',animations:'disabled'});
+});
+
+
+// Phase 12: production-only accessibility/localization smoke, without seeded fixtures.
+test('Phase 12 production language, focus and non-playing card accessibility',async({page})=>{
+ await mkdir('test-results/visual-review',{recursive:true});
+ await page.setViewportSize({width:320,height:568});
+ await page.goto('/');
+ await expect(page.locator('html')).toHaveAttribute('lang','th');
+ await page.getByRole('button',{name:/ตั้งค่า|Settings/}).first().click();
+ const dialog=page.getByRole('dialog');
+ await expect(dialog).toBeVisible();
+ const heading=dialog.locator('h2');
+ expect(await dialog.getAttribute('aria-labelledby')).toBe(await heading.getAttribute('id'));
+ await page.getByRole('combobox',{name:/ภาษา|Language/i}).selectOption('en');
+ await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await page.keyboard.press('Escape');
+ await page.getByTestId('play-now').click();
+ await expect(page.getByTestId('game-selection').locator('h1[data-screen-heading]')).toBeFocused();
+ await page.getByTestId('select-crazy-eights').click();
+ await page.getByTestId('start-match').click();
+ await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+ const list=page.getByTestId('accessible-hand-list');
+ await expect(list.locator('li')).toHaveCount(7);
+ const names=await page.getByTestId('player-hand').locator('button').evaluateAll(btns=>btns.map(b=>b.getAttribute('aria-label')));
+ expect(names.every(Boolean)).toBe(true);
+ await page.screenshot({path:'test-results/visual-review/p12-english-320x568.png',animations:'disabled'});
+ await page.getByTestId('pause-button').click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await page.screenshot({path:'test-results/visual-review/p12-pause-english-320x568.png',animations:'disabled'});
 });
