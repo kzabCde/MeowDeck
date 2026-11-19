@@ -241,7 +241,7 @@ export function validateGinSave(value:unknown):GinState|null{
   if(typeof c.id!=='string'||!isCardId(c.id)||c.id!==String(c.rank)+String(c.suit)||ids.has(c.id))return null;
   ids.add(c.id);
  }
- if(ids.size!==52||(v.discard as unknown[]).length===0||
+ if(ids.size!==52||((v.discard as unknown[]).length===0&&!(v.phase==='discard'&&v.drawnFromDiscard!==null))||
   ![10,11].includes((v.human as unknown[]).length)||![10,11].includes((v.ai as unknown[]).length))return null;
  if(v.phase==='discard'&&((v.actor==='human'?(v.human as unknown[]).length:(v.ai as unknown[]).length)!==11))return null;
  if(v.scores===null||typeof v.scores!=='object'||!['human','ai'].every(a=>{
