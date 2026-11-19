@@ -292,3 +292,33 @@ test('Phase 10 production captures selection, pause and result feedback with ori
  await page.setViewportSize({width:1280,height:800});
  await page.screenshot({path:'test-results/visual-review/p10-blackjack-result-1280x800.png',animations:'disabled'});
 });
+
+
+// Phase 12: production-only accessibility/localization smoke, without seeded fixtures.
+test('Phase 12 production language, focus and non-playing card accessibility',async({page})=>{
+ await mkdir('test-results/visual-review',{recursive:true});
+ await page.setViewportSize({width:320,height:568});
+ await page.goto('/');
+ await expect(page.locator('html')).toHaveAttribute('lang','th');
+ await page.getByRole('button',{name:/ตั้งค่า|Settings/}).first().click();
+ const dialog=page.getByRole('dialog');
+ await expect(dialog).toBeVisible();
+ const heading=dialog.locator('h2');
+ expect(await dialog.getAttribute('aria-labelledby')).toBe(await heading.getAttribute('id'));
+ await page.getByRole('combobox',{name:/ภาษา|Language/i}).selectOption('en');
+ await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await page.keyboard.press('Escape');
+ await page.getByTestId('play-now').click();
+ await expect(page.getByTestId('game-selection').locator('h1[data-screen-heading]')).toBeFocused();
+ await page.getByTestId('select-crazy-eights').click();
+ await page.getByTestId('start-match').click();
+ await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+ const list=page.getByTestId('accessible-hand-list');
+ await expect(list.locator('li')).toHaveCount(7);
+ const names=await page.getByTestId('player-hand').locator('button').evaluateAll(btns=>btns.map(b=>b.getAttribute('aria-label')));
+ expect(names.every(Boolean)).toBe(true);
+ await page.screenshot({path:'test-results/visual-review/p12-english-320x568.png',animations:'disabled'});
+ await page.getByTestId('pause-button').click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await page.screenshot({path:'test-results/visual-review/p12-pause-english-320x568.png',animations:'disabled'});
+});
