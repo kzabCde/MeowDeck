@@ -129,8 +129,12 @@ test('mobile touch events reach each original card rather than a neighboring ove
     await startCrazyEights(page);
     const card=page.getByTestId('player-hand').locator('.card-tile.is-playable:not([disabled])').first();
     await expect(card).toBeVisible();
+    // A legal card may start outside the viewport: swipe/scroll to its complete hit area first.
+    await card.scrollIntoViewIfNeeded();
     const rect=await card.boundingBox();
     expect(rect?.width).toBeGreaterThanOrEqual(44);
+    expect(rect?.x).toBeGreaterThanOrEqual(-1);
+    expect((rect?.x??Infinity)+(rect?.width??0)).toBeLessThanOrEqual(321);
     await page.touchscreen.tap(rect!.x+rect!.width/2,rect!.y+rect!.height/2);
     await expect(card).toHaveAttribute('aria-pressed','true');
   }finally{await context.close();}
