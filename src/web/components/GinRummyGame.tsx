@@ -42,6 +42,7 @@ export function GinRummyGame({t,onBack,onSound,reducedMotion}:{
  const [selected,setSelected]=useState<CardId|null>(null);
  const [order,setOrder]=useState<CardId[]>([]);
  const [rulesOpen,setRulesOpen]=useState(false);
+ const [resetOpen,setResetOpen]=useState(false);
  const [storageError,setStorageError]=useState(false);
  const [externalChange,setExternalChange]=useState(false);
  const [cue,setCue]=useState<PresentationCue|null>(null);
@@ -64,7 +65,7 @@ export function GinRummyGame({t,onBack,onSound,reducedMotion}:{
  useEffect(()=>{if(hydrated)headingRef.current?.focus({preventScroll:true});},[hydrated]);
  useEffect(()=>{setSelected(null);},[state?.revision]);
  const begin=()=>{
-  const next=startGinRummy(secureRandomInt,secureRandomInt(2)===0?'ai':'human');
+  const next=startGinRummy(secureRandomInt,secureRandomInt(2)===0?'ai':'human',stateRef.current?.stats);
   stateRef.current=next;setState(next);setSelected(null);setOrder([]);setExternalChange(false);
   onSound('confirm');
  };
@@ -129,6 +130,11 @@ export function GinRummyGame({t,onBack,onSound,reducedMotion}:{
    <GameButton variant="primary" onClick={begin} data-testid="gin-start">{t('start')}</GameButton>
    <GameButton variant="text" onClick={()=>setRulesOpen(true)}>{t('rules')}</GameButton>
   </section>
+  {resetOpen&&<GameDialog t={t} title={t('ginNewMatch')} onClose={()=>setResetOpen(false)}>
+   <p>{t('ginNewMatchConfirm')}</p>
+   <div className="modal-inline"><GameButton variant="secondary" onClick={()=>setResetOpen(false)}>{t('cancel')}</GameButton>
+    <GameButton variant="primary" onClick={()=>{setResetOpen(false);begin();}} data-testid="gin-confirm-reset">{t('confirm')}</GameButton></div>
+  </GameDialog>}
   {rulesOpen&&<GameDialog t={t} title={t('ginRulesTitle')} onClose={()=>setRulesOpen(false)}><p>{t('ginRulesText')}</p></GameDialog>}
  </main>;
  const humanTurn=state.actor==='human',drawPhase=state.phase==='draw',openPhase=state.phase.startsWith('opening_');
@@ -143,7 +149,8 @@ export function GinRummyGame({t,onBack,onSound,reducedMotion}:{
   <header className="md-gin-header">
    <GameButton variant="text" onClick={onBack} data-testid="gin-back">‹ {t('back')}</GameButton>
    <h1 tabIndex={-1} ref={headingRef} data-screen-heading>GIN RUMMY</h1>
-   <GameButton variant="text" onClick={()=>setRulesOpen(true)}>{t('rules')}</GameButton>
+   <div className="md-gin-tools"><GameButton variant="text" onClick={()=>setResetOpen(true)}>{t('ginNewMatch')}</GameButton>
+    <GameButton variant="text" onClick={()=>setRulesOpen(true)}>{t('rules')}</GameButton></div>
   </header>
   <div className="md-gin-score" aria-label={t('matchScore')}>
    <span>{t('you')} <strong>{state.scores.human}</strong></span>
@@ -206,6 +213,7 @@ export function GinRummyGame({t,onBack,onSound,reducedMotion}:{
     <strong>{state.result.kind==='stock'?t('drawResult'):state.result.winner==='human'?t('win'):t('lose')}</strong>
     <span>{state.result.kind==='gin'?t('ginDeclare'):state.result.kind==='undercut'?t('ginUndercut'):state.result.kind==='knock'?t('ginKnock'):t('ginStockEmpty')}</span>
     <span>{t('ginPoints')} +{state.result.points} · {t('ginDeadwood')} {state.result.knockerDeadwood} : {state.result.opponentDeadwood}</span>
+    {state.phase==='match_result'&&<span>{t('ginMatches')} {state.stats.matches} · {t('wins')} {state.stats.humanWins} · {t('losses')} {state.stats.aiWins}</span>}
     {state.result.laidOff.length>0&&<span>{t('ginLayoff')}: {state.result.laidOff.join(' · ')}</span>}
     <GameButton variant="primary" disabled={externalChange} onClick={()=>{perform(state.phase==='match_result'?'new_match':'next_hand');setOrder([]);}} data-testid="gin-next">
      {state.phase==='match_result'?t('rematch'):t('nextRound')}
