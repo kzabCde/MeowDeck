@@ -6,6 +6,7 @@ import { GameDialog } from './components/GameDialog.js';
 import { Mochi } from './components/Mochi.js';
 import { GameTable } from './components/GameTable.js';
 import { BlackjackGame } from './components/BlackjackGame.js';
+import { GinRummyGame } from './components/GinRummyGame.js';
 import { DifficultySelection, GameSelection, MainMenu } from './components/Screens.js';
 import { SUIT_SYMBOL, SUIT_CLASS, ensureCardAssets } from './game/assets.js';
 import { choosePracticeMove } from './game/practice-opponent.js';
@@ -23,7 +24,7 @@ import { GameAudio } from './audio/audio-manager.js';
 import { setupPwa, type PwaController, type PwaState } from './pwa/service-worker-register.js';
 import { DEFAULT_TUTORIAL, getTutorialHint, readTutorial, advanceTutorial, writeTutorial, type TutorialProgress } from './tutorial/tutorial.js';
 
-type Screen = 'menu' | 'select' | 'difficulty' | 'game' | 'blackjack';
+type Screen = 'menu' | 'select' | 'difficulty' | 'game' | 'blackjack' | 'gin-rummy';
 type Modal = 'pause' | 'settings' | 'rules' | 'statistics' | 'suit' | 'restart' | 'leave' | 'replace' | 'discard' | 'resetStats' | 'resetSettings' | 'storageConflict' | 'corrupt' | null;
 const fourSuits: readonly Suit[] = ['S', 'H', 'D', 'C'];
 
@@ -370,9 +371,11 @@ export function App() {
       {pwaInstallable&&<button className="pixel-button button-secondary" onClick={()=>{void pwaRef.current?.install();}}>{t('installApp')}</button>}
       {pwaUpdate&&<button className="pixel-button button-cream" onClick={()=>{void pwaRef.current?.update();}}>{t('updateApp')}</button>}
     </div>}
-    {screen === 'select' && <GameSelection t={t} onBack={() => setScreen('menu')} onCrazyEights={() => {playUi();setScreen('difficulty');}} onBlackjack={() => {playUi();setScreen('blackjack');}} />}
+    {screen === 'select' && <GameSelection t={t} onBack={() => setScreen('menu')} onCrazyEights={() => {playUi();setScreen('difficulty');}} onBlackjack={() => {playUi();setScreen('blackjack');}} onGinRummy={() => {playUi();setScreen('gin-rummy');}} />}
     {screen === 'difficulty' && <DifficultySelection t={t} reducedMotion={reducedMotion} preferredDifficulty={settings.preferredDifficulty} onBack={() => setScreen('select')} onStart={startMatch} />}
     {screen === 'blackjack' && <BlackjackGame t={t} reducedMotion={reducedMotion} onBack={() => {playUi();setScreen('select');}}
+      onSound={(sound) => {void audioRef.current?.unlock().then(()=>audioRef.current?.play(sound));}} />}
+    {screen === 'gin-rummy' && <GinRummyGame t={t} reducedMotion={reducedMotion} onBack={() => {playUi();setScreen('select');}}
       onSound={(sound) => {void audioRef.current?.unlock().then(()=>audioRef.current?.play(sound));}} />}
     {screen === 'game' && view && <GameTable view={view} t={t} selected={selected} onSelect={id=>{playUi('select');setSelected(current=>current===id?null:id);}} onPlay={playSelected}
       onDraw={() => {playUi('select');submit('draw_card','human');}} onFinish={() => {playUi('click');submit('finish_turn','human');}}
