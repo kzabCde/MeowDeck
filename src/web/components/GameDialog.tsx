@@ -11,6 +11,7 @@ export function GameDialog({ title, children, onClose, t, wide = false, initialF
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
+    const opener=document.activeElement instanceof HTMLElement?document.activeElement:null;
     if (!node.open) node.showModal();
     // Focus the actual first task control rather than the decorative close icon.
     // The caller can override for suit selection and other special dialogs.
@@ -18,7 +19,21 @@ export function GameDialog({ title, children, onClose, t, wide = false, initialF
       ??node.querySelector<HTMLElement>('.dialog-content button:not([disabled]), .dialog-content select:not([disabled]), .dialog-content input:not([disabled])')
       ??node.querySelector<HTMLElement>('.dialog-header button:not([disabled])');
     first?.focus({preventScroll:true});
-    return () => { if (node.open) node.close(); };
+    return () => {
+      if (node.open) node.close();
+      // Native focus restoration is inconsistent when React removes the dialog
+      // during the same commit. Restore the *connected* original trigger only
+      // when another dialog has not already taken focus.
+      if (opener && !node.contains(opener)) {
+        requestAnimationFrame(()=>{
+          const active=document.activeElement;
+          const anotherDialog=document.querySelector('dialog[open]');
+          const focusIsEmpty=!active||active===document.body||active===document.documentElement||!active.isConnected;
+          if(opener.isConnected&&!opener.hasAttribute('disabled')&&!anotherDialog&&focusIsEmpty)
+            opener.focus({preventScroll:true});
+        });
+      }
+    };
   }, [initialFocusSelector]);
   return <dialog ref={ref} className={`game-dialog ${wide ? 'dialog-wide' : ''}`} aria-labelledby={titleId}
     onCancel={(event: SyntheticEvent<HTMLDialogElement>) => { event.preventDefault(); onClose(); }}>
