@@ -160,3 +160,15 @@ for(const [width,height] of [[320,568],[640,360],[390,844]] as const){
   await expect(dialog).toHaveCount(0);
  });
 }
+
+
+test('Blackjack entry focuses its heading even during local-save hydration',async({page})=>{
+ await page.goto('/?qaSeed=62&fastAI=1');
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-blackjack').click();
+ await expect(page.getByTestId('blackjack-screen')).toBeVisible();
+ await expect(page.getByTestId('blackjack-screen').locator('h1[data-screen-heading]')).toBeFocused();
+ await expect(page.getByRole('group',{name:/คะแนนรอบแบล็กแจ็ก|Blackjack round score/})).toBeVisible();
+ await page.getByTestId('blackjack-back').click();
+ await expect(page.getByTestId('game-selection').locator('h1[data-screen-heading]')).toBeFocused();
+});

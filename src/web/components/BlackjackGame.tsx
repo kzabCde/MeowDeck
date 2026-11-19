@@ -110,7 +110,10 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
      clip:'pet_reaction',sessionId:'blackjack',round:current.round,turn:current.revision});
    onSound('pet');
  };
- if(!hydrated||!state)return <main className="blackjack-room md5-blackjack" role="status">{t('saveLoading')}</main>;
+ if(!hydrated||!state)return <main className="blackjack-room md5-blackjack" role="status">
+   <h1 className="sr-only" tabIndex={-1} data-screen-heading>{t('blackjack')}</h1>
+   {t('saveLoading')}
+ </main>;
  const view=getBlackjackView(state);
  const outcome:BlackjackOutcome|null=view.outcome;
  const mochiPose=view.phase==='finished'
@@ -125,7 +128,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
        <GameButton variant="text" onClick={()=>setRulesOpen(true)} data-testid="blackjack-rules">{t('rules')}</GameButton>
      </div>
    </header>
-   <div className="md5-bj-scorebar" aria-label={t('bjSeriesScore')}>
+   <div className="md5-bj-scorebar" role="group" aria-label={t('bjSeriesScore')}>
      <span className="md5-bj-round">{t('round')} {view.round}</span>
      <div className="md5-bj-score-pips">
        <Score label={t('you')} count={view.score.human} testId="blackjack-wins"/>
@@ -174,7 +177,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
      </div>}
      {storageError && <p className="md5-bj-storage-warning" role="alert">{t('saveFailed')}</p>}
      {view.phase==='finished'&&outcome&&view.reason
-       ?<div className="md5-bj-result" role="status" data-testid="blackjack-result">
+       ?<div className="md5-bj-result" role="status" aria-atomic="true" data-testid="blackjack-result">
          <strong>{t(outcomeKeys[outcome])}</strong>
          <span>{t(reasonKeys[view.reason])}</span>
        </div>

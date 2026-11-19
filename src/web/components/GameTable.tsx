@@ -157,7 +157,7 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
     <h1 className="sr-only" tabIndex={-1} data-screen-heading>{t('crazyEights')}</h1>
     <header className="game-hud md4-hud"><div className="hud-brand">MEOW<span>DECK</span></div>
       <div className="hud-round">{t('round')} <strong data-testid="round-number">{view.roundNumber}</strong></div>
-      <div className="hud-score" aria-label={`${t('you')} ${view.scores.human}, ${t('mochi')} ${view.scores.ai}`}>
+      <div className="hud-score" role="group" aria-label={`${t('you')} ${view.scores.human}, ${t('mochi')} ${view.scores.ai}`}>
         <span className="hud-score-pair"><span className="hud-score-label">{t('you')}</span><strong data-testid="human-score">{view.scores.human}</strong></span>
         <span className="hud-score-divider" aria-hidden="true"/>
         <span className="hud-score-pair"><span className="hud-score-label">{t('mochi')}</span><strong data-testid="mochi-score">{view.scores.ai}</strong></span>
@@ -187,7 +187,7 @@ export function GameTable({ view, t, selected, onSelect, onPlay, onDraw, onFinis
         <div className="pile-group"><span className="pile-label">{t('discard')}</span><div className="discard-pile" ref={discardRef} data-testid="top-discard"><img className="pixel-art card-image" style={((cue?.clip==='play_card'&&cue.cardId===view.topDiscard.id&&shownActionFrame!==cue.id&&!reducedMotion)||(humanFlight?.cardId===view.topDiscard.id))?{visibility:'hidden'}:undefined} src={cardImage(view.topDiscard.id, true)} alt={cardLabel(view.topDiscard,t)} />{impact&&<span key={impact} className={view.topDiscard.rank==='8'?`md-card-impact md-wild-impact md-wild-${SUIT_CLASS[view.activeSuit]}`:'md-card-impact'} aria-hidden="true" onAnimationEnd={()=>setImpact(null)}/>}</div></div>
         <div className="active-suit"><span>{t('activeSuit')}</span><strong role="img" className={`suit-${SUIT_CLASS[view.activeSuit]}`} data-testid="active-suit" aria-label={t(({ S:'spades', H:'hearts', D:'diamonds', C:'clubs' } as const)[view.activeSuit])}>{SUIT_SYMBOL[view.activeSuit]}</strong></div>
       </section>
-      <div className={`turn-banner ${isHumanTurn?'your-turn':'opponent-turn'}`} aria-live="polite" data-testid="turn-status"><span className="md-turn-dot" aria-hidden="true"/><strong>{isHumanTurn?t('yourTurn'):t('mochiTurn')}</strong></div>
+      <div className={`turn-banner ${isHumanTurn?'your-turn':'opponent-turn'}`} role="status" aria-live="polite" aria-atomic="true" data-testid="turn-status"><span className="md-turn-dot" aria-hidden="true"/><strong>{isHumanTurn?t('yourTurn'):t('mochiTurn')}</strong></div>
       <section className="player-area md4-player-area" aria-label={t('yourHand')}>
         <div className="hand-title"><span>{t('yourHand')}</span>
           <span className="hand-title-tail">
