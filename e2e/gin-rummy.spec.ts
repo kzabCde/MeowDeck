@@ -1,6 +1,6 @@
 import {expect,test} from '@playwright/test';
 async function openGin(page:import('@playwright/test').Page){
- await page.goto('/');
+ await page.goto('/?qaSeed=4');
  await expect(page.getByTestId('main-menu')).toBeVisible();
  await page.getByTestId('play-now').click();
  await expect(page.getByTestId('select-gin-rummy')).toBeVisible();
@@ -15,6 +15,18 @@ test('Gin Rummy enters through the shared MeowDeck game selector',async({page})=
  await expect(page.getByTestId('gin-opponent-hand').locator('.card-back')).toHaveCount(10);
  await expect(page.getByTestId('gin-stock')).toContainText(/30|31/);
  await expect(page.getByTestId('gin-discard')).toBeVisible();
+});
+test('Gin Rummy human can pass opening, draw stock and discard one card',async({page})=>{
+ await openGin(page);
+ await expect(page.getByTestId('gin-pass')).toBeEnabled();
+ await page.getByTestId('gin-pass').click();
+ await expect(page.getByTestId('gin-stock')).toBeEnabled({timeout:20000});
+ await page.getByTestId('gin-stock').click();
+ await expect(page.getByTestId('gin-player-hand').locator('[data-testid^="gin-card-"]')).toHaveCount(11);
+ await page.getByTestId('gin-player-hand').locator('[data-testid^="gin-card-"]').first().click();
+ await expect(page.getByTestId('gin-throw')).toBeEnabled();
+ await page.getByTestId('gin-throw').click();
+ await expect(page.getByTestId('gin-player-hand').locator('[data-testid^="gin-card-"]')).toHaveCount(10);
 });
 test('Gin Rummy restores a complete hand on refresh without affecting Blackjack',async({page})=>{
  await openGin(page);
