@@ -1,6 +1,6 @@
 import {useCallback,useEffect,useMemo,useRef,useState,type DragEvent} from 'react';
 import type {Card,CardId,Actor} from '../../games/meowdeck/core/cards.js';
-import {secureRandomInt} from '../../games/meowdeck/core/random.js';
+import {secureRandomInt,type RandomInt} from '../../games/meowdeck/core/random.js';
 import {applyGinAction,evaluateGinHand,startGinRummy,validateGinSave,type GinActionType,type GinDifficulty,type GinState} from '../../games/meowdeck/games/gin-rummy/rules.js';
 import {chooseGinMove,createGinObservation} from '../../games/meowdeck/games/gin-rummy/ai.js';
 import {cardImage} from '../game/assets.js';
@@ -18,6 +18,14 @@ const rankOrder=(c:Card)=>RANKS.indexOf(c.rank);
 const soundFor=(type:GinActionType,after:GinState):SoundName=>
  after.result?.winner==='human'?'win':after.result?.winner==='ai'?'lose':
  (type==='draw_stock'||type==='draw_discard'||type==='take_open')?'draw':'confirm';
+function qaRandom():RandomInt{
+ if(process.env.NODE_ENV!=='development')return secureRandomInt;
+ const raw=new URLSearchParams(location.search).get('qaSeed');
+ const seed=Number(raw);
+ if(!raw||!Number.isSafeInteger(seed)||seed<1)return secureRandomInt;
+ let value=seed>>>0;
+ return (max:number)=>{value^=value<<13;value^=value>>>17;value^=value<<5;return (value>>>0)%max;};
+}
 function readSave():GinState|null{
  try{const raw=localStorage.getItem(SAVE_KEY);return raw?validateGinSave(JSON.parse(raw) as unknown):null;}catch{return null;}
 }
@@ -38,6 +46,7 @@ export function GinRummyGame({t,onBack,onSound,reducedMotion}:{
  const [hydrated,setHydrated]=useState(false);
  const [state,setState]=useState<GinState|null>(null);
  const stateRef=useRef<GinState|null>(null);
+ const rngRef=useRef<RandomInt>(secureRandomInt);
  const [difficulty,setDifficulty]=useState<GinDifficulty>('normal');
  const [selected,setSelected]=useState<CardId|null>(null);
  const [order,setOrder]=useState<CardId[]>([]);
@@ -48,6 +57,7 @@ export function GinRummyGame({t,onBack,onSound,reducedMotion}:{
  const [cue,setCue]=useState<PresentationCue|null>(null);
  const headingRef=useRef<HTMLHeadingElement|null>(null);
  useEffect(()=>{
+  rngRef.current=qaRandom();
   const saved=readSave();setState(saved);stateRef.current=saved;setDifficulty(readMode());
   setHydrated(true);
  },[]);
@@ -65,14 +75,14 @@ export function GinRummyGame({t,onBack,onSound,reducedMotion}:{
  useEffect(()=>{if(hydrated)headingRef.current?.focus({preventScroll:true});},[hydrated]);
  useEffect(()=>{setSelected(null);},[state?.revision]);
  const begin=()=>{
-  const next=startGinRummy(secureRandomInt,secureRandomInt(2)===0?'ai':'human',stateRef.current?.stats);
-  stateRef.current=next;setState(next);setSelected(null);setOrder([]);setExternalChange(false);
+  const next=startGinRummy(rngRef.current,rngRef.current(2)===0?'ai':'human',stateRef.current?.stats);
+  stateRef.current=next;setState(next);setSelected(null);setOrder([]);setExternalChange(false);setCue(null);
   onSound('confirm');
  };
  const perform=useCallback((type:GinActionType,actor:Actor='human',cardId?:CardId)=>{
   const current=stateRef.current;
   if(!current||externalChange)return;
-  const result=applyGinAction(current,{type,actor,...(cardId?{cardId}:{}),expectedRevision:current.revision,actionId:crypto.randomUUID()},secureRandomInt);
+  const result=applyGinAction(current,{type,actor,...(cardId?{cardId}:{}),expectedRevision:current.revision,actionId:crypto.randomUUID()},rngRef.current);
   if(!result.ok)return;
   const next=result.state;stateRef.current=next;setState(next);
   const eventClip=next.result
