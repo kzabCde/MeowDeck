@@ -248,3 +248,37 @@ test('Phase 9 captures notch-aware mobile and landscape game scenes',async({page
  await expect(page.getByRole('dialog')).toBeVisible();
  await page.screenshot({path:'test-results/visual-review/p9-dialog-landscape-667x375.png',animations:'disabled'});
 });
+
+
+test('Phase 10 production captures selection, pause and result feedback with original card art',async({page})=>{
+ await mkdir('test-results/visual-review',{recursive:true});
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/');
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-crazy-eights').click();
+ await page.getByTestId('start-match').click();
+ await expect(page.getByTestId('gameplay-screen')).toBeVisible();
+ if(await page.getByTestId('tutorial-skip').isVisible().catch(()=>false))
+  await page.getByTestId('tutorial-skip').click();
+ const playable=page.getByTestId('player-hand').locator('.card-tile.is-playable:not(:disabled)').first();
+ await playable.click();
+ await expect(playable).toHaveAttribute('aria-pressed','true');
+ await page.screenshot({path:'test-results/visual-review/p10-card-selected-390x844.png',animations:'disabled'});
+ await page.getByTestId('pause-button').click();
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await page.screenshot({path:'test-results/visual-review/p10-pause-dialog-390x844.png',animations:'disabled'});
+ await page.goto('/');
+ await page.getByTestId('play-now').click();
+ await page.getByTestId('select-blackjack').click();
+ await expect(page.getByTestId('blackjack-screen')).toBeVisible();
+ for(let i=0;i<6;i++){
+   if(await page.getByTestId('blackjack-stand').isVisible().catch(()=>false))break;
+   await page.getByTestId('blackjack-next').click();
+ }
+ await expect(page.getByTestId('blackjack-stand')).toBeVisible();
+ await page.getByTestId('blackjack-stand').click();
+ await expect(page.getByTestId('blackjack-result')).toBeVisible();
+ await page.screenshot({path:'test-results/visual-review/p10-blackjack-result-390x844.png',animations:'disabled'});
+ await page.setViewportSize({width:1280,height:800});
+ await page.screenshot({path:'test-results/visual-review/p10-blackjack-result-1280x800.png',animations:'disabled'});
+});
