@@ -57,6 +57,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
  const stateRef=useRef<BlackjackState|null>(null);
  const rngRef=useRef<RandomInt>(secureRandomInt);
  const [hydrated,setHydrated]=useState(false);
+ const screenHeadingRef=useRef<HTMLHeadingElement|null>(null);
  const [storageError,setStorageError]=useState(false);
  const [externalChange,setExternalChange]=useState(false);
  const [rulesOpen,setRulesOpen]=useState(false);
@@ -69,6 +70,15 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
    const initial=saved??startBlackjack(rngRef.current);
    stateRef.current=initial;setState(initial);setHydrated(true);
  },[]);
+ useEffect(()=>{
+   if(!hydrated)return;
+   // The loaded hand can replace the initial placeholder before the parent
+   // route-focus effect runs. Repair focus once after hydration, never on Hit,
+   // Stand, dealer animations, or ordinary rerenders.
+   const active=document.activeElement;
+   if(!active||active===document.body||!active.isConnected||active===screenHeadingRef.current)
+     screenHeadingRef.current?.focus({preventScroll:true});
+ },[hydrated]);
  useEffect(()=>{
    if(!hydrated||!state||externalChange)return;
    try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));setStorageError(false);}
@@ -111,7 +121,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
    onSound('pet');
  };
  if(!hydrated||!state)return <main className="blackjack-room md5-blackjack" role="status">
-   <h1 className="sr-only" tabIndex={-1} data-screen-heading>{t('blackjack')}</h1>
+   <h1 className="sr-only" tabIndex={-1} data-screen-heading ref={screenHeadingRef}>{t('blackjack')}</h1>
    {t('saveLoading')}
  </main>;
  const view=getBlackjackView(state);
@@ -120,7 +130,7 @@ export function BlackjackGame({t,onBack,onSound,reducedMotion}:{
    ?outcome==='dealer'?'victory':outcome==='human'?'defeat':'idle'
    :'idle';
  return <main className="blackjack-room md5-blackjack" data-testid="blackjack-screen">
-   <h1 className="sr-only" tabIndex={-1} data-screen-heading>{t('blackjack')}</h1>
+   <h1 className="sr-only" tabIndex={-1} data-screen-heading ref={screenHeadingRef}>{t('blackjack')}</h1>
    <header className="md5-bj-header">
      <GameButton variant="text" onClick={onBack} data-testid="blackjack-back">‹ {t('back')}</GameButton>
      <div className="md5-bj-brand"><strong>BLACKJACK</strong></div>

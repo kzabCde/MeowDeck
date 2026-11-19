@@ -26,10 +26,8 @@ export function GameDialog({ title, children, onClose, t, wide = false, initialF
       // when another dialog has not already taken focus.
       if (opener && !node.contains(opener)) {
         requestAnimationFrame(()=>{
-          const active=document.activeElement;
           const anotherDialog=document.querySelector('dialog[open]');
-          const focusIsEmpty=!active||active===document.body||active===document.documentElement||!active.isConnected;
-          if(opener.isConnected&&!opener.hasAttribute('disabled')&&!anotherDialog&&focusIsEmpty)
+          if(opener.isConnected&&!opener.hasAttribute('disabled')&&!anotherDialog)
             opener.focus({preventScroll:true});
         });
       }
