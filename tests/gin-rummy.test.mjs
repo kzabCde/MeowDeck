@@ -85,3 +85,31 @@ test('duplicate or stale actions cannot change the game',()=>{
  const first=applyGinAction(state,action,rng);assert.ok(first.ok);
  const duplicate=applyGinAction(first.state,action,rng);assert.equal(duplicate.ok,false);
 });
+
+test('Gin AI completes a full seeded 100-point match with only legal actions',()=>{
+ let seed=835;
+ const random=max=>{
+  seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;
+  return (seed>>>0)%max;
+ };
+ let state=startGinRummy(random,'ai'),actions=0;
+ while(state.phase!=='match_result'&&actions++<3000){
+  let move,actor=state.actor;
+  if(state.phase==='hand_result')move={type:'next_hand'};
+  else move=chooseGinMove(createGinObservation(state,actor),actor==='human'?'normal':'hard');
+  const result=applyGinAction(state,{...move,actor,expectedRevision:state.revision,actionId:'sim-'+actions},random);
+  assert.equal(result.ok,true,'invalid AI move at revision '+state.revision);
+  state=result.state;
+  assert.equal(new Set([...state.human,...state.ai,...state.stock,...state.discard].map(c=>c.id)).size,52);
+ }
+ assert.equal(state.phase,'match_result','AI match did not finish');
+ assert.ok(Math.max(state.scores.human,state.scores.ai)>=100);
+ assert.ok(validateGinSave(state));
+});
+test('opening upcard can be saved and restored while discard pile is empty',()=>{
+ const start=startGinRummy(rng,'ai');
+ const result=dispatch(start,'take_open','human');
+ assert.ok(result.ok);
+ assert.equal(result.state.discard.length,0);
+ assert.ok(validateGinSave(result.state));
+});
