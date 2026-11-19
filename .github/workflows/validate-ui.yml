@@ -15,6 +15,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'playwright*.ts'
+      - 'scripts/verify-visual-review.mjs'
       - '.github/workflows/validate-ui.yml'
   pull_request:
     paths:
@@ -79,6 +80,15 @@ jobs:
           grep -q 'production.spec.ts' /tmp/meowdeck-prod-tests.txt
       - name: Run seeded development E2E
         run: npm run test:e2e
+      - name: Verify Phase 13 visual screenshot inventory
+        run: node scripts/verify-visual-review.mjs
+      - name: Upload Phase 13 development visual review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meowdeck-phase13-visual-states
+          path: test-results/visual-review/p13-*
+          if-no-files-found: ignore
       - name: Run focused cross-browser gameplay smoke
         run: npm run test:e2e:cross-browser
       - name: Run production build E2E

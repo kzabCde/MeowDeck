@@ -20,7 +20,8 @@
     "test:offline": "playwright test --config=playwright.production.config.ts e2e/offline.spec.ts",
     "build:p4": "tsc -p tsconfig.p4-test.json",
     "test:e2e:cross-browser": "playwright test --config=playwright.cross-browser.config.ts",
-    "evaluate:ai": "npm run build:engine && node examples/evaluate-ai-difficulty.mjs 1000"
+    "evaluate:ai": "npm run build:engine && node examples/evaluate-ai-difficulty.mjs 1000",
+    "test:visual": "playwright test --config=playwright.config.ts e2e/p13-visual-baseline.spec.ts e2e/p13-visual-states.spec.ts && node scripts/verify-visual-review.mjs"
   },
   "dependencies": {
     "next": "16.4.6",
